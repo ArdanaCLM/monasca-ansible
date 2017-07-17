@@ -57,7 +57,7 @@
   register: ardana_notify_monasca_api_restart_required
 
 - name: create api log dir
-  file: path={{api_log_dir}} state=directory owner=root group={{monasca_group}} mode=0775
+  file: path={{api_log_dir}} state=directory owner=mon-api group=adm mode=0775
   register: ardana_notify_monasca_api_restart_required
 
 - name: set monasca-api log file ownership

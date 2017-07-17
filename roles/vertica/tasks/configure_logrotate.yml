@@ -33,3 +33,13 @@
 
 - name: Remove admintools logrotate config as it fails due to permissions issues and logging handles rotating it
   file: path=/opt/vertica/config/logrotate/admintool.logrotate state=absent
+
+- name: Install cron job for daily log rotation
+  copy:
+    content: |
+      #!/bin/sh
+      logrotate /opt/vertica/config/logrotate_base.conf
+    dest: /etc/cron.daily/vertica-logrotate
+    owner: root
+    group: root
+    mode: 0750

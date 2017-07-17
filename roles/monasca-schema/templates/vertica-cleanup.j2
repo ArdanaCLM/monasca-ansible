@@ -39,5 +39,3 @@ eval "$vertica_command \"DELETE FROM MonMetrics.DefinitionDimensions WHERE id NO
 eval "$vertica_command \"DELETE FROM MonMetrics.Definitions WHERE id NOT IN (SELECT DISTINCT definition_id FROM MonMetrics.DefinitionDimensions); COMMIT;\""
 
 eval "$vertica_command \"DELETE FROM MonMetrics.Dimensions WHERE dimension_set_id NOT IN (SELECT DISTINCT dimension_set_id FROM MonMetrics.DefinitionDimensions); COMMIT;\""
-
-eval "logrotate /opt/vertica/config/logrotate_base.conf"

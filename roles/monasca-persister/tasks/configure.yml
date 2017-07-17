@@ -32,7 +32,7 @@
   register: ardana_notify_monasca_persister_restart_required
 
 - name: create persister log directory
-  file: path={{persister_log_dir}} state=directory owner=root group={{monasca_group}} mode=0775
+  file: path={{persister_log_dir}} state=directory owner=mon-persister group=adm mode=0775
   register: ardana_notify_monasca_persister_restart_required
 
 - name: set monasca-persister log file ownership

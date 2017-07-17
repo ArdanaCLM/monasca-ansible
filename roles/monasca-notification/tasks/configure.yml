@@ -32,7 +32,7 @@
   register: ardana_notify_monasca_notification_restart_required
 
 - name: create notification log dir
-  file: path={{notification_log_dir}} state=directory owner=root group={{monasca_group}} mode=0775
+  file: path={{notification_log_dir}} state=directory owner=mon-notification group=adm mode=0775
   register: ardana_notify_monasca_notification_restart_required
 
 - name: set monasca-notification log file ownership

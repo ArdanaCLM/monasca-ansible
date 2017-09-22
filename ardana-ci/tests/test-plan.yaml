@@ -1,0 +1,136 @@
+#
+# (c) Copyright 2016 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2017 SUSE LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+#
+---
+- name: Validate monasca smoketest
+  logfile: testsuite-initial-monasca-smoketest.log
+  prefix: smoketest-monasca
+  exec:
+    - validate-monasca-smoke.bash
+
+- name: Test monasca stop
+  logfile: testsuite-stop-monasca.log
+  prefix: stop-monasca
+  playbooks:
+    - monasca-stop.yml
+
+- name: Validate monasca down
+  logfile: testsuite-stop-monasca.log
+  prefix: validate-monasca-down
+  exec:
+    - validate-monasca-down.bash
+
+- name: Test zookeeper stop
+  logfile: testsuite-stop-zookeeper.log
+  prefix: stop-zookeeper
+  playbooks:
+    - zookeeper-stop.yml
+
+- name: Validate zookeeper down
+  logfile: testsuite-stop-zookeeper.log
+  prefix: stop-zookeeper
+  exec:
+    - validate-zookeeper-down.bash
+
+- name: Test zookeeper start
+  logfile: testsuite-start-zookeeper.log
+  prefix: start-zookeeper
+  playbooks:
+    - zookeeper-start.yml
+
+- name: Validate zookeeper up
+  logfile: testsuite-start-zookeeper.log
+  prefix: start-zookeeper
+  exec:
+    - validate-zookeeper-up.bash
+
+- name: Test zookeeper reconfigure
+  logfile: testsuite-reconfigure-zookeeper.log
+  prefix: reconfigure-zookeeper
+  playbooks:
+    - zookeeper-reconfigure.yml
+
+- name: Validate zookeeper up
+  logfile: testsuite-reconfigure-zookeeper.log
+  prefix: reconfigure-zookeeper
+  exec:
+    - validate-zookeeper-up.bash
+
+- name: Test monasca start
+  logfile: testsuite-start-monasca.log
+  prefix: start-monasca
+  playbooks:
+    - monasca-start.yml
+
+- name: Validate monasca up
+  logfile: testsuite-start-monasca.log
+  prefix: start-monasca
+  exec:
+    - validate-monasca-up.bash
+
+- name: Test monasca reconfigure
+  logfile: testsuite-reconfigure-monasca.log
+  prefix: reconfigure-monasca
+  playbooks:
+    - monasca-reconfigure.yml
+
+- name: Validate monasca up
+  logfile: testsuite-reconfigure-monasca.log
+  prefix: reconfigure-monasca
+  exec:
+    - validate-monasca-up.bash
+
+- name: Validate monasca smoketest
+  logfile: testsuite-reconfigure-monasca-smoketest.log
+  prefix: smoketest-monasca
+  exec:
+    - validate-monasca-smoke.bash
+
+- name: Test monasca agent stop
+  logfile: testsuite-stop-agent.log
+  prefix: stop-monasca-agent
+  playbooks:
+    - monasca-agent-stop.yml
+
+- name: Validate monasca agent down
+  logfile: testsuite-stop-agent.log
+  prefix: stop-monasca-agent
+  exec:
+    - validate-monasca-agent-down.bash
+
+- name: Test monasca agent start
+  logfile: testsuite-start-agent.log
+  prefix: start-monasca-agent
+  playbooks:
+    - monasca-agent-start.yml
+
+- name: Validate monasca agent up
+  logfile: testsuite-start-agent.log
+  prefix: start-monasca-agent
+  exec:
+    - validate-monasca-agent-up.bash
+
+- name: Test monasca agent reconfigure
+  logfile: testsuite-reconfigure-agent.log
+  prefix: reconfigure-monasca-agent
+  playbooks:
+    - monasca-agent-reconfigure.yml
+
+- name: Validate monasca agent up
+  logfile: testsuite-agent-reconfigure.log
+  prefix: reconfigure-monasca-agent
+  exec:
+    - validate-monasca-agent-up.bash

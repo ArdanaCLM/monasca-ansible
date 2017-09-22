@@ -1,0 +1,111 @@
+#
+# (c) Copyright 2015-2017 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2017 SUSE LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+#
+---
+- name: monasca-agent | configure | Setup group
+  group:
+    name: "{{ monasca_agent_group_name }}"
+    system: yes
+  register: ardana_notify_monasca_agent_restart_required
+
+- name: monasca-agent | configure | Setup user
+  user:
+    name: "{{ monasca_agent_user_name }}"
+    system: yes
+    group: "{{ monasca_agent_group_name }}"
+    shell: "{{ monasca_agent_shell }}"
+  register: ardana_notify_monasca_agent_restart_required
+
+- name: monasca-agent | configure | create /opt/monasca
+  file:
+    path: /opt/monasca
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: monasca-agent | configure | copy sudoers
+  copy:
+    src: sudoers
+    dest: /etc/sudoers.d/mon-agent
+    owner: root
+    group: root
+    mode: 0440
+
+- name: monasca-agent | configure | configure sudoers
+  lineinfile:
+    dest: /etc/sudoers.d/mon-agent
+    line: "Defaults:mon-agent  secure_path=\"/usr/local/sbin:/usr/local/bin\
+            :/usr/sbin:/usr/bin:/sbin:/bin\""
+
+- name: monasca-agent | configure | create conf.d dir and custom plugin dirs
+  become: yes
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - "{{ monasca_conf_dir }}"
+    - "{{ monasca_conf_dir }}/agent"
+    - "{{ monasca_conf_dir }}/agent/conf.d"
+    - "{{ monasca_agent_check_plugin_dir }}"
+    - "{{ monasca_agent_detection_plugin_dir }}"
+
+- name: monasca-agent | configure | create monasca log dir
+  become: yes
+  file:
+    path: "{{ monasca_log_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0775
+
+- name: monasca-agent | configure | create agent log dir
+  become: yes
+  file:
+    path: "{{ monasca_agent_log_dir }}"
+    state: directory
+    owner: "{{ monasca_agent_user_name }}"
+    group: "{{ monasca_agent_group_name }}"
+    mode: 0775
+
+- name: monasca-agent | configure | set monasca-agent log file ownership
+  file:
+    path: "{{ item }}"
+    state: touch
+    owner: "{{ monasca_agent_user_name }}"
+    group: "adm"
+    mode: 0640
+  with_items:
+    - "{{ monasca_agent_log_dir }}/collector.log"
+    - "{{ monasca_agent_log_dir }}/forwarder.log"
+    - "{{ monasca_agent_log_dir }}/statsd.log"
+    - "{{ monasca_agent_log_dir }}/supervisord.log"
+
+# Instead of running this directly by creating a file to run
+# it changes such as user/pass will trigger a rerun.
+# Also a user can run it manually
+- name: monasca-agent | configure | Create reconfigure script
+  become: yes
+  template:
+    dest: "{{ agent_reconfigure_script }}"
+    src: monasca-reconfigure.j2
+    owner: root
+    group: root
+    mode: 0750
+  register: ardana_notify_monasca_agent_restart_required

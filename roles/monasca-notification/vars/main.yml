@@ -15,9 +15,6 @@
 # under the License.
 #
 ---
-dependencies:
-  - python-mysqldb
-  - libmysqlclient18
 notification_log_dir: "{{ monasca_log_dir }}/notification"
 notification_systemd_service: /etc/systemd/system/monasca-notification.service
 notification_upstart_conf: /etc/init/monasca-notification.conf

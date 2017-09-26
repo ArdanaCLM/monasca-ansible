@@ -20,5 +20,6 @@
     msg: "Notify change in Kafka package dependency: {{ item }}"
   changed_when: true
   when: item in ardana_upgraded_pkgs | default({})
-  with_items: kafka_restart_packages
+  with_items: monasca_kafka_restart_packages
   register: ardana_notify_kafka_restart_required
+

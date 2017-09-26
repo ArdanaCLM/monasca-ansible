@@ -15,12 +15,23 @@
 # under the License.
 #
 ---
+- name: zookeeper | configure | Find jars installed by zookeeper rpm
+  shell: "ls {{ zookeeper_java_share_dir }}/*.jar"
+  become: yes
+  register: zookeeper_jars_list_result
+  when: ansible_os_family | lower == 'suse'
+
+- name: zookeeper | configure | Add jars to zookeeper classpath
+  set_fact:
+    zookeeper_java_share_classpath: "{{ zookeeper_jars_list_result.stdout_lines | join(':') }}"
+  when: ansible_os_family | lower == 'suse'
+
 - name: zookeeper | configure | Setup zoo.cfg
   template: dest="{{ zookeeper_conf_dir }}/zoo.cfg" src=zoo.cfg.j2
   register: ardana_notify_zookeeper_restart_required
 
 - name: zookeeper | configure | Setup myid
-  template: dest="{{ zookeeper_conf_dir }}/myid" src=myid.j2
+  template: dest="{{ zookeeper_myid_dir }}/myid" src=myid.j2
   register: ardana_notify_zookeeper_restart_required
 
 - name: zookeeper | configure | Setup environment

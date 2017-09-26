@@ -15,8 +15,10 @@
 # under the License.
 #
 ---
-- name: Install | Install package prerequisites for monasca-api service
-  apt: name={{item}} state=present
+- name: monasca-api | install | Install OS specific required packages
+  package:
+    name: "{{ item }}"
+    state: present
   with_items: monasca_api_package_dependencies
 
 - name: Install | Update venv cache
@@ -33,3 +35,5 @@
 - name: Install | Set service directories
   set_fact:
     monasca_api_conf_file: "{{ 'monasca' | config_dir(ardana_notify_monasca_api_restart_required.version) }}/api-config.yml"
+
+- include: ../../monasca-variables/tasks/post_java_install_restore.yml

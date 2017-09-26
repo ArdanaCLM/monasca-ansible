@@ -20,5 +20,5 @@
     msg: "Notify change in Zookeeper package dependency: {{ item }}"
   changed_when: true
   when: item in ardana_upgraded_pkgs | default({})
-  with_items: zookeeper_restart_packages
+  with_items: monasca_zookeeper_restart_packages
   register: ardana_notify_zookeeper_restart_required

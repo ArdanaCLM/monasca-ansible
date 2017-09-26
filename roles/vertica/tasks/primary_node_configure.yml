@@ -1,0 +1,80 @@
+#
+# (c) Copyright 2017 SUSE LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+#
+---
+
+- name: primary_node_configure | Create file for EULA acceptance for vertica
+  copy: src={{ monasca_vertica_eula_file }} dest={{vertica_config_dir}}/d5415f948449e9d4c421b568f2411140.dat owner="{{vertica_dbadmin_user}}" group="{{vertica_dbadmin_group}}" mode=0755
+  notify:
+    - vertica | restart | restart all vertica services
+
+- name: primary_node_configure | check if database exists
+  command: /opt/vertica/bin/admintools -t list_db -d {{ vertica_database_name }}
+  sudo_user: dbadmin
+  ignore_errors: yes
+  environment: "{{vertica_env}}"
+  register: vertica_db_exists_result
+
+- name: primary_node_configure | print db exists result
+  debug:
+    msg: "vertica_db_exists_result = {{ vertica_db_exists_result }} and vertica_nodes = {{ vertica_nodes }}"
+
+- name: primary_node_configure | place encrypted vertica license
+  copy: src=00002919_HP_Vertica_12TB.dat.gpg dest={{vertica_config_dir}}/license.key.gpg owner="{{vertica_dbadmin_user}}" group="{{vertica_dbadmin_group}}" mode=0664
+  when: vertica_db_exists_result | failed
+  notify:
+    - vertica | restart | restart all vertica services
+
+- name: primary_node_configure | check license file
+  stat: path={{vertica_config_dir}}/license.key
+  register: vertica_license_file_check
+
+- name: primary_node_configure | decrypt vertica license
+  sudo_user: dbadmin
+  command: gpg --passphrase {{ vertica_license_passphrase }} --batch --no-tty --output {{vertica_config_dir}}/license.key -d {{vertica_config_dir}}/license.key.gpg
+  when: vertica_license_file_check.stat.exists == False and (vertica_db_exists_result | failed)
+  no_log: True
+  notify:
+    - vertica | restart | restart all vertica services
+
+- name: primary_node_configure | Set Vertica IPs for cluster deployment
+  set_fact: vertica_ips={{vertica_cluster}}
+  when: vertica_cluster is defined
+
+- name: primary_node_configure | Set Vertica IPs for cluster deployment
+  set_fact:
+    vertica_current_host: >
+      {{ (vertica_nodes |
+          selectattr('hlm_ansible_host','equalto', inventory_hostname) |
+          first).host }}
+    add_hosts_list: []
+
+- name: primary_node_configure | run vertica install for all hosts on primary node
+  shell: |
+    set -eu
+    sudo /opt/vertica/sbin/install_vertica -T -S default --failure-threshold {{ vertica_failure_threshold }} --data-dir {{ vertica_data_dir }} --license {{vertica_config_dir}}/license.key --accept-eula --dba-user-password {{ vertica_dbadmin_password }} --ssh-identity {{login_user_home}}/.ssh/id_rsa --hosts {{ vertica_ips }}
+  become: yes
+  become_user: "{{ login_user }}"
+  args:
+    executable: /bin/bash
+  environment: "{{vertica_env}}"
+  register: vertica_install_vertica_run_status
+  when: vertica_db_exists_result | failed
+
+
+- name: primary_node_configure | Determine add hosts list
+  set_fact:
+    add_hosts_list: "{{ vertica_ips.split(',') | difference([vertica_current_host]) }}"
+  when: vertica_db_exists_result | failed

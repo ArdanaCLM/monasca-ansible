@@ -15,36 +15,36 @@
 # under the License.
 #
 ---
-- name: Create dbadmin group
+- name: node_users | Create dbadmin group
   group: name="{{vertica_dbadmin_group}}" state=present
   when: not rebuild
   notify:
     - vertica | restart | restart all vertica services
 
-- name: Create dbadmin user
+- name: node_users | Create dbadmin user
   user: name="{{vertica_dbadmin_user}}" home="{{vertica_dbadmin_home}}" group="{{vertica_dbadmin_group}}" shell=/bin/bash
   when: not rebuild
   notify:
     - vertica | restart | restart all vertica services
 
-- name: Create user directory under vertica for dbadmin
+- name: node_users | Create user directory under vertica for dbadmin
   file: path=/opt/vertica/config/users/"{{vertica_dbadmin_user}}" owner="{{vertica_dbadmin_user}}" group=root mode=0775 state=directory
   notify:
     - vertica | restart | restart all vertica services
 
-- name: Create agent.conf
+- name: node_users | Create agent.conf
   file: path=/opt/vertica/config/users/"{{vertica_dbadmin_user}}"/agent.conf owner=root group=root mode=0644 state=touch
 
 # It is important that the dbadmin users on each node in a cluster can have passwordless ssh access to the other machines
 # This is done with a shared private ssh key
 
-- name: Create ssh directory in vertica home directory
+- name: node_users | Create ssh directory in vertica home directory
   file: path="{{vertica_dbadmin_home}}"/.ssh owner="{{vertica_dbadmin_user}}" group="{{vertica_dbadmin_group}}" mode=0700 state=directory
   when: not rebuild
   notify:
     - vertica | restart | restart all vertica services
 
-- name: Create config for ssh
+- name: node_users | Create config for ssh
   copy: dest={{vertica_dbadmin_home}}/.ssh/config owner="{{vertica_dbadmin_user}}" group="{{vertica_dbadmin_group}}" mode=0600 content="StrictHostKeyChecking no"
   when: not rebuild
   notify:
@@ -57,7 +57,7 @@
   notify:
     - vertica | restart | restart all vertica services
 
-- name: Check status dbadmin ssh file
+- name: node_users | Check status dbadmin ssh file
   stat: path={{vertica_dbadmin_home}}/.ssh/id_rsa
   register: status
   when: vertica_ssh_private_key is not defined
@@ -65,21 +65,21 @@
     - vertica | restart | restart all vertica services
 
 # generate ssh keys on first host if not already generated
-- name: Create ssh keys
+- name: node_users | Create ssh keys
   command: ssh-keygen -t rsa -b 2048 -f {{vertica_dbadmin_home}}/.ssh/id_rsa -q -N ''
   sudo_user: dbadmin
   when: status is defined and not status.stat.exists and vertica_ssh_private_key is not defined and not rebuild
   notify:
     - vertica | restart | restart all vertica services
 
-- name: Read in private ssh key
+- name: node_users | Read in private ssh key
   slurp: src={{vertica_dbadmin_home}}/.ssh/id_rsa
   register: private_key_info
   when: vertica_ssh_private_key is not defined and not rebuild
   notify:
     - vertica | restart | restart all vertica services
 
-- name: Read in public ssh key
+- name: node_users | Read in public ssh key
   slurp: src={{vertica_dbadmin_home}}/.ssh/id_rsa.pub
   register: public_key_info
   when: vertica_ssh_public_key is not defined and not rebuild
@@ -87,25 +87,25 @@
     - vertica | restart | restart all vertica services
 
 # sets the ssh keys on the first host
-- name: Set public and private key variables
+- name: node_users | Set public and private key variables
   set_fact: vertica_ssh_private_key="{{private_key_info.content | b64decode}}" vertica_ssh_public_key="{{public_key_info.content | b64decode}}"
   when: vertica_ssh_private_key is not defined and not rebuild
   notify:
     - vertica | restart | restart all vertica services
 
-- name: Create id_rsa
+- name: node_users | Create id_rsa
   copy: dest={{vertica_dbadmin_home}}/.ssh/id_rsa owner="{{vertica_dbadmin_user}}" group="{{vertica_dbadmin_group}}" mode=0600 content="{{vertica_ssh_private_key}}"
   when: not rebuild
   notify:
     - vertica | restart | restart all vertica services
 
-- name: Create id_rsa.pub
+- name: node_users | Create id_rsa.pub
   copy: dest={{vertica_dbadmin_home}}/.ssh/id_rsa.pub owner="{{vertica_dbadmin_user}}" group="{{vertica_dbadmin_group}}" mode=0600 content="{{vertica_ssh_public_key}}"
   when: not rebuild
   notify:
     - vertica | restart | restart all vertica services
 
-- name: Add public key to authorized keys
+- name: node_users | Add public key to authorized keys
   authorized_key: user="{{vertica_dbadmin_user}}" key="{{vertica_ssh_public_key}}"
   when: not rebuild
   notify:

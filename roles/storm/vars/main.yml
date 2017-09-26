@@ -27,6 +27,3 @@ supervisor_upstart_conf: /etc/init/storm-supervisor.conf
 logviewer_systemd_service: /etc/systemd/system/storm-logviewer.service
 logviewer_upstart_conf: /etc/init/storm-logviewer.conf
 storm_user: storm
-
-storm_restart_packages:
-  - default-jre-headless

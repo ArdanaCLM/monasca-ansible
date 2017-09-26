@@ -15,8 +15,12 @@
 # under the License.
 #
 ---
+
+- name: vertica | main | include OS specific variables
+  include_vars: "{{ ansible_os_family | lower }}.yml"
+
 - include: install.yml
-  when: run_mode == 'Install' or run_mode == 'Deploy'
+  when: (run_mode == 'Install' or run_mode == 'Deploy')
 
 - include: upgrade_vertica_version.yml
   when: run_mode == 'Upgrade' and check_version_upgrade is defined
@@ -25,7 +29,9 @@
   when: run_mode == 'Configure' or run_mode == 'Deploy' or run_mode == 'Upgrade' and check_version_upgrade is not defined
 
 - include: enable.yml
-  when: run_mode == 'Configure' or run_mode == 'Deploy' or run_mode == 'Upgrade' and check_version_upgrade is not defined
+  when: (run_mode == 'Configure' or run_mode == 'Deploy' or
+         run_mode == 'Upgrade') and check_version_upgrade is not defined
+         and not vertica_pre_primary_setup
 
 - include: start.yml
   when: run_mode == 'Start'

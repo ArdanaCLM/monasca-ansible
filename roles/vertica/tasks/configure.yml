@@ -1,5 +1,5 @@
 #
-# (c) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
+# (c) Copyright 2015-2017 Hewlett Packard Enterprise Development LP
 # (c) Copyright 2017 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -16,12 +16,23 @@
 #
 ---
 - include: node_users.yml
+
 - include: node_setup.yml
+  when: ( not vertica_primary_setup ) or
+        ( ansible_os_family | lower == 'debian')
+
+- include: primary_node_configure.yml
+  when: vertica_primary_setup and
+        ( ansible_os_family | lower == 'suse')
 
 - include: cluster.yml
+  when: ( not vertica_pre_primary_setup and
+          not vertica_primary_setup ) or
+        ( ansible_os_family | lower == 'debian')
 
 - name: Delete requirement ntp from init script
   lineinfile:
     dest: /etc/init.d/verticad
     regexp: '^# Required-Start: [$]network ntpd'
     line: '# Required-Start:'
+  when: not vertica_pre_primary_setup

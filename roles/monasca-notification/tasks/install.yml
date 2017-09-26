@@ -15,9 +15,11 @@
 # under the License.
 #
 ---
-- name: Install | Install the binary prerequisites for monasca-notification service
-  apt: name={{item}} state=present
-  with_items: dependencies
+- name: monasca-notification | install | Install OS specific required packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: monasca_notification_package_dependencies
 
 - name: Install | Update the venv cache
   install_package:

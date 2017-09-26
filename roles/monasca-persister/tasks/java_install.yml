@@ -15,8 +15,10 @@
 # under the License.
 #
 ---
-- name: Install | Install package prerequisites for monasca-persister service
-  apt: name={{item}} state=present
+- name: monasca-persister | java_install | Install OS specific required packages
+  package:
+    name: "{{ item }}"
+    state: present
   with_items: monasca_persister_package_dependencies
 
 - name: Update venv cache
@@ -34,3 +36,5 @@
   set_fact:
     persister_conf_dir: "{{ 'monasca' | config_dir(ardana_notify_monasca_persister_restart_required.version) }}"
     persister_java_conf_file: "{{ 'monasca' | config_dir(ardana_notify_monasca_persister_restart_required.version) }}/persister-config.yml"
+
+- include: ../../monasca-variables/tasks/post_java_install_restore.yml

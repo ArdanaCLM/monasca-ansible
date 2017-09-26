@@ -26,6 +26,7 @@
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
     - roles/monasca-variables/defaults/main.yml
+    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
   roles:
     - {role: kafka, tags: [kafka]}
 
@@ -50,11 +51,29 @@
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
     - roles/monasca-variables/defaults/main.yml
+    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
   vars:
     check_version_upgrade: True
     vertica_group_size: "{{ groups['FND-VDB'] | length }}"
   roles:
     - {role: vertica, when: database_type == 'vertica' and run_mode == 'Upgrade', tags: [vertica]}
+
+# Execute serially as need to set ssh keys from first host to others
+- name: Pre-configure steps for all vertica nodes
+  hosts: FND-VDB
+  serial: 1
+  sudo: yes
+  tags: [vertica]
+  vars_files:
+    - roles/monasca-variables/vars/configuration.yml
+    - roles/monasca-variables/defaults/main.yml
+    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
+  vars:
+    vertica_pre_primary_setup: True
+  roles:
+    - {role: vertica,
+       when: database_type == 'vertica' and ansible_os_family | lower == 'suse',
+       tags: [vertica]}
 
 - name: Configures Vertica on primary node
   hosts: FND-VDB--first-member
@@ -63,6 +82,9 @@
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
     - roles/monasca-variables/defaults/main.yml
+    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
+  vars:
+    vertica_primary_setup: True
   roles:
     - {role: vertica, when: database_type == 'vertica', tags: [vertica]}
 
@@ -73,6 +95,9 @@
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
     - roles/monasca-variables/defaults/main.yml
+    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
+  vars:
+    vertica_post_primary_setup: True
   roles:
     - {role: vertica, when: database_type == 'vertica', tags: [vertica]}
 
@@ -83,6 +108,7 @@
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
     - roles/monasca-variables/defaults/main.yml
+    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
   roles:
     - {role: influxdb, when: database_type == 'influxdb', tags: [influxdb]}
 
@@ -97,6 +123,7 @@
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
     - roles/monasca-variables/defaults/main.yml
+    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
   roles:
     - {role: monasca-schema, tags: [monasca-schema-mysql, monasca-schema]}
 
@@ -113,6 +140,7 @@
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
     - roles/monasca-variables/defaults/main.yml
+    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
   roles:
     - {role: monasca-schema, tags: [monasca-schema-kafka, monasca-schema]}
 
@@ -129,6 +157,7 @@
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
     - roles/monasca-variables/defaults/main.yml
+    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
   roles:
     - {role: monasca-schema, tags: [monasca-schema-influx, monasca-schema]}
 
@@ -145,6 +174,7 @@
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
     - roles/monasca-variables/defaults/main.yml
+    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
     - roles/vertica/defaults/main.yml
     - roles/vertica/vars/main.yml
   roles:
@@ -171,6 +201,7 @@
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
     - roles/monasca-variables/defaults/main.yml
+    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
   vars:
     run_mode: Logging
   roles:
@@ -189,6 +220,7 @@
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
     - roles/monasca-variables/defaults/main.yml
+    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
     - roles/ardana-monasca-keystone/defaults/main.yml
   tasks:
     - include: roles/ardana-monasca-keystone/tasks/main.yml
@@ -201,6 +233,7 @@
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
     - roles/monasca-variables/defaults/main.yml
+    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
   roles:
     - {role: monasca-api, tags: [monasca-api]}
   tasks:
@@ -214,6 +247,7 @@
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
     - roles/monasca-variables/defaults/main.yml
+    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
   roles:
     - {role: monasca-persister, tags: [persister]}
   tasks:
@@ -227,6 +261,7 @@
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
     - roles/monasca-variables/defaults/main.yml
+    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
   roles:
     - {role: monasca-notification, tags: [notification]}
   tasks:
@@ -239,6 +274,7 @@
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
     - roles/monasca-variables/defaults/main.yml
+    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
   pre_tasks:
     - name: Compute Maximum Kafka Lag for Alarm Definitions
       set_fact:
@@ -259,6 +295,7 @@
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
     - roles/monasca-variables/defaults/main.yml
+    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
     - roles/storm/vars/nodes.yml
     - roles/storm/defaults/main.yml
   tasks:
@@ -271,6 +308,7 @@
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
     - roles/monasca-variables/defaults/main.yml
+    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
   pre_tasks:
     - name: Install the monasca venv
       install_package: name=monasca service=monasca state=present
@@ -284,6 +322,7 @@
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
     - roles/monasca-variables/defaults/main.yml
+    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
     - roles/monasca-thresh/vars/nodes.yml
   roles:
     - role: monasca-thresh

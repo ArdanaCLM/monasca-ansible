@@ -15,22 +15,31 @@
 # under the License.
 #
 ---
-- name: Install Vertica dependencies
-  apt: name="{{item}}" state=present
-  with_items: vertica_dependencies
+- name: node_dependencies | Install OS specific packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: monasca_vertica_dependencies
   when: not skip_install
 
-- name: Setup User limits for the db
+- name: node_dependencies | Create custom limits dir
+  become: yes
+  file:
+    path: "/etc/security/limits.d"
+    state: directory
+    mode: 0755
+
+- name: node_dependencies | Setup User limits for the db
   template: dest=/etc/security/limits.d/vertica.conf owner=root group=root mode=0644 src=vertica_limits.conf.j2
   notify:
     - vertica | restart | restart all vertica services
 
-- name: Apply security limits to su sessions, admintools needs this as it uses su
+- name: node_dependencies | Apply security limits to su sessions, admintools needs this as it uses su
   lineinfile: dest=/etc/pam.d/su regexp="^#\ssession    required   pam_limits.so" line="session    required   pam_limits.so" backrefs=yes
   notify:
     - vertica | restart | restart all vertica services
 
-- name: Set the LANG variable
+- name: node_dependencies | Set the LANG variable
   copy:
     dest: /etc/profile.d/vertica_node.sh
     content: "export LANG='en_US.UTF-8'\nexport LC_ALL='en_US.UTF-8'\n"
@@ -40,5 +49,5 @@
   notify:
     - vertica | restart | restart all vertica services
 
-- name: Create en_US.UTF-8 locale
+- name: node_dependencies | Create en_US.UTF-8 locale
   shell: localedef -i en_US -c -f UTF-8 en_US.UTF-8

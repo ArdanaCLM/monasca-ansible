@@ -33,3 +33,4 @@ zookeeper_hosts: "{% for node in zookeeper_nodes | sort(attribute='member_id') %
 zookeeper_id: "{{ host.vars.member_id | int - 1 }}"
 zookeeper_heap_opt: "{% if zookeeper_heap_opt_override %}{{ zookeeper_heap_opt_override }}{% else %}{{ zookeeper_tunings.zookeeper_heap_opts }}{% endif %}"
 zookeeper_maxClientCnxns: "{% if zookeeper_maxClientCnxns_override %}{{ zookeeper_maxClientCnxns_override }}{% else %}{{ zookeeper_tunings.zookeeper_maxClientCnxns }}{% endif %}"
+zookeeper_data_dir: /var/lib/zookeeper

@@ -21,6 +21,3 @@ persister_systemd_service: /etc/systemd/system/monasca-persister.service
 persister_upstart_conf: /etc/init/monasca-persister.conf
 persister_user: mon-persister
 monasca_group: monasca
-
-monasca_persister_package_dependencies:
-  - default-jre-headless

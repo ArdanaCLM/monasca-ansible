@@ -17,15 +17,18 @@
 ---
 - include: fix_auth.yml
 
-- name: Influxdb | upgrade | apt upgrade Infludb
-  apt: name=influxdb state=latest
+- name: influxdb | upgrade | OS specific upgrade Influxdb
+  package:
+    name: "{{ item }}"
+    state: latest
+  with_items: monasca_inflxudb_required_packages
   register: influxdb_upgrade_result
   notify:
     - influxdb | restart | restart all influxdb services
 
-- name: Influxdb | upgrade | Stop Infludb if upgraded
+- name: influxdb | upgrade | Stop Infludb if upgraded
   service: name=influxdb state=stopped
   when: influxdb_upgrade_result | changed
 
-- name: Influxdb | upgrade | Remove old config if present
+- name: influxdb | upgrade | Remove old config if present
   file: path=/etc/opt/influxdb state=absent

@@ -17,6 +17,19 @@
 ---
 - include: node_dependencies.yml
 
-- name: Install Vertica from apt repo
-  apt: name="vertica"
-  sudo: true
+- name: vertica | install | pre-install SLES version check bypass
+  include: bypass_version_check.yml
+  vars:
+    bypass_op_type: "pre-install"
+
+- name: vertica | install | Install OS specific vertica packages
+  become: yes
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: monasca_vertica_packages
+
+- name: vertica | install | post-install SLES version revert
+  include: bypass_version_check.yml
+  vars:
+    bypass_op_type: "post-install"

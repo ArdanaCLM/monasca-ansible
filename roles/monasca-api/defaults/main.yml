@@ -24,8 +24,6 @@ monasca_admin_client_port: "{{ host.bind.MON_API.metrics.port }}"
 monasca_api_admin_bind_host: localhost
 monasca_api_client_keystore:
 monasca_api_client_keystore_password:
-monasca_api_truststore: "/usr/lib/jvm/default-java/jre/lib/security/cacerts"
-monasca_api_truststore_password: "changeit"
 monasca_api_keystore_password:
 monasca_api_version: 1.1.0-SNAPSHOT
 monasca_wait_for_period: 60

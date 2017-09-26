@@ -15,6 +15,10 @@
 # under the License.
 #
 ---
+- name: monasca-schema | main | include OS specific variables
+  include_vars: "{{ ansible_os_family | lower }}.yml"
+
+
 - include: influxdb.yml tags=influxdb_schema
   when: influxdb_schema_enabled and database_type == 'influxdb'
 - include: mysql.yml tags=mysql_schema

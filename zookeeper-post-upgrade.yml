@@ -16,9 +16,12 @@
 #
 ---
 - hosts: FND-ZOO
+  vars_files:
+    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
   tasks:
-  - name:  zookeeper-post-upgrade | Remove openjdk-7-jre-headless
+  - name: zookeeper-post-upgrade | Remove OS specfic packages
     become: yes
-    apt:
-      name: openjdk-7-jre-headless
+    package:
+      name: "{{ item }}"
       state: absent
+    with_items: zookeeper_post_upgrade_cleanup

@@ -1,0 +1,35 @@
+#
+# (c) Copyright 2017 SUSE LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+#
+---
+monasca_zookeeper_package_dependencies:
+  - java-1_8_0-openjdk-headless
+  - zookeeper-server
+
+monasca_zookeeper_restart_packages:
+  - java-1_8_0-openjdk-headless
+  - zookeeper-server
+
+
+zookeeper_conf_dir: /etc/zookeeper
+
+# Location of myid file for zookeeper cluster
+zookeeper_myid_dir: "{{ zookeeper_data_dir }}"
+
+zookeeper_java_share_dir: /usr/share/java/zookeeper
+
+# All jar files available under zookeeper_java_share_dir are added to classpath.
+# That's why there is no predefined list of files and hence blank value below.
+zookeeper_java_share_classpath:

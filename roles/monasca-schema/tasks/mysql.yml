@@ -16,10 +16,11 @@
 #
 ---
 # Install python mysql client library on all nodes
-- name: monasca-schema | mysql | Install Python Mysql lib
-  apt:
-    name: python-mysqldb
+- name: monasca-schema | mysql | Install OS specific required packages in Debian
+  package:
+    name: "{{ item }}"
     state: present
+  with_items: monasca_schema_package_dependencies
 
 # Copy temporary python script and scheme to host
 - name: monasca-schema | mysql | Copy python script to host

@@ -15,43 +15,43 @@
 # under the License.
 #
 ---
-- name: Set Vertica IPs for cluster deployment
+- name: cluster | Set Vertica IPs for cluster deployment
   set_fact: vertica_ips={{vertica_cluster}}
   when: vertica_cluster is defined
   notify:
     - vertica | restart | restart all vertica services
 
-- name: Check status of admintools config file
+- name: cluster | Check status of admintools config file
   stat: path={{vertica_config_dir}}/admintools.conf
   register: admin_tools_status
   notify:
     - vertica | restart | restart all vertica services
 
-- name: Create admintools config file
+- name: cluster | Create admintools config file
   template: src=admintools.conf.j2 dest={{vertica_config_dir}}/admintools.conf owner="{{vertica_dbadmin_user}}" group="{{vertica_dbadmin_group}}" mode=0660
   when: not admin_tools_status.stat.exists and not rebuild
   notify:
     - vertica | restart | restart all vertica services
 
-- name: Build hosts file if inventory entry is defined with hostname
+- name: cluster | Build hosts file if inventory entry is defined with hostname
   lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ hostvars[item].ansible_default_ipv4.address }} {{item}}" state=present
   when: vertica_cluster is defined and vertica_group is defined and hostvars[item].ansible_default_ipv4.address is defined
   with_items: vertica_group
   notify:
     - vertica | restart | restart all vertica services
 
-- name: Build hosts file if inventory entry is defined with ip
+- name: cluster | Build hosts file if inventory entry is defined with ip
   lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{item}} {{ hostvars[item].ansible_fqdn }}" state=present
   when: vertica_cluster is defined and vertica_group is defined and hostvars[item].ansible_default_ipv4.address is not defined
   with_items: vertica_group
   notify:
     - vertica | restart | restart all vertica services
 
-- name: Determine target for admintools when rebuild
+- name: cluster | Determine target for admintools when rebuild
   set_fact: admintools_target_host={% for host in groups['FND-VDB'] %}{% if host != inventory_hostname %}{{ host }}{% if not loop.last %},{% endif %}{% endif %}{% endfor %}
   when: rebuild
 
-- name: Restart node when rebuild
+- name: cluster | Restart node when rebuild
   command: /opt/vertica/bin/admintools -t restart_node -s {{ vertica_ip_address }} -d {{ vertica_database_name }} -p "{{ vertica_dbadmin_password| quote }}" --force -i
   sudo_user: dbadmin
   register: status_restart
@@ -61,7 +61,7 @@
   when: rebuild
   no_log: False
 
-- name: Stop vertica db (force) when rebuild
+- name: cluster | Stop vertica db (force) when rebuild
   command: /opt/vertica/bin/admintools -t stop_db -d {{ vertica_database_name }} -p "{{ vertica_dbadmin_password| quote }}" --force -i
   sudo_user: dbadmin
   register: status_restart
@@ -71,7 +71,7 @@
   when: rebuild
   no_log: False
 
-- name:  Start vertica db (force) when rebuild
+- name: cluster | Start vertica db (force) when rebuild
   command: /opt/vertica/bin/admintools -t start_db -d {{ vertica_database_name }} -p "{{ vertica_dbadmin_password| quote }}" --force -i
   sudo_user: dbadmin
   register: status_restart

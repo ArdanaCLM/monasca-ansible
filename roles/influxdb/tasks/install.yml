@@ -15,5 +15,9 @@
 # under the License.
 #
 ---
-- name: Influxdb | install | apt install influxdb
-  apt: name=influxdb
+
+- name: influxdb | install | Install required OS specific packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: monasca_inflxudb_required_packages

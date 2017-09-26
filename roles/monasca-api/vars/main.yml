@@ -20,6 +20,3 @@ monasca_group: monasca
 api_log_dir: "{{ monasca_log_dir }}/api"
 monasca_api_conf_file: "{{ 'monasca' | config_dir() }}/api-config.yml"
 api_systemd_service: /etc/systemd/system/monasca-api.service
-
-monasca_api_package_dependencies:
-  - default-jre-headless

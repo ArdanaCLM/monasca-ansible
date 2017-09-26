@@ -1,0 +1,64 @@
+#!/bin/bash
+#
+# (c) Copyright 2017 SUSE LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+#
+
+# There are set of manual OS configuration changes which are not covered
+# by vertica install script. These changes are expected to be addressed
+# as a pre-install checkup.
+# Vertica install script reports these as errors on SLES and is corrected via
+# following commands. Only messages reported as errors are addressed.
+
+set -o pipefail
+
+#https://my.vertica.com/docs/9.0.x/HTML/index.htm#cshid=S0310
+if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
+
+    trhp_value=$(cat /sys/kernel/mm/transparent_hugepage/enabled)
+
+    if [ $? = 0 ] && [ "$trhp_value" = "[always] madvise never" ]
+    then
+        echo madvise > /sys/kernel/mm/transparent_hugepage/enabled
+        echo 'echo madvise > /sys/kernel/mm/transparent_hugepage/enabled' >> /etc/init.d/after.local
+    fi
+fi
+
+# For https://my.vertica.com/docs/9.0.x/HTML/index.htm#cshid=S0340
+if test -f /sys/fs/cgroup/pids/system.slice/sshd.service/pids.max; then
+
+    pmax_value=$(cat /sys/fs/cgroup/pids/system.slice/sshd.service/pids.max)
+
+    if [ $? = 0 ] && [ $pmax_value != 'max' ]
+    then
+        #echo max | tee /sys/fs/cgroup/pids/system.slice/sshd.service/pids.max
+        echo -n max > /sys/fs/cgroup/pids/system.slice/sshd.service/pids.max
+        echo 'echo -n max > /sys/fs/cgroup/pids/system.slice/sshd.service/pids.max' >> /etc/init.d/after.local
+    fi
+fi
+
+# https://my.vertica.com/docs/9.0.x/HTML/index.htm#cshid=S0020
+data_fs=$(df {{ vertica_data_dir }} | awk 'NR > 1 {print $1}')
+readahead_value=$(/sbin/blockdev --getra $data_fs)
+
+if [ $? = 0 ] && [ $readahead_value -lt 2048 ]
+then
+    /sbin/blockdev --setra 2048 $data_fs
+    echo '/sbin/blockdev --setra 2048 $data_fs' >> /etc/init.d/after.local
+fi
+
+# https://my.vertica.com/docs/9.0.x/HTML/index.htm#cshid=S0180
+
+# Need to add these settings to /etc/init.d/after.local
+echo "Completed vertica OS related manual changes successfully."

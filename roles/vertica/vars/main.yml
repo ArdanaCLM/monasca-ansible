@@ -19,12 +19,3 @@ vertica_config_dir: /opt/vertica/config
 vertica_dbadmin_user: dbadmin
 vertica_dbadmin_group: verticadba
 vertica_dbadmin_home: /home/dbadmin
-vertica_dependencies:
-  - logrotate
-  - pstack
-  - rsync
-  - openssh-client
-  - openssh-server
-  - sysstat
-  - mcelog
-  - openssl

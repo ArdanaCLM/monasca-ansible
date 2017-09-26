@@ -15,12 +15,10 @@
 # under the License.
 #
 ---
-- name: zookeeper | install | Install OpenJDK 8 if possible
-  apt: name=openjdk-8-jre-headless state=present
-  ignore_errors: True
+- name: zookeeper | install | Install OS specific required packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: monasca_zookeeper_package_dependencies
 
-- name: zookeeper | install | Install OpenJDK default-jre-headless
-  apt: name=default-jre-headless state=present
-
-- name: zookeeper | install | Install Zookeeper
-  apt: name=zookeeperd state=present
+- include: ../../monasca-variables/tasks/post_java_install_restore.yml

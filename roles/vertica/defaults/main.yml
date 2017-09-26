@@ -40,3 +40,18 @@ vertica_dbadmin_password: "{{ FND_VDB.vars.dbadmin_user_password }}"
 vertica_ip_address: "{{ host.bind.FND_VDB.internal.ip_address }}"
 
 stop_cluster: True
+
+sles_version_file: /etc/os-release
+
+vertica_failure_threshold: HALT
+
+vertica_pre_primary_setup: False
+vertica_primary_setup: False
+vertica_post_primary_setup: False
+
+# Ansible user and user's home directory
+# This is needed for passwordless ssh to other controller nodes and
+# ansible user already has that privileges
+login_user: "{{ ansible_env['USER'] }}"
+login_user_home: "{{ ansible_env['HOME'] }}"
+

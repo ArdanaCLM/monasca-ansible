@@ -15,8 +15,11 @@
 # under the License.
 #
 ---
-- name: install | Install OpenJDK
-  apt: name=default-jre-headless state=present
+- name: kafka | install | Install OS specific required packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: monasca_kafka_required_packages
 
 - name: install | Update venv cache
   install_package:
@@ -28,3 +31,6 @@
     service: monasca
     state: present
   register: ardana_notify_kafka_restart_required
+
+- include: ../../monasca-variables/tasks/post_java_install_restore.yml
+

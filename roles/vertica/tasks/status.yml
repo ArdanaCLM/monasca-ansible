@@ -15,8 +15,12 @@
 # under the License.
 #
 ---
+
+# setting environment variable to avoid redirect from init.d to systemctl
 - name: "{{ service_name }} | Check vertica service status"
   command: /etc/init.d/{{service_name}} status
+  environment:
+    SYSTEMD_NO_WRAP: True
   register: status_result
   ignore_errors: yes
   changed_when: false

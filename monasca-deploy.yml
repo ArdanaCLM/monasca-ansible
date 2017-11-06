@@ -180,7 +180,7 @@
   roles:
     - {role: monasca-schema, tags: [monasca-schema-vertica, monasca-schema]}
 
-- name: Delete vertica licenses
+- name: Delete vertica licenses and reset dbadmin privileges
   hosts: FND-VDB
   sudo: yes
   tags: [vertica]
@@ -193,6 +193,7 @@
       file: path={{vertica_config_dir}}/share/license.key state=absent
     - name: vertica | license | remove encrypted vertica license
       file: path={{vertica_config_dir}}/license.key.gpg state=absent
+    - include: roles/vertica/tasks/reset_dbadmin_privs.yml
 
 - name: Set up Vertica logrotate and Monasca Agent configuration
   hosts: FND-VDB

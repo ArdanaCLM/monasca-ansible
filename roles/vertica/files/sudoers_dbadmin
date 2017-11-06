@@ -1,0 +1,3 @@
+Defaults:dbadmin !requiretty
+
+dbadmin ALL=(root) NOPASSWD: ALL

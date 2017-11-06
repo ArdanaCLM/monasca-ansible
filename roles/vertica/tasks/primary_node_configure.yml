@@ -64,9 +64,13 @@
 - name: primary_node_configure | run vertica install for all hosts on primary node
   shell: |
     set -eu
-    sudo /opt/vertica/sbin/install_vertica -T -S default --failure-threshold {{ vertica_failure_threshold }} --data-dir {{ vertica_data_dir }} --license {{vertica_config_dir}}/license.key --accept-eula --dba-user-password {{ vertica_dbadmin_password }} --ssh-identity {{login_user_home}}/.ssh/id_rsa --hosts {{ vertica_ips }}
+    sudo -u {{ vertica_dbadmin_user }} sudo /opt/vertica/sbin/install_vertica -T -S default \
+      --failure-threshold {{ vertica_failure_threshold }} --data-dir {{ vertica_data_dir }} \
+      --license {{vertica_config_dir}}/license.key --accept-eula \
+      --dba-user-password {{ vertica_dbadmin_password }} \
+      --ssh-identity {{ vertica_dbadmin_home }}/.ssh/id_rsa \
+      --hosts {{ vertica_ips }}
   become: yes
-  become_user: "{{ login_user }}"
   args:
     executable: /bin/bash
   environment: "{{vertica_env}}"

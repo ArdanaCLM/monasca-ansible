@@ -204,3 +204,14 @@
 - name: node_setup | Delete manual os config change script
   file: path=/tmp/vertica_manual_os_config_changes.sh state=absent
   when: vertica_execute_manual_os_setting_changes
+
+- name: node_setup | copy dbadmin sudoers file to sudoers location
+  become: yes
+  copy:
+    src: sudoers_dbadmin
+    dest: "/etc/sudoers.d/{{ vertica_dbadmin_user }}"
+    owner: root
+    group: root
+    mode: 0440
+    validate: 'visudo -cf %s'
+

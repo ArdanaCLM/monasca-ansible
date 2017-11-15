@@ -15,6 +15,11 @@
 # under the License.
 #
 ---
+
+- include: ../../vertica/tasks/eula_check.yml
+  vars:
+    cmd_type: view_cluster
+
 - name: vertica | start | check database status
   sudo_user: dbadmin
   command: /opt/vertica/bin/admintools -t view_cluster -d {{vertica_database_name}}
@@ -28,20 +33,25 @@
   register: status_start
   failed_when: status_start | failed
   run_once_per: verb_hosts.FND_VDB
-  when: running_result.stdout.find("INITIALIZING") == -1 and running_result.stdout.find("UP") == -1 
+  when: running_result.stdout.find("INITIALIZING") == -1 and running_result.stdout.find("UP") == -1
   no_log: True
 
 - name: vertica | start | start vertica agent service
   service: name=vertica_agent state=started
 
+# setting environment variable to avoid redirect from init.d to systemctl
 - name: vertica | start | check verticad
   command: /etc/init.d/verticad status
+  environment:
+    SYSTEMD_NO_WRAP: True
   register: verticad_status_result
   ignore_errors: yes
   changed_when: false
 
 - name: vertica | start | start verticad
   command: /etc/init.d/verticad start
+  environment:
+    SYSTEMD_NO_WRAP: True
   when: verticad_status_result | failed and not start_one_node
 
 - name: vertica | start | force restart vertica if running on one node

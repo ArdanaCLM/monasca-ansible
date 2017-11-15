@@ -20,6 +20,10 @@
   notify:
     - vertica | restart | restart all vertica services
 
+- include: ../../vertica/tasks/eula_check.yml
+  vars:
+    cmd_type: list_db
+
 - name: primary_node_configure | check if database exists
   command: /opt/vertica/bin/admintools -t list_db -d {{ vertica_database_name }}
   sudo_user: dbadmin

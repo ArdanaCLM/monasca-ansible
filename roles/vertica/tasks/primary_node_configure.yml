@@ -57,7 +57,7 @@
   set_fact:
     vertica_current_host: >
       {{ (vertica_nodes |
-          selectattr('hlm_ansible_host','equalto', inventory_hostname) |
+          selectattr('ardana_ansible_host','equalto', inventory_hostname) |
           first).host }}
     add_hosts_list: []
 

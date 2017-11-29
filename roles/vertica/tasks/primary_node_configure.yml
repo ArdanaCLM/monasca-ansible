@@ -69,6 +69,7 @@
       --license {{vertica_config_dir}}/license.key --accept-eula \
       --dba-user-password {{ vertica_dbadmin_password }} \
       --ssh-identity {{ vertica_dbadmin_home }}/.ssh/id_rsa \
+      --ignore-install-config --ignore-aws-instance-type \
       --hosts {{ vertica_ips }}
   become: yes
   args:

@@ -164,7 +164,8 @@ class MonascaAnsible(object):
                 ks = ksclient.KSClient(auth_url=self.module.params['keystone_url'],
                                        username=self.module.params['keystone_user'],
                                        password=self.module.params['keystone_password'],
-                                       project_name=self.module.params['keystone_project'])
+                                       project_name=self.module.params['keystone_project'],
+                                       os_cacert="/etc/ssl/certs/ca-certificates.crt")
             except Exception, e:
                 self.module.fail_json(msg='Keystone KSClient Exception: %s' % e)
             self.token = ks.token

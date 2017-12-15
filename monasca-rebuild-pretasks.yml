@@ -17,7 +17,7 @@
 ---
 - name: Initialize vertica cluster hostvars with the ssh keys
   hosts: FND-VDB
-  sudo: yes
+  become: yes
   tags: [vertica]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -30,7 +30,7 @@
 
 - name: Define dbadmin, ssh keys, and agent keys on rebuild host
   hosts: FND-VDB
-  sudo: yes
+  become: yes
   tags: [vertica]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml

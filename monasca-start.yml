@@ -17,7 +17,7 @@
 ---
 - name: Start kafka
   hosts: FND-KFK
-  sudo: yes
+  become: yes
   tags: [kafka]
   vars:
     run_mode: Start
@@ -26,7 +26,7 @@
 
 - name: Start vertica
   hosts: FND-VDB
-  sudo: yes
+  become: yes
   tags: [vertica]
   vars:
     run_mode: Start
@@ -44,7 +44,7 @@
 
 - name: Start influxdb
   hosts: FND-IDB
-  sudo: yes
+  become: yes
   tags: [influxdb]
   vars:
     run_mode: Start
@@ -56,7 +56,7 @@
 
 - name: Start monasca-api
   hosts: MON-API
-  sudo: yes
+  become: yes
   tags: [monasca-api]
   vars:
     run_mode: Start
@@ -65,7 +65,7 @@
 
 - name: Start monasca-persister
   hosts: MON-PST
-  sudo: yes
+  become: yes
   tags: [persister]
   vars:
     run_mode: Start
@@ -74,7 +74,7 @@
 
 - name: Start monasca-notification
   hosts: MON-NTF
-  sudo: yes
+  become: yes
   tags: [notification]
   vars:
     run_mode: Start
@@ -83,7 +83,7 @@
 
 - name: Start storm
   hosts: MON-THR
-  sudo: yes
+  become: yes
   tags: [storm, thresh]
   vars:
     run_mode: Start
@@ -92,7 +92,7 @@
 
 - name: Start monasca-thresh
   hosts: MON-THR
-  sudo: yes
+  become: yes
   tags: [thresh]
   vars:
     run_mode: Start

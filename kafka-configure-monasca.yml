@@ -17,7 +17,7 @@
 ---
 - name: Kafka Monasca Agent detection plugin
   hosts: FND-KFK:&MON-AGN
-  sudo: yes
+  become: yes
   tags: [kafka]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml

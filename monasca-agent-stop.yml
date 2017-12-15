@@ -17,7 +17,7 @@
 ---
 - name: Stop the Monasca Agent on all systems
   hosts: MON-AGN:NOV-CMP
-  sudo: yes
+  become: yes
   vars:
     run_mode: Stop
   roles:

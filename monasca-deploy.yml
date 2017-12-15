@@ -21,7 +21,7 @@
 
 - name: Installs kafka
   hosts: FND-KFK
-  sudo: yes
+  become: yes
   tags: [kafka]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -32,7 +32,7 @@
 
 - name: Installs kafka dynamic retention cron job
   hosts: FND-KFK--first-member
-  sudo: yes
+  become: yes
   tags: [kafka]
   vars_files:
     - roles/kafka/defaults/main.yml
@@ -46,7 +46,7 @@
 
 - name: Upgrade Vertica Version
   hosts: FND-VDB
-  sudo: yes
+  become: yes
   tags: [vertica]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -62,7 +62,7 @@
 - name: Pre-configure steps for all vertica nodes
   hosts: FND-VDB
   serial: 1
-  sudo: yes
+  become: yes
   tags: [vertica]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -77,7 +77,7 @@
 
 - name: Configures Vertica on primary node
   hosts: FND-VDB--first-member
-  sudo: yes
+  become: yes
   tags: [vertica]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -90,7 +90,7 @@
 
 - name: Configures Vertica on secondary nodes, if any
   hosts: FND-VDB:!FND-VDB--first-member
-  sudo: yes
+  become: yes
   tags: [vertica]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -103,7 +103,7 @@
 
 - name: Installs Influxdb
   hosts: FND-IDB
-  sudo: yes
+  become: yes
   tags: [influxdb]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -114,7 +114,7 @@
 
 - name: Set up mysql
   hosts: MON-API--first-member
-  sudo: yes
+  become: yes
   tags: [monasca-schema-mysql, monasca-schema]
   vars:
     influxdb_schema_enabled: False
@@ -129,7 +129,7 @@
 
 - name: Sets up kafka
   hosts: FND-KFK--first-member
-  sudo: yes
+  become: yes
   tags: [monasca-schema-kafka, monasca-schema]
   vars:
     influxdb_schema_enabled: False
@@ -146,7 +146,7 @@
 
 - name: Set up influxdb
   hosts: FND-IDB--first-member
-  sudo: yes
+  become: yes
   tags: [monasca-schema-influx, monasca-schema]
   vars:
     influxdb_schema_enabled: True
@@ -163,7 +163,7 @@
 
 - name: Set up vertica schema
   hosts: FND-VDB--first-member
-  sudo: yes
+  become: yes
   tags: [monasca-schema-vertica, monasca-schema]
   vars:
     influxdb_schema_enabled: False
@@ -182,7 +182,7 @@
 
 - name: Delete vertica licenses and reset dbadmin privileges
   hosts: FND-VDB
-  sudo: yes
+  become: yes
   tags: [vertica]
   vars_files:
     - roles/vertica/vars/main.yml
@@ -197,7 +197,7 @@
 
 - name: Set up Vertica logrotate and Monasca Agent configuration
   hosts: FND-VDB
-  sudo: yes
+  become: yes
   tags: [vertica]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -216,7 +216,7 @@
 
 - name: Set up Monasca keystone users
   hosts: MON-API
-  sudo: yes
+  become: yes
   tags: [monasca-keystone]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -229,7 +229,7 @@
 
 - name: Sets up Monasca API
   hosts: MON-API
-  sudo: yes
+  become: yes
   tags: [monasca-api]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -243,7 +243,7 @@
 
 - name: Sets up Monasca Persister
   hosts: MON-PST
-  sudo: yes
+  become: yes
   tags: [persister]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -257,7 +257,7 @@
 
 - name: Sets up Monasca Notification Engine
   hosts: MON-NTF
-  sudo: yes
+  become: yes
   tags: [notification]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -291,7 +291,7 @@
 
 - name: Stop Thresh and Storm on Upgrade of Storm
   hosts: MON-THR
-  sudo: yes
+  become: yes
   tags: [thresh, storm]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -304,7 +304,7 @@
 
 - name: Sets up Storm
   hosts: MON-THR
-  sudo: yes
+  become: yes
   tags: [thresh, storm]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -318,7 +318,7 @@
 
 - name: Sets up Threshold engine
   hosts: MON-THR
-  sudo: yes
+  become: yes
   tags: [thresh]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -337,7 +337,7 @@
 
 - name: Configure active host checks for all machines
   hosts: MON-LVC
-  sudo: yes
+  become: yes
   tags: [active_ping_checks]
   roles:
     - {role: monasca-agent, run_mode: Use}

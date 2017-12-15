@@ -18,7 +18,7 @@
 - name: kafka Status
   hosts: FND-KFK
   max_fail_percentage: 0
-  sudo: yes
+  become: yes
   tags: [kafka]
   tasks:
     - { include: roles/monasca-variables/tasks/service_status.yml, service_name: kafka}
@@ -26,7 +26,7 @@
 - name: vertica Status
   hosts: FND-VDB
   max_fail_percentage: 0
-  sudo: yes
+  become: yes
   tags: [vertica]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -38,7 +38,7 @@
 - name: influxdb Status
   hosts: FND-IDB
   max_fail_percentage: 0
-  sudo: yes
+  become: yes
   tags: [influxdb]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -49,7 +49,7 @@
 - name: monasca-api Status
   hosts: MON-API
   max_fail_percentage: 0
-  sudo: yes
+  become: yes
   tags: [monasca-api]
   tasks:
     - { include: roles/monasca-variables/tasks/service_status.yml, service_name: monasca-api}
@@ -57,7 +57,7 @@
 - name: monasca-persister Status
   hosts: MON-PST
   max_fail_percentage: 0
-  sudo: yes
+  become: yes
   tags: [monasca-persister]
   tasks:
     - { include: roles/monasca-variables/tasks/service_status.yml, service_name: monasca-persister}
@@ -65,7 +65,7 @@
 - name: monasca-notification Status
   hosts: MON-NTF
   max_fail_percentage: 0
-  sudo: yes
+  become: yes
   tags: [monasca-notification]
   tasks:
     - { include: roles/monasca-variables/tasks/service_status.yml, service_name: monasca-notification}
@@ -73,7 +73,7 @@
 - name: storm Status
   hosts: MON-THR
   max_fail_percentage: 0
-  sudo: yes
+  become: yes
   tags: [storm, thresh]
   vars_files:
     - roles/storm/defaults/main.yml
@@ -96,7 +96,7 @@
 - name: monasca-thresh Status
   hosts: MON-THR
   max_fail_percentage: 0
-  sudo: yes
+  become: yes
   tags: [thresh]
   vars_files:
     - roles/monasca-thresh/vars/nodes.yml

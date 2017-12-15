@@ -17,7 +17,7 @@
 ---
 - name: Tune the Monasca Agent libvirt plugin.
   hosts: MON-AGN:NOV-CMP
-  sudo: yes
+  become: yes
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
     - roles/monasca-variables/defaults/main.yml

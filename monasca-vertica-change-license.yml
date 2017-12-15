@@ -17,7 +17,7 @@
 ---
 - name: Upgrades the vertica license
   hosts: FND-VDB--first-member
-  sudo: yes
+  become: yes
   vars_files:
     - roles/vertica/defaults/main.yml
     - roles/vertica/vars/main.yml

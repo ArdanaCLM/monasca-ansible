@@ -17,7 +17,7 @@
 ---
 - name: Setup zookeeper monasca-agent plugin
   hosts: FND-ZOO:&MON-AGN
-  sudo: yes
+  become: yes
   tags: [zookeeper]
   roles:
     - {role: monasca-agent, run_mode: Use, tags: [zookeeper]}

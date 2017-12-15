@@ -17,7 +17,7 @@
 ---
 - name: Stop monasca-thresh
   hosts: MON-THR
-  sudo: yes
+  become: yes
   tags: [thresh]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -30,7 +30,7 @@
 
 - name: Stop storm-supervisor
   hosts: MON-THR
-  sudo: yes
+  become: yes
   tags: [storm, thresh]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -42,7 +42,7 @@
 
 - name: Stop storm-nimbus
   hosts: MON-THR--first-member
-  sudo: yes
+  become: yes
   tags: [storm, thresh]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -54,7 +54,7 @@
 
 - name: Stop monasca-notification
   hosts: MON-NTF
-  sudo: yes
+  become: yes
   tags: [notification]
   vars:
     run_mode: Stop
@@ -63,7 +63,7 @@
 
 - name: Stop monasca-persister
   hosts: MON-PST
-  sudo: yes
+  become: yes
   tags: [persister]
   vars:
     run_mode: Stop
@@ -72,7 +72,7 @@
 
 - name: Stop monasca-api
   hosts: MON-API
-  sudo: yes
+  become: yes
   tags: [monasca-api]
   vars:
     run_mode: Stop
@@ -81,7 +81,7 @@
 
 - name: Stop influxdb
   hosts: FND-IDB
-  sudo: yes
+  become: yes
   tags: [influxdb]
   vars:
     run_mode: Stop
@@ -93,7 +93,7 @@
 
 - name: Stop vertica
   hosts: FND-VDB
-  sudo: yes
+  become: yes
   tags: [vertica]
   vars:
     run_mode: Stop
@@ -115,7 +115,7 @@
 
 - name: Stop kafka
   hosts: FND-KFK
-  sudo: yes
+  become: yes
   tags: [kafka]
   vars:
     run_mode: Stop

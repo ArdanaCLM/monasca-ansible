@@ -17,7 +17,7 @@
 ---
 - name: Recovers Vertica from last good known state
   hosts: FND-VDB--first-member
-  sudo: yes
+  become: yes
   tags: [vertica-database-remove]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml

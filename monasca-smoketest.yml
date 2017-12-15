@@ -17,7 +17,7 @@
 ---
 - name: Runs Smoketest
   hosts: MON-API--first-member
-  sudo: yes
+  become: yes
   tags: [smoke]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml

@@ -15,17 +15,20 @@
 # under the License.
 #
 ---
+- name: include kafka vars
+  include_vars: ../../kafka/vars/main.yml
+
 - name: check topics
-  shell: /opt/kafka/bin/kafka-topics.sh --list --zookeeper {{ zookeeper_hosts }} --topic {{ item.key }} | grep {{ item.key }}
+  shell: "{{ kafka_bin_dir}}/kafka-topics.sh --list --zookeeper {{ zookeeper_hosts }} --topic {{ item.key }} | grep {{ item.key }}"
   with_dict: kafka_topics
   ignore_errors: yes
   register: check_result
 
 - name: create topics
-  command: /opt/kafka/bin/kafka-topics.sh --create --zookeeper {{ zookeeper_hosts }} --replication-factor {{ item.value.replicas }} --partitions {{ item.value.partitions }} --topic {{ item.key }}
+  command: "{{ kafka_bin_dir}}/kafka-topics.sh --create --zookeeper {{ zookeeper_hosts }} --replication-factor {{ item.value.replicas }} --partitions {{ item.value.partitions }} --topic {{ item.key }}"
   with_dict: kafka_topics
   when: check_result|failed
 
 - name: configure per topic segment rotation
-  command: /opt/kafka/bin/kafka-topics.sh --zookeeper {{ zookeeper_hosts }} --topic {{ item.key }} --alter --config segment.ms={{ kafka_segment_minutes * 60 * 1000 }}
+  command: "{{ kafka_bin_dir}}/kafka-topics.sh --zookeeper {{ zookeeper_hosts }} --topic {{ item.key }} --alter --config segment.ms={{ kafka_segment_minutes * 60 * 1000 }}"
   with_dict: kafka_topics

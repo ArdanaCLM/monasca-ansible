@@ -26,7 +26,7 @@ monasca_api_client_keystore:
 monasca_api_client_keystore_password:
 monasca_api_keystore_password:
 monasca_api_version: 1.1.0-SNAPSHOT
-monasca_wait_for_period: 60
+monasca_wait_for_period: 120
 monasca_log_dir: /var/log/monasca
 monasca_log_level: WARN
 monasca_log_rotation_backup_count: 5

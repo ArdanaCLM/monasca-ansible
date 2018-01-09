@@ -14,16 +14,20 @@
 # under the License.
 #
 ---
-monasca_api_package_dependencies:
-  - java-1_8_0-openjdk-headless
 
-monasca_api_dependencies:
-  - apache2-mod_wsgi
-  - libopenssl-devel
-  - shibboleth-sp
-  - libffi48-devel
-  - libmysqlclient18
-  - python-httplib2 # Required for ansible url plugin
+- name: monasca-api | stop-pythonimpl | Disable apache site
+  become: yes
+  command: a2dissite monasca_api_modwsgi
+  register: command_result
+  failed_when: "('ERROR' in command_result.stderr
+    and 'Site monasca_api_modwsgi does not exist' not in command_result.stderr)
+    and 'disabled' not in command_result.stdout"
 
-monasca_api_truststore: "/usr/lib64/jvm/jre/lib/security/cacerts"
-monasca_api_truststore_password: "changeit"
+# Reload Apache, ignore errors, if reload fails in stop as apache not
+# running, keep going
+- name: monasca-api | stop-pythonimpl | Reload apache after disabling monasca-api
+  become: yes
+  service:
+    name: apache2
+    state: reloaded
+  ignore_errors: yes

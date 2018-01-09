@@ -17,5 +17,13 @@
 monasca_api_package_dependencies:
   - default-jre-headless
 
+monasca_api_dependencies:
+  - libapache2-mod-wsgi
+  - libssl-dev
+  - libapache2-mod-shib2
+  - libffi-dev
+  - libmysqlclient18
+  - python-httplib2 # Required for ansible url plugin
+
 monasca_api_truststore: "/usr/lib/jvm/default-java/jre/lib/security/cacerts"
 monasca_api_truststore_password: "changeit"

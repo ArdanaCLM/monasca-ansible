@@ -32,6 +32,23 @@ vertica_env: {LC_ALL: en_US.UTF-8, LANG: en_US.UTF-8}
 vertica_schema_enabled: true
 vertica_dbadmin_old_password: "{% if FND_VDB.old_vars is defined and FND_VDB.old_vars.dbadmin_user_password is defined %}{{ FND_VDB.old_vars.dbadmin_user_password }}{% else %}{{ vertica_dbadmin_password }}{% endif %}"
 
+# enable cassandra schema
+cassandra_schema_enabled: true
+cassandra_hosts: "{{ FND_CDB.members.inter_node_cluster }}"
+
+cassandra_local_hostname: >
+  {{ (cassandra_hosts |
+      selectattr('ardana_ansible_host','equalto', inventory_hostname) |
+      first).host }}
+
+cassandra_contact_points: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FND_CDB.members.client }}{% endif %}"
+cassandra_port: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FND_CDB.members.client[0].port }}{% endif %}"
+cassandra_user: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FND_CDB.vars.cassandra_monasca_persister_user }}{% endif %}"
+cassandra_password: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FND_CDB.vars.cassandra_monasca_persister_password }}{% endif %}"
+cassandra_datacenter_identifier: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FND_CDB.vars.cassandra_datacenter_identifier }}{% endif %}"
+cassandra_client_connect_timeout: 120
+cassandra_client_request_timeout: 120
+
 mysql_root_dir: /var/lib/mysql
 mysql_schema_dir: /root
 monasca_schema_version: 4

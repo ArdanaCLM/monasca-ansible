@@ -46,13 +46,26 @@
   tasks:
     - { include: roles/monasca-variables/tasks/service_status.yml, service_name: influxdb, when: database_type=='influxdb'}
 
+- name: cassandra Status
+  hosts: FND-CDB
+  max_fail_percentage: 0
+  sudo: yes
+  tags: [cassandra]
+  vars_files:
+    - roles/monasca-variables/vars/configuration.yml
+    - roles/monasca-variables/defaults/main.yml
+  tasks:
+    - { include: roles/FND-CDB/tasks/status.yml, service_name: cassandra, when: database_type=='cassandra'}
+
 - name: monasca-api Status
   hosts: MON-API
   max_fail_percentage: 0
   become: yes
   tags: [monasca-api]
+  vars_files:
+    - roles/monasca-variables/vars/configuration.yml
   tasks:
-    - { include: roles/monasca-variables/tasks/service_status.yml, service_name: monasca-api}
+    - { include: roles/monasca-variables/tasks/service_status.yml, service_name: monasca-api, when: monasca_api_implementation_lang == 'java' }
 
 - name: monasca-persister Status
   hosts: MON-PST

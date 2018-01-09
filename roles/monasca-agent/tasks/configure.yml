@@ -15,7 +15,7 @@
 # under the License.
 #
 ---
-- name: monasca-agent | configure | Setup group
+- name: monasca-agent | configure | Setup monasca agent group
   group:
     name: "{{ monasca_agent_group_name }}"
     system: yes

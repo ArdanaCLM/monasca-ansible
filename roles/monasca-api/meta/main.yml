@@ -30,4 +30,5 @@ galaxy_info:
     - jessie
   categories:
   - monitoring
-dependencies: []
+dependencies:
+  - role: FND-AP2

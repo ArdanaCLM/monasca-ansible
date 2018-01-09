@@ -58,6 +58,9 @@
   tags: [notification]
   vars:
     run_mode: Stop
+  vars_files:
+    - roles/monasca-variables/vars/configuration.yml
+    - roles/monasca-variables/defaults/main.yml
   roles:
     - {role: monasca-notification, tags: [notification]}
 
@@ -67,6 +70,9 @@
   tags: [persister]
   vars:
     run_mode: Stop
+  vars_files:
+    - roles/monasca-variables/vars/configuration.yml
+    - roles/monasca-variables/defaults/main.yml
   roles:
     - {role: monasca-persister, tags: [persister]}
 
@@ -76,6 +82,9 @@
   tags: [monasca-api]
   vars:
     run_mode: Stop
+  vars_files:
+    - roles/monasca-variables/vars/configuration.yml
+    - roles/monasca-variables/defaults/main.yml
   roles:
     - {role: monasca-api, tags: [monasca-api]}
 

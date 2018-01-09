@@ -1,0 +1,97 @@
+[DEFAULT]
+log_config_append = /etc/monasca/api-logging.conf
+region = region1
+
+# Dispatchers to be loaded to serve restful APIs
+[dispatcher]
+versions = monasca_api.v2.reference.versions:Versions
+version_2_0 = monasca_api.v2.reference.version_2_0:Version2
+metrics = monasca_api.v2.reference.metrics:Metrics
+metrics_measurements = monasca_api.v2.reference.metrics:MetricsMeasurements
+metrics_statistics = monasca_api.v2.reference.metrics:MetricsStatistics
+metrics_names = monasca_api.v2.reference.metrics:MetricsNames
+alarm_definitions = monasca_api.v2.reference.alarm_definitions:AlarmDefinitions
+alarms = monasca_api.v2.reference.alarms:Alarms
+alarms_count = monasca_api.v2.reference.alarms:AlarmsCount
+alarms_state_history = monasca_api.v2.reference.alarms:AlarmsStateHistory
+notification_methods = monasca_api.v2.reference.notifications:Notifications
+dimension_values = monasca_api.v2.reference.metrics:DimensionValues
+dimension_names = monasca_api.v2.reference.metrics:DimensionNames
+notification_method_types = monasca_api.v2.reference.notificationstype:NotificationsType
+healthchecks = monasca_api.healthchecks:HealthChecks
+
+[cassandra]
+contact_points = {{ cassandra_contact_points }}
+keyspace = monasca
+
+[database]
+url = mysql+pymysql://{{monasca_api_mysql_user}}:{{monasca_api_mysql_password| quote }}@{{mysql_host}}/{{monasca_mysql_db}}?charset=utf8
+
+[kafka]
+uri = {{ kafka_hosts }}
+partitions = 0
+
+# The topic that metrics will be published too
+metrics_topic = metrics
+
+# consumer group name
+group = api
+
+# how many times to try when error occurs
+max_retry = 1
+
+# wait time between tries when kafka goes down
+wait_time = 1
+
+# use synchronous or asynchronous connection to kafka
+async = False
+
+# send messages in bulk or send messages one by one.
+compact = False
+
+
+[messaging]
+driver = monasca_api.common.messaging.kafka_publisher:KafkaPublisher
+
+[repositories]
+# The driver to use for the metrics repository
+# Switches depending on backend database in use. Influxdb or Cassandra.
+
+## metrics_driver = monasca_api.common.repositories.influxdb.metrics_repository:MetricsRepository
+metrics_driver = monasca_api.common.repositories.cassandra.metrics_repository:MetricsRepository
+
+# The driver to use for the alarm definitions repository
+alarm_definitions_driver = monasca_api.common.repositories.sqla.alarm_definitions_repository:AlarmDefinitionsRepository
+
+# The driver to use for the alarms repository
+alarms_driver = monasca_api.common.repositories.sqla.alarms_repository:AlarmsRepository
+
+# The driver to use for the notifications repository
+notifications_driver = monasca_api.common.repositories.sqla.notifications_repository:NotificationsRepository
+
+# The driver to use for the notification  method type repository
+notification_method_type_driver = monasca_api.common.repositories.sqla.notification_method_type_repository:NotificationMethodTypeRepository
+
+
+
+[security]
+delegate_authorized_roles = admin
+read_only_authorized_roles = monasca-read-only-user
+agent_authorized_roles = monasca-agent
+default_authorized_roles = user, domainuser, domainadmin, monasca-user
+
+[keystone_authtoken]
+auth_uri = {{ keystone_url }}
+identity_uri = {{ keystone_url | replace(keystone_port, '35357') }}
+region_name = region1
+# memcached_servers = localhost:11211
+# signing_dir =
+cafile = /etc/ssl/certs/ca-certificates.crt
+project_domain_name = Default
+project_name = {{keystone_admin_project}}
+user_domain_name = Default
+password = {{monasca_keystone_password}}
+username = {{monasca_keystone_user}}
+# auth_url = {{ keystone_url | replace(':' + keystone_port, '') }}/identity
+auth_url = {{ keystone_url | replace(keystone_port, '35357') }}
+auth_type = password

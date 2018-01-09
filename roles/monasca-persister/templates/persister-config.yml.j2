@@ -27,6 +27,7 @@ alarmHistoryConfiguration:
   groupId: 1_alarm-state-transitions
   consumerId: "{{ monasca_persister_hostname }}"
   clientId : 1
+  commitBatchTime: 10000
 
 metricConfiguration:
   batchSize: {{ monasca_persister_metric_batch_size }}
@@ -37,6 +38,7 @@ metricConfiguration:
   groupId: 1_metrics
   consumerId: "{{ monasca_persister_hostname }}"
   clientId : 1
+  commitBatchTime: 10000
 
 #Kafka settings.
 kafkaConfig:
@@ -61,7 +63,7 @@ verticaMetricRepoConfig:
   maxCacheSize: 2000000
 
 databaseConfiguration:
-# vertica | influxdb
+# vertica | influxdb | cassandra
   databaseType: {{ database_type }}
 
 # Uncomment if databaseType is influxdb
@@ -102,9 +104,44 @@ dataSourceFactory:
   # the maximum lifetime of an idle connection
   maxConnectionAge: 1 minute
 
+# uncomment if database type is cassandra
+cassandraDbConfiguration:
+  contactPoints:
+    {% for vip_private in cassandra_contact_points %}
+     - '{{  vip_private.host }}'
+    {% endfor %}
+
+  port: {{ cassandra_port }}
+  # user: {{ cassandra_user }}
+  # password: {{ cassandra_password }}
+  keyspace: monasca
+  maxConnections: 5
+  maxRequests: 2048
+  maxBatches: 500
+  localDataCenter: {{ cassandra_datacenter_identifier }}
+  # socket time out in milli seconds when creating a new connection
+  connectionTimeout: 5000
+  # number of retries in upsert query. The retry interval is exponential,
+  # i.e., 1, 2, 4, 8 ... seconds. Retry is blocking.
+  maxWriteRetries: 8
+  maxDefinitionCacheSize: 20000000
+  #    ANY(0),
+  #    ONE(1),
+  #    TWO(2),
+  #    THREE(3),
+  #    QUORUM(4),
+  #    ALL(5),
+  #    LOCAL_QUORUM(6),
+  #    EACH_QUORUM(7),
+  #    SERIAL(8),
+  #    LOCAL_SERIAL(9),
+  #    LOCAL_ONE(10);
+  consistencyLevel: ONE
+  # number of days metric retention
+  retentionPolicy: 45
+
 metrics:
   frequency: 1 second
-
 
 # Logging settings.
 logging:

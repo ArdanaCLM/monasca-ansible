@@ -37,6 +37,7 @@ monasca_agent_shell: /usr/sbin/nologin
 # These can't be changed
 monasca_agent_user_name: mon-agent
 monasca_agent_group_name: mon-agent
+monasca_group_name: monasca
 
 # Number of seconds a plugin collection time exceeds that causes a warning to
 # be logged for that plugin

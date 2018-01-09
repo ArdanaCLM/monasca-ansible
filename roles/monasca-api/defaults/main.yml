@@ -50,6 +50,13 @@ influxdb_url: "{% if database_type == 'influxdb' %}{{ MON_API.consumes_FND_IDB.v
 influxdb_user: "{% if database_type == 'influxdb' %}{{ MON_API.consumes_FND_IDB.vars.influxdb_monasca_api_user }}{% endif %}"
 influxdb_password: "{% if database_type == 'influxdb' %}{{ MON_API.consumes_FND_IDB.vars.influxdb_monasca_api_password | quote }}{% endif %}"
 
+# cassandra
+cassandra_contact_points: "{% for node in MON_PST.consumes_FND_CDB.members.inter_node_cluster %}{{ node.host }}{% if not loop.last %},{% endif %}{% endfor %}"
+cassandra_port: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FND_CDB.members.client[0].port }}{% endif %}"
+cassandra_user: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FND_CDB.vars.cassandra_monasca_persister_user }}{% endif %}"
+cassandra_password: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FND_CDB.vars.cassandra_monasca_persister_password }}{% endif %}"
+cassandra_datacenter_identifier: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FND_CDB.vars.cassandra_datacenter_identifier }}{% endif %}"
+
 kafka_nodes: "{{ MON_API.consumes_FND_KFK.members.private }}"
 kafka_hosts: "{% for node in kafka_nodes %}{{ node.host }}:{{ node.port }}{% if not loop.last %},{% endif %}{% endfor %}"
 
@@ -57,6 +64,7 @@ keystone_host: "{{MON_API.consumes_KEY_API.vips.private[0].host}}"
 keystone_port: "{{MON_API.consumes_KEY_API.vips.private[0].port}}"
 keystone_use_https: "{{MON_API.consumes_KEY_API.vips.private[0].use_tls}}"
 keystone_admin_project: "{{KEY_API.vars.keystone_admin_tenant}}"
+keystone_url: "{{MON_API.consumes_KEY_API.vips.private[0].url}}"
 
 monasca_api_bind_host: "{{ host.bind.MON_API.internal.ip_address }}"
 monasca_api_client_port: "{{MON_API.advertises.vips.private[0]['port']}}"
@@ -71,3 +79,6 @@ monasca_api_mysql_password: "{{ MON_API.consumes_FND_MDB.vars.accounts.monasca_a
 zookeeper_nodes: "{{ MON_API.consumes_FND_ZOO.members.private }}"
 zookeeper_hosts: "{% for node in zookeeper_nodes %}{{ node.host }}:{{ node.port }}{% if not loop.last %},{% endif %}{% endfor %}"
 # TODO: Get the connector port and set it
+
+# monasca global conf
+monasca_global_conf_dir: "/etc/monasca/"

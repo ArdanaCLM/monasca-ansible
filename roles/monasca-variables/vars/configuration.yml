@@ -28,8 +28,8 @@ vertica_retention_period: 45 # 45 day default retention
 # monasca_tuning_selector_override
 monasca_tuning_selector_override:
 
-# Must be either vertica or influxdb
-database_type: vertica
+# Must be vertica or influxdb or cassandra
+database_type: cassandra
 
 # The number of seconds between metric collections for the Monasca Agent.
 # Decreasing this will increase the amount of disk, CPU and RAM used by
@@ -37,6 +37,9 @@ database_type: vertica
 # Increasing this can cause issues for the Threshold Engine evaluating
 # Alarms as most Alarm Definitions have a period of 60 seconds
 monasca_agent_check_frequency: 30
+
+# monasca api implementation language
+monasca_api_implementation_lang: python
 
 # Do not make changes to monasca_possible_tunings. Use the override
 # parameters below in order to set individual parameters if required

@@ -64,24 +64,24 @@ monasca_persister_metric_batch_size: "{% if monasca_persister_metric_batch_size_
 
 # Vertica Defaults
 vertica_users:
-  - username: "{{ FND_VDB.vars.monitor_user_name }}"
-    password: "{{ FND_VDB.vars.monitor_user_password }}"
+  - username: "{% if database_type == 'vertica' %}{{ FND_VDB.vars.monitor_user_name }}{% endif %}"
+    password: " {% if database_type == 'vertica' %}{{ FND_VDB.vars.monitor_user_password }}{% endif %}"
     role: monitor
-  - username: "{{ MON_API.consumes_FND_VDB.vars.vertica_monasca_api_user }}"
-    password: "{{ MON_API.consumes_FND_VDB.vars.vertica_monasca_api_password }}"
+  - username: "{% if database_type == 'vertica' %}{{ MON_API.consumes_FND_VDB.vars.vertica_monasca_api_user }}{% endif %}"
+    password: "{% if database_type == 'vertica' %}{{ MON_API.consumes_FND_VDB.vars.vertica_monasca_api_password }}{% endif %}"
     role: monasca_api
-  - username: "{{ MON_PST.consumes_FND_VDB.vars.vertica_monasca_persister_user }}"
-    password: "{{ MON_PST.consumes_FND_VDB.vars.vertica_monasca_persister_password }}"
+  - username: "{% if database_type == 'vertica' %}{{ MON_PST.consumes_FND_VDB.vars.vertica_monasca_persister_user }}{% endif %}"
+    password: "{% if database_type == 'vertica' %}{{ MON_PST.consumes_FND_VDB.vars.vertica_monasca_persister_password }}{% endif %}"
     role: monasca_persister
-vertica_api_user: "{{ MON_API.consumes_FND_VDB.vars.vertica_monasca_api_user }}"
-vertica_api_password: "{{ MON_API.consumes_FND_VDB.vars.vertica_monasca_api_password }}"
-vertica_persister_user: "{{ MON_PST.consumes_FND_VDB.vars.vertica_monasca_persister_user }}"
-vertica_persister_password: "{{ MON_PST.consumes_FND_VDB.vars.vertica_monasca_persister_password }}"
-vertica_resource_pools_limits: "{% if vertica_resource_pools_limits_override %}{{ vertica_resource_pools_limits_override }}{% else %}{{ monasca_tunings.vertica_resource_pools_limits }}{% endif %}"
+vertica_api_user: "{% if database_type == 'vertica' %}{{ MON_API.consumes_FND_VDB.vars.vertica_monasca_api_user }}{% endif %}"
+vertica_api_password: "{% if database_type == 'vertica' %}{{ MON_API.consumes_FND_VDB.vars.vertica_monasca_api_password }}{% endif %}"
+vertica_persister_user: "{% if database_type == 'vertica' %}{{ MON_PST.consumes_FND_VDB.vars.vertica_monasca_persister_user }}{% endif %}"
+vertica_persister_password: "{% if database_type == 'vertica' %}{{ MON_PST.consumes_FND_VDB.vars.vertica_monasca_persister_password }}{% endif %}"
+vertica_resource_pools_limits: "{% if database_type == 'vertica' and vertica_resource_pools_limits_override %}{{ vertica_resource_pools_limits_override }}{% else %}{{ monasca_tunings.vertica_resource_pools_limits }}{% endif %}"
 vertica_version: 7.2.1-0
 vertica_jdbc_version: 7.2.1-0
-vertica_jdbc_jar: "vertica-jdbc-{{ vertica_jdbc_version }}.jar"
-vertica_jdbc_location: "/opt/vertica/java/lib/{{ vertica_jdbc_jar }}"
+vertica_jdbc_jar: "{% if database_type == 'vertica' %}vertica-jdbc-{{ vertica_jdbc_version }}.jar{% endif %}"
+vertica_jdbc_location: "{% if database_type == 'vertica' %}/opt/vertica/java/lib/{{ vertica_jdbc_jar }}{% endif %}"
 vertica_use_apt: True
 
 # Threshold Engine defaults

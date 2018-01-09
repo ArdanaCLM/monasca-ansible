@@ -15,6 +15,7 @@
 #
 ---
 monasca_kafka_required_packages:
+  - cron
   - java-1_8_0-openjdk-headless
 
 monasca_kafka_restart_packages:

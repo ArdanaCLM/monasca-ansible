@@ -53,8 +53,8 @@ influxdb_password: "{% if database_type == 'influxdb' %}{{ MON_API.consumes_FND_
 # cassandra
 cassandra_contact_points: "{% for node in MON_PST.consumes_FND_CDB.members.inter_node_cluster %}{{ node.host }}{% if not loop.last %},{% endif %}{% endfor %}"
 cassandra_port: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FND_CDB.members.client[0].port }}{% endif %}"
-cassandra_user: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FND_CDB.vars.cassandra_monasca_persister_user }}{% endif %}"
-cassandra_password: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FND_CDB.vars.cassandra_monasca_persister_password }}{% endif %}"
+cassandra_user: "{% if database_type == 'cassandra' %}{{ MON_API.consumes_FND_CDB.vars.cassandra_monasca_api_user }}{% endif %}"
+cassandra_password: "{% if database_type == 'cassandra' %}{{ MON_API.consumes_FND_CDB.vars.cassandra_monasca_api_password }}{% endif %}"
 cassandra_datacenter_identifier: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FND_CDB.vars.cassandra_datacenter_identifier }}{% endif %}"
 
 kafka_nodes: "{{ MON_API.consumes_FND_KFK.members.private }}"

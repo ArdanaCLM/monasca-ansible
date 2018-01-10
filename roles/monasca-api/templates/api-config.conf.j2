@@ -23,6 +23,8 @@ healthchecks = monasca_api.healthchecks:HealthChecks
 [cassandra]
 contact_points = {{ cassandra_contact_points }}
 keyspace = monasca
+user = {{ cassandra_user }}
+password = {{ cassandra_password }}
 
 [database]
 url = mysql+pymysql://{{monasca_api_mysql_user}}:{{monasca_api_mysql_password| quote }}@{{mysql_host}}/{{monasca_mysql_db}}?charset=utf8

@@ -1,3 +1,4 @@
+
 {#
 #
 # (c) Copyright 2015-2017 Hewlett Packard Enterprise Development LP
@@ -112,8 +113,8 @@ cassandraDbConfiguration:
     {% endfor %}
 
   port: {{ cassandra_port }}
-  # user: {{ cassandra_user }}
-  # password: {{ cassandra_password }}
+  user: {{ cassandra_persister_user }}
+  password: {{ cassandra_persister_password }}
   keyspace: monasca
   maxConnections: 5
   maxRequests: 2048

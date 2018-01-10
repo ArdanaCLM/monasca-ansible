@@ -33,6 +33,7 @@ vertica_schema_enabled: true
 vertica_dbadmin_old_password: "{% if FND_VDB.old_vars is defined and FND_VDB.old_vars.dbadmin_user_password is defined %}{{ FND_VDB.old_vars.dbadmin_user_password }}{% else %}{{ vertica_dbadmin_password }}{% endif %}"
 
 # enable cassandra schema
+cassandra_conf_dir: "{{ '/etc/cassandra/conf' if ansible_os_family == 'Suse' else '/etc/cassandra' }}"
 cassandra_schema_enabled: true
 cassandra_hosts: "{{ FND_CDB.members.inter_node_cluster }}"
 
@@ -48,6 +49,8 @@ cassandra_password: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FN
 cassandra_datacenter_identifier: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FND_CDB.vars.cassandra_datacenter_identifier }}{% endif %}"
 cassandra_client_connect_timeout: 120
 cassandra_client_request_timeout: 120
+cassandra_admin_user_name: "{% if database_type == 'cassandra' %}{{ MON_API.consumes_FND_CDB.vars.cassandra_admin_user }}{% endif %}"
+cassandra_admin_user_password: "{% if database_type == 'cassandra' %}{{ MON_API.consumes_FND_CDB.vars.cassandra_admin_password }}{% endif %}"
 
 mysql_root_dir: /var/lib/mysql
 mysql_schema_dir: /root

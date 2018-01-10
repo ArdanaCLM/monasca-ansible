@@ -1,0 +1,41 @@
+
+{#
+#
+# (c) Copyright 2018 SUSE LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+#
+#}
+
+ALTER KEYSPACE "system_auth" WITH REPLICATION = {'class' : 'NetworkTopologyStrategy', '{{ cassandra_datacenter_identifier }}' : 2};
+
+CREATE ROLE IF NOT EXISTS db_admin_role WITH SUPERUSER = true;
+DROP ROLE IF EXISTS {{ cassandra_admin_user_name }};
+CREATE ROLE IF NOT EXISTS {{ cassandra_admin_user_name }} WITH PASSWORD = '{{ cassandra_admin_user_password }}' AND LOGIN = true;
+GRANT db_admin_role to {{ cassandra_admin_user_name }};
+
+CREATE ROLE IF NOT EXISTS monasca_monitor_role;
+CREATE ROLE IF NOT EXISTS monasca_persister_role;
+CREATE ROLE IF NOT EXISTS monasca_api_role;
+GRANT ALL ON KEYSPACE monasca TO monasca_monitor_role;
+GRANT SELECT ON KEYSPACE monasca TO monasca_persister_role;
+GRANT MODIFY ON KEYSPACE monasca TO monasca_persister_role;
+GRANT SELECT ON KEYSPACE monasca TO monasca_api_role;
+
+{% for item in cassandra_users %}
+DROP ROLE IF EXISTS {{ item.username }};
+CREATE ROLE IF NOT EXISTS {{ item.username }};
+GRANT {{ item.role }} TO {{ item.username }};
+ALTER ROLE {{ item.username }} WITH PASSWORD = '{{ item.password }}' AND LOGIN = true AND SUPERUSER = false;
+{% endfor %}
+

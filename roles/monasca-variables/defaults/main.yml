@@ -1,3 +1,4 @@
+
 #
 # (c) Copyright 2015,2016 Hewlett Packard Enterprise Development LP
 # (c) Copyright 2017 SUSE LLC
@@ -61,6 +62,23 @@ monasca_persister_alarm_threads: "{% if monasca_persister_alarm_threads_override
 monasca_persister_alarm_batch_size: "{% if monasca_persister_alarm_batch_size_override %}{{ monasca_persister_alarm_batch_size_override }}{% else %}{{ monasca_tunings.monasca_persister_alarm_batch_size }}{% endif %}"
 monasca_persister_metric_threads: "{% if monasca_persister_metric_threads_override %}{{ monasca_persister_metric_threads_override }}{% else %}{{ monasca_tunings.monasca_persister_metric_threads }}{% endif %}"
 monasca_persister_metric_batch_size: "{% if monasca_persister_metric_batch_size_override %}{{ monasca_persister_metric_batch_size_override }}{% else %}{{ monasca_tunings.monasca_persister_metric_batch_size }}{% endif %}"
+
+# Cassandra Defaults
+cassandra_users:
+  - username: "{% if database_type == 'cassandra' %}{{ MON_API.consumes_FND_CDB.vars.cassandra_monitor_user }}{% endif %}"
+    password: " {% if database_type == 'cassandra' %}{{ MON_API.consumes_FND_CDB.vars.cassandra_monitor_password }}{% endif %}"
+    role: monasca_monitor_role
+  - username: "{% if database_type == 'cassandra' %}{{ MON_API.consumes_FND_CDB.vars.cassandra_monasca_api_user }}{% endif %}"
+    password: "{% if database_type == 'cassandra' %}{{ MON_API.consumes_FND_CDB.vars.cassandra_monasca_api_password }}{% endif %}"
+    role: monasca_api_role
+  - username: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FND_CDB.vars.cassandra_monasca_persister_user }}{% endif %}"
+    password: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FND_CDB.vars.cassandra_monasca_persister_password }}{% endif %}"
+    role: monasca_persister_role
+cassandra_api_user: "{% if database_type == 'cassandra' %}{{ MON_API.consumes_FND_CDB.vars.cassandra_monasca_api_user }}{% endif %}"
+cassandra_api_password: "{% if database_type == 'cassandra' %}{{ MON_API.consumes_FND_CDB.vars.cassandra_monasca_api_password }}{% endif %}"
+cassandra_persister_user: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FND_CDB.vars.cassandra_monasca_persister_user }}{% endif %}"
+cassandra_persister_password: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FND_CDB.vars.cassandra_monasca_persister_password }}{% endif %}"
+cassandra_version: 3.11.1
 
 # Vertica Defaults
 vertica_users:

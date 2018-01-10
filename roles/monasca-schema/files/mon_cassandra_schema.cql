@@ -17,7 +17,7 @@
 
 drop schema if exists monasca;
 
-create schema monasca with replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
+create schema monasca with replication = { 'class' : 'NetworkTopologyStrategy', 'dc1' : 2 };
 
 create table monasca.measurements (
     metric_id blob,

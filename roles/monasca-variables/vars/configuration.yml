@@ -29,7 +29,7 @@ vertica_retention_period: 45 # 45 day default retention
 monasca_tuning_selector_override:
 
 # Must be vertica or influxdb or cassandra
-database_type: cassandra
+database_type: "{{ 'cassandra' if ansible_os_family == 'Suse' else 'vertica' }}"
 
 # The number of seconds between metric collections for the Monasca Agent.
 # Decreasing this will increase the amount of disk, CPU and RAM used by

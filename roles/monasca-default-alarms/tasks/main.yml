@@ -15,6 +15,7 @@
 # under the License.
 #
 ---
+
 - name: monasca-default-alarms | main | Setup default notification method
   monasca_notification_method:
     name: "{{ notification_name }}"
@@ -24,6 +25,9 @@
     keystone_user: "{{ monasca_keystone_user }}"
     keystone_password: "{{ monasca_keystone_password }}"
     keystone_project: "{{ monasca_keystone_project }}"
+    keystone_project_domain: "{{ monasca_keystone_project_domain }}"
+    keystone_user_domain: "{{ monasca_keystone_user_domain }}"
+    keystone_verify: "{{ system_cacert_file }}"
     monasca_api_url: "{{ monasca_api_url }}"
   no_log: True
   tags:
@@ -40,7 +44,13 @@
     name: "{{ item.name }}"
     description: "{{ item.description | default('') }}"
     expression: "{{ item.expression }}"
-    keystone_token: "{{ default_notification_result.keystone_token }}"
+    keystone_url: "{{ monasca_keystone_url }}"
+    keystone_user: "{{ monasca_keystone_user }}"
+    keystone_password: "{{ monasca_keystone_password }}"
+    keystone_project: "{{ monasca_keystone_project }}"
+    keystone_project_domain: "{{ monasca_keystone_project_domain }}"
+    keystone_user_domain: "{{ monasca_keystone_user_domain }}"
+    keystone_verify: "{{ system_cacert_file }}"
     match_by: "{{ item.match_by | default(['hostname']) }}"
     monasca_api_url: "{{ default_notification_result.monasca_api_url }}"
     severity: "{{ item.severity | default('LOW') }}"

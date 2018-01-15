@@ -97,30 +97,22 @@
     mode: 0755
   register: ardana_notify_monasca_api_apache_restart
 
-- name: monasca-api | configure-pythonimpl | configure monasca-api vhost available
+- name: monasca-api | configure-pythonimpl | configure monasca-api apache virtualhost
   become: yes
   template:
     src: monasca-api-apache2.conf.j2
-    dest: /etc/apache2/sites-available/monasca-api-apache2.conf
-    mode: 0755
-  register: ardana_notify_monasca_api_apache_restart
-
-
-- name: monasca-api | configure-pythonimpl | configure monasca-api apache virtualhost available
-  become: yes
-  template:
-    src: monasca-api-apache2.conf.j2
-    dest: /etc/apache2/sites-available/monasca-api-apache2.conf
+    dest: "{{ apache2_vhost_dir }}/monasca-api-apache2.conf"
     mode: 0755
   register: ardana_notify_monasca_api_apache_restart
 
 - name: monasca-api | configure-pythonimpl | configure monasca-api apache virtualhost enabled
   become: yes
   file:
-    src: /etc/apache2/sites-available/monasca-api-apache2.conf
+    src: "{{ apache2_vhost_dir }}/monasca-api-apache2.conf"
     dest: /etc/apache2/sites-enabled/monasca-api-apache2.conf
     state: link
   register: ardana_notify_monasca_api_apache_restart
+  when: ansible_os_family == 'Debian'
 
 - name: create monasca log dir
   file: path={{monasca_log_dir}} state=directory owner=root group=root mode=0775

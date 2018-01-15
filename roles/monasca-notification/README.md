@@ -28,7 +28,7 @@ Optionally if needed
 ##Example Playbook
 
     hosts: monasca
-    sudo: yes
+    become: yes
     roles:
       - {role: tkuhlman.monasca-notification,
          monasca_notification_mysql_user: "{{notification_mysql_user}}",

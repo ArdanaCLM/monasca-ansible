@@ -186,7 +186,7 @@
 
 - name: Set up cassandra schema
   hosts: FND-CDB--first-member
-  sudo: yes
+  become: yes
   tags: [monasca-schema-cassandra, monasca-schema]
   vars:
     influxdb_schema_enabled: False

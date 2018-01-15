@@ -79,7 +79,7 @@
 
 - name: vertica | upgrade vertica version | install new Vertica version from apt repo
   apt: name="vertica"={{ vertica_version }}
-  sudo: true
+  become: true
 
 - name: vertica | upgrade vertica version | update to new EULA from vertica 7.1.1
   copy: src=vertica_7_2_eula.dat dest={{ vertica_config_dir }}/d5415f948449e9d4c421b568f2411140.dat owner="{{ vertica_dbadmin_user }}" group="{{ vertica_dbadmin_group }}" mode=0755

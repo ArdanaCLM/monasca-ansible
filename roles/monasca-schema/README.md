@@ -70,7 +70,7 @@ vertica_users:
 ##Example Playbook
 
     hosts: group
-    sudo: yes
+    become: yes
     roles:
       - {role: monasca-schema, tags: [monasca-schema]}
 

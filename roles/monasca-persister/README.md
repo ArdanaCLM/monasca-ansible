@@ -28,7 +28,7 @@ Requires Variables be defined for:
 ##Example Playbook
 
     hosts: monasca
-    sudo: yes
+    become: yes
     roles:
       - {role: tkuhlman.monasca-persister,
          kafka_hosts: "{{kafka_hosts}}",

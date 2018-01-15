@@ -49,7 +49,7 @@
 - name: cassandra Status
   hosts: FND-CDB
   max_fail_percentage: 0
-  sudo: yes
+  become: yes
   tags: [cassandra]
   vars_files:
     - roles/monasca-variables/vars/configuration.yml

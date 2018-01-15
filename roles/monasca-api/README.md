@@ -49,7 +49,7 @@ The keystore and truststore's are jks files and created by command such as these
 ##Example Playbook
 
     hosts: monasca
-    sudo: yes
+    become: yes
     roles:
       - {role: tkuhlman.monasca-api,
          influxdb_user: "{{api_influxdb_user}}",

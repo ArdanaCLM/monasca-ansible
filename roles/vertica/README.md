@@ -31,7 +31,7 @@ This role does not create the database. That creation is in the role [Monasca-sc
 ##Example Playbook
 
     hosts: vertica
-    sudo: yes
+    become: yes
     roles:
       - {role: vertica,
          vertica_group="{{groups['vertica']}}",

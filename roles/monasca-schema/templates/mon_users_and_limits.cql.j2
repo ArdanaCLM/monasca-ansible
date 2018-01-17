@@ -17,7 +17,7 @@
 #
 #}
 
-ALTER KEYSPACE "system_auth" WITH REPLICATION = {'class' : 'NetworkTopologyStrategy', '{{ cassandra_datacenter_identifier }}' : 2};
+ALTER KEYSPACE "system_auth" WITH REPLICATION = {'class' : 'NetworkTopologyStrategy', '{{ cassandra_datacenter_identifier }}' : {{ cassandra_node_count }} };
 
 CREATE ROLE IF NOT EXISTS db_admin_role WITH SUPERUSER = true;
 DROP ROLE IF EXISTS {{ cassandra_admin_user_name }};

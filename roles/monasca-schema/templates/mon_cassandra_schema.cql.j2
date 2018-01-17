@@ -1,5 +1,5 @@
 
-// (C) Copyright 2017 SUSE LLC
+// (C) Copyright 2018 SUSE LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 
 drop schema if exists monasca;
 
-create schema monasca with replication = { 'class' : 'NetworkTopologyStrategy', 'dc1' : 2 };
+create schema monasca with replication = { 'class' : 'NetworkTopologyStrategy', 'dc1' : {{ cassandra_replication_factor }} };
 
 create table monasca.measurements (
     metric_id blob,

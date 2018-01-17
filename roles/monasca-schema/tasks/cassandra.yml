@@ -15,10 +15,8 @@
 #
 ---
 
-- name: monasca-schema | cassandra | Copy over cassandra schema cql files
-  copy: src={{ item }} dest=/var/cassandra/{{ item }} mode=0660
-  with_items:
-    - mon_cassandra_schema.cql
+- name: monasca-schema | cassandra | Copy over cassandra schema cql file
+  template: src=mon_cassandra_schema.cql.j2 dest=/var/cassandra/mon_cassandra_schema.cql mode=0660
   register: cql_schema_status
 
 - name: monasca-schema | cassandra | Write schema to cassandra

@@ -74,13 +74,11 @@ notifications_driver = monasca_api.common.repositories.sqla.notifications_reposi
 # The driver to use for the notification  method type repository
 notification_method_type_driver = monasca_api.common.repositories.sqla.notification_method_type_repository:NotificationMethodTypeRepository
 
-
-
 [security]
-delegate_authorized_roles = admin
+delegate_authorized_roles = monitoring-delegate
 read_only_authorized_roles = monasca-read-only-user
 agent_authorized_roles = monasca-agent
-default_authorized_roles = user, domainuser, domainadmin, monasca-user
+default_authorized_roles = user, domainuser, domainadmin, monasca-user, admin
 
 [keystone_authtoken]
 auth_uri = {{ keystone_url }}

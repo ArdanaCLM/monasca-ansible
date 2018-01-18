@@ -55,6 +55,24 @@ options:
         required: false
         description:
             - Keystone project name to obtain a token for, defaults to the user's default project
+    keystone_project_domain:
+        required: false
+        description:
+            - Keystone project domain to obtain a token for, defaults to the default project domain
+    keystone_user_domain:
+        required: false
+        description:
+            - Keystone project domain to obtain a token for, defaults to the default user domain
+    keystone_verify:
+        required: false
+        description:
+            - See 'verify' parameter in
+              https://github.com/openstack/keystoneauth/blob/master/keystoneauth1/session.py
+              The verification arguments to pass to requests. These are of
+              the same form as requests expects, so True or False to
+              verify (or not) against system certificates or a path to a
+              bundle or CA certs to check against or None for requests to
+              attempt to locate and use certificates. (optional, defaults to True)
     metric_dimensions:
         required: true
         description:
@@ -83,7 +101,6 @@ import os
 
 try:
     from monascaclient import client
-    from monascaclient import ksclient
 except ImportError:
     paths = ["/opt/stack/service/monascaclient/venv", "/opt/monasca"]
     for path in paths:
@@ -93,7 +110,6 @@ except ImportError:
         try:
             execfile(activate_this, dict(__file__=activate_this))
             from monascaclient import client
-            from monascaclient import ksclient
         except ImportError:
             monascaclient_found = False
         else:
@@ -114,9 +130,12 @@ class MonascaAnsible(object):
     """
     def __init__(self, module):
         self.module = module
-        self._keystone_auth()
-        self.exit_data = {'keystone_token': self.token, 'monasca_api_url': self.api_url}
-        self.monasca = client.Client(self.module.params['api_version'], self.api_url, token=self.token)
+        self.api_url = self.module.params['monasca_api_url']
+        auth_args = self._get_keystone_auth_args()
+        auth_args["endpoint"] = self.api_url
+        self.monasca = client.Client(self.module.params['api_version'],
+                                     **auth_args)
+        self.exit_data = {'monasca_api_url': self.api_url}
 
     def _exit_json(self, **kwargs):
         """ Exit with supplied kwargs combined with the self.exit_data
@@ -124,29 +143,33 @@ class MonascaAnsible(object):
         kwargs.update(self.exit_data)
         self.module.exit_json(**kwargs)
 
-    def _keystone_auth(self):
-        """ Authenticate to Keystone and set self.token and self.api_url
-        """
-        if self.module.params['keystone_token'] is None:
-            try:
-                ks = ksclient.KSClient(auth_url=self.module.params['keystone_url'],
-                                       username=self.module.params['keystone_user'],
-                                       password=self.module.params['keystone_password'],
-                                       project_name=self.module.params['keystone_project'],
-                                       os_cacert="/etc/ssl/certs/ca-certificates.crt")
-            except Exception, e:
-                self.module.fail_json(msg='Keystone KSClient Exception: %s' % e)
+    def _get_keystone_auth_args(self):
+        """get arguments that should be passed on to monascaclient. """
+        if self.module.params['monasca_api_url'] is None:
+            self.module.fail_json(msg='Error: monasca_api_url is required')
 
-            self.token = ks.token
-            if self.module.params['monasca_api_url'] is None:
-                self.api_url = ks.monasca_url
-            else:
-                self.api_url = self.module.params['monasca_api_url']
+        keystone_verify = self.module.params.get('keystone_verify', None)
+        if keystone_verify and keystone_verify == "True":
+            verify_flag = True
+        elif keystone_verify and keystone_verify == "False":
+            verify_flag = False
         else:
-            if self.module.params['monasca_api_url'] is None:
-                self.module.fail_json(msg='Error: When specifying keystone_token, monasca_api_url is required')
-            self.token = self.module.params['keystone_token']
-            self.api_url = self.module.params['monasca_api_url']
+            # path to ca cert
+            verify_flag = keystone_verify
+
+        keystone_auth_args = {'auth_url': self.module.params['keystone_url'],
+                              'project_name': self.module.params['keystone_project'],
+                              'project_domain_name': self.module.params['keystone_project_domain'],
+                              'user_domain_name': self.module.params['keystone_user_domain'],
+                              'verify': verify_flag}
+
+        if self.module.params['keystone_token'] is not None:
+            keystone_auth_args['token'] = self.module.params['keystone_token']
+        else:
+            keystone_auth_args['username'] = self.module.params['keystone_user']
+            keystone_auth_args['password'] = self.module.params['keystone_password']
+
+        return keystone_auth_args
 
 
 class MonascaAlarmCleanup(MonascaAnsible):
@@ -177,6 +200,9 @@ def main():
             keystone_url=dict(required=False, type='str'),
             keystone_user=dict(required=False, type='str'),
             keystone_project=dict(required=False, type='str'),
+            keystone_user_domain=dict(required=False, type='str'),
+            keystone_project_domain=dict(required=False, type='str'),
+            keystone_verify=dict(required=False, type='str'),
             metric_dimensions=dict(default=['hostname'], type='dict'),
             monasca_api_url=dict(required=False, type='str')
         ),

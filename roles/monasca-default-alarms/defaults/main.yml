@@ -24,6 +24,9 @@ monasca_api_url: "{{ MON_AGN.consumes_MON_API.vips.private[0].url }}/v2.0"
 monasca_keystone_user: "{{ MON_API.consumes_KEY_API.vars.keystone_monasca_user }}"
 monasca_keystone_password: "{{ MON_API.consumes_KEY_API.vars.keystone_monasca_password | quote }}"
 monasca_keystone_project: "{{ KEY_API.vars.keystone_admin_tenant }}"
+monasca_keystone_project_domain: "Default"
+monasca_keystone_user_domain: "Default"
+system_cacert_file: "/etc/ssl/certs/ca-certificates.crt"
 
 monasca_client_venv: "{{ monasca_agent_virtualenv_dir }}"
 

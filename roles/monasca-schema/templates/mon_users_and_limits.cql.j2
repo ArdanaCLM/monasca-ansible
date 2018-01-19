@@ -1,7 +1,7 @@
 
 {#
 #
-# (c) Copyright 2018 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -17,17 +17,8 @@
 #
 #}
 
-ALTER KEYSPACE "system_auth" WITH REPLICATION = {'class' : 'NetworkTopologyStrategy', '{{ cassandra_datacenter_identifier }}' : {{ cassandra_node_count }} };
-
-CREATE ROLE IF NOT EXISTS db_admin_role WITH SUPERUSER = true;
-DROP ROLE IF EXISTS {{ cassandra_admin_user_name }};
-CREATE ROLE IF NOT EXISTS {{ cassandra_admin_user_name }} WITH PASSWORD = '{{ cassandra_admin_user_password }}' AND LOGIN = true;
-GRANT db_admin_role to {{ cassandra_admin_user_name }};
-
-CREATE ROLE IF NOT EXISTS monasca_monitor_role;
 CREATE ROLE IF NOT EXISTS monasca_persister_role;
 CREATE ROLE IF NOT EXISTS monasca_api_role;
-GRANT ALL ON KEYSPACE monasca TO monasca_monitor_role;
 GRANT SELECT ON KEYSPACE monasca TO monasca_persister_role;
 GRANT MODIFY ON KEYSPACE monasca TO monasca_persister_role;
 GRANT SELECT ON KEYSPACE monasca TO monasca_api_role;

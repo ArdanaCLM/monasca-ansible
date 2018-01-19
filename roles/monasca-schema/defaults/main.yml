@@ -49,8 +49,8 @@ cassandra_password: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FN
 cassandra_datacenter_identifier: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FND_CDB.vars.cassandra_datacenter_identifier }}{% endif %}"
 cassandra_client_connect_timeout: 120
 cassandra_client_request_timeout: 120
-cassandra_admin_user_name: "{% if database_type == 'cassandra' %}{{ MON_API.consumes_FND_CDB.vars.cassandra_admin_user }}{% endif %}"
-cassandra_admin_user_password: "{% if database_type == 'cassandra' %}{{ MON_API.consumes_FND_CDB.vars.cassandra_admin_password }}{% endif %}"
+cassandra_admin_user: "{% if database_type == 'cassandra' %}{{ FND_CDB.vars.cassandra_admin_user }}{% endif %}"
+cassandra_admin_password: "{% if database_type == 'cassandra' %}{{ FND_CDB.vars.cassandra_admin_password }}{% endif %}"
 
 mysql_root_dir: /var/lib/mysql
 mysql_schema_dir: /root

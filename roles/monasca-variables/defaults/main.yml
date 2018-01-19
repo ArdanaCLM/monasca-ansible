@@ -65,9 +65,6 @@ monasca_persister_metric_batch_size: "{% if monasca_persister_metric_batch_size_
 
 # Cassandra Defaults
 cassandra_users:
-  - username: "{% if database_type == 'cassandra' %}{{ MON_API.consumes_FND_CDB.vars.cassandra_monitor_user }}{% endif %}"
-    password: " {% if database_type == 'cassandra' %}{{ MON_API.consumes_FND_CDB.vars.cassandra_monitor_password }}{% endif %}"
-    role: monasca_monitor_role
   - username: "{% if database_type == 'cassandra' %}{{ MON_API.consumes_FND_CDB.vars.cassandra_monasca_api_user }}{% endif %}"
     password: "{% if database_type == 'cassandra' %}{{ MON_API.consumes_FND_CDB.vars.cassandra_monasca_api_password }}{% endif %}"
     role: monasca_api_role

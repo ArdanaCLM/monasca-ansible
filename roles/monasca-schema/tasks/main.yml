@@ -27,5 +27,9 @@
   when: kafka_topics_enabled
 - include: vertica.yml tags=vertica_schema
   when: vertica_schema_enabled and database_type == 'vertica'
-- include: cassandra.yml tags=cassandra_schema
+- include: cassandra-schema.yml tags=cassandra_schema
+  when: cassandra_schema_enabled and database_type == 'cassandra'
+- include: cassandra-change-passwords.yml tags=cassandra_schema
+  when: cassandra_schema_enabled and database_type == 'cassandra'
+- include: cassandra-start.yml tags=cassandra_schema
   when: cassandra_schema_enabled and database_type == 'cassandra'

@@ -1,6 +1,6 @@
 #
 # (c) Copyright 2015,2016 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -17,8 +17,12 @@
 ---
 - name: monasca-persister | start | restart monasca-persister service
   service: name=monasca-persister state=restarted enabled=yes
-  when: ardana_notify_monasca_persister_restart_required is defined and
-        ardana_notify_monasca_persister_restart_required.changed
+  when: ( ardana_notify_monasca_persister_restart_required is defined and
+        ardana_notify_monasca_persister_restart_required.changed ) or
+        ( hostvars[groups['MON-API--first-member'] | first ]
+        ['ardana_notify_tsdb_restarted'] is defined and
+        hostvars[groups['MON-API--first-member'] | first]
+        ['ardana_notify_tsdb_restarted'].changed )
 
 - name: start | Start monasca-persister service
   service: name=monasca-persister state=started enabled=yes
@@ -29,3 +33,4 @@
     host={{ persister_admin_connector_host }}
     state=started
     timeout={{ monasca_wait_for_period }}
+

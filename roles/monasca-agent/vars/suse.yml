@@ -16,8 +16,6 @@
 #
 ---
 monasca_agent_required_packages:
-  - gcc
-  - python-devel
-  - libxml2-devel
-  - libxslt-devel
+  - libxml2
+  - libxslt1
   - libcap-progs

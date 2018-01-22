@@ -26,7 +26,7 @@ User={{ monasca_api_user }}
 Group={{ monasca_group }}
 LimitNOFILE=32768
 Restart=on-failure
-ExecStart=/usr/bin/java {{ monasca_api_java_opts }} -cp {{ monasca_api_jar }}:{{ vertica_jdbc_location }} monasca.api.MonApiApplication server {{ 'monasca' | config_dir() }}/api-config.yml
+ExecStart=/usr/bin/java {{ monasca_api_java_opts }} -cp {{ monasca_api_jar }}{% if database_type == 'vertica' %}:{{ vertica_jdbc_location }}{% endif %} monasca.api.MonApiApplication server {{ 'monasca' | config_dir() }}/api-config.yml
 
 [Install]
 WantedBy=multi-user.target

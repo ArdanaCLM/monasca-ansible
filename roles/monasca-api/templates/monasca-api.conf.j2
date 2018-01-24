@@ -26,4 +26,4 @@ respawn
 
 setgid {{ monasca_group }}
 setuid {{ monasca_api_user }}
-exec /usr/bin/java {{ monasca_api_java_opts }} -cp {{ monasca_jars_virtualenv_dir }}/lib/monasca-api-{{monasca_api_version}}-shaded.jar:{{ vertica_jdbc_location }} monasca.api.MonApiApplication server {{ 'monasca' | config_dir() }}/api-config.yml
+exec /usr/bin/java {{ monasca_api_java_opts }} -cp {{ monasca_jars_virtualenv_dir }}/lib/monasca-api-{{monasca_api_version}}-shaded.jar{% if database_type == 'vertica' %}:{{ vertica_jdbc_location }}{% endif %} monasca.api.MonApiApplication server {{ 'monasca' | config_dir() }}/api-config.yml

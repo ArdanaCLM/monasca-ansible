@@ -19,9 +19,9 @@ monasca_api_package_dependencies:
 
 monasca_api_dependencies:
   - apache2-mod_wsgi
-  - libopenssl-devel
+  - libopenssl1_0_0
   - shibboleth-sp
-  - libffi48-devel
+  - libffi4
   - libmysqlclient18
   - python-httplib2 # Required for ansible url plugin
 

@@ -242,6 +242,23 @@
       no_log: True
       when: database_type == 'vertica'
 
+- name: Set up Cassandra Monasca Agent configuration
+  hosts: FND-CDB
+  become: yes
+  tags: [cassandra]
+  vars_files:
+    - roles/monasca-variables/vars/configuration.yml
+    - roles/monasca-variables/defaults/main.yml
+    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
+  roles:
+    - {role: FND-CDB, when: database_type == 'cassandra', tags: [cassandra]}
+  tasks:
+    - name: Run Monasca Agent detection plugin for Cassandra
+      monasca_agent_plugin:
+        name="Cassandra"
+        args="directory_names='{{ FND_CDB.vars.cassandra_data_dir }},{{ FND_CDB.vars.cassandra_commit_log_dir }}', process_username='{{ FND_CDB.vars.cassandra_user }}'"
+      when: database_type == 'cassandra'
+
 - name: Set up Monasca keystone users
   hosts: MON-API
   become: yes

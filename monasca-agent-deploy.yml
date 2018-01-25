@@ -32,29 +32,37 @@
         tags: [monasca-agent]}
   tasks:
     # Create /opt/monasca explicitly or ansible creates with strange permissions
-    - name: create monasca dir
+    - name: create monasca dir (legacy)
       file: path=/opt/monasca state=directory owner=root group=root mode=0755
-    - name: create monasca bin dir
+      when: deployer_media_legacy_layout|bool
+    - name: create monasca bin dir (legacy)
       file:
         path=/opt/monasca/bin state=directory owner=root group=root mode=0755
-    - name: create monasca-setup link for services
+      when: deployer_media_legacy_layout|bool
+    - name: create monasca-setup link for services (legacy)
       file:
         path=/opt/monasca/bin/monasca-setup
-        src="{{ monasca_agent_virtualenv_dir }}/bin/monasca-setup"
+        src="{{ monasca_setup_bin_dir }}/monasca-setup"
         state=link
+      when: deployer_media_legacy_layout|bool
     - name: create monasca venv link, help with the alarm definition module
       file:
         path=/opt/monasca/bin/activate_this.py
-        src="{{ monasca_agent_virtualenv_dir }}/bin/activate_this.py"
+        src="{{ monasca_setup_bin_dir }}/activate_this.py"
         state=link
+      when: deployer_media_legacy_layout|bool
     - name: Run Monasca Agent detection plugin for the monasca-agent processes
-      monasca_agent_plugin: name="MonAgent"
+      monasca_agent_plugin:
+        name="MonAgent"
+        monasca_setup_path="{{monasca_setup_bin_dir}}/monasca-setup"
       register: monasca_agent_detection_result
       until: not monasca_agent_detection_result | failed
       retries: 5
       delay: 5
     - name: Run Monasca Agent detection plugin for ntp
-      monasca_agent_plugin: name="ntp"
+      monasca_agent_plugin:
+        name="ntp"
+        monasca_setup_path="{{monasca_setup_bin_dir}}/monasca-setup"
       tags: [monasca-agent-ntp]
     - name: Determine if kdump directory exists
       stat: path=/sys/kernel/kexec_crash_loaded
@@ -64,7 +72,9 @@
       register: kdump_config_result
       when: kdump_dir_result.stat.exists
     - name: Run Monasca Agent detection plugin for crash detection
-      monasca_agent_plugin: name="crash"
+      monasca_agent_plugin:
+        name="crash"
+        monasca_setup_path="{{monasca_setup_bin_dir}}/monasca-setup"
       tags: [monasca-agent-crash]
       when: "kdump_dir_result.stat.exists and '1' in kdump_config_result.stdout"
 

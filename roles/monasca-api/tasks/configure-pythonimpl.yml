@@ -122,19 +122,18 @@
   file: path={{api_log_dir}} state=directory owner=mon-api group=adm mode=0775
   register: ardana_notify_monasca_api_apache_restart
 
-- name: monasca-api | configure-pythonimpl | configure monaca-api apache log file ownership
-  become: yes
-  file:
-    path: "{{ monasca_log_dir }}/api/{{ item }}"
-    owner: "{{ monasca_api_user }}"
-    group: "{{ monasca_group }}"
-    mode: 0640
-    state: touch
-  with_items:
-    - monasca_api_wsgi.log
-    - monasca_api_wsgi-access.log
-
 - name: monasca-api | configure-pythonimpl | set monasca-api log file ownership
+  file:
+    path: "{{ item }}"
+    state: touch
+    owner: "{{ monasca_api_user }}"
+    group: "adm"
+    mode: 0640
+  with_items:
+    - "{{ api_log_dir }}/monasca-api.log"
+    - "{{ api_log_dir }}/request.log"
+
+- name: monasca-api | configure-pythonimpl | set monasca-api apache log file ownership
   file:
     path: "{{ item }}"
     state: touch

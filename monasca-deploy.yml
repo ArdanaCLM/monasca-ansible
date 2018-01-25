@@ -268,7 +268,6 @@
   tasks:
     - name: Run Monasca Agent detection plugin for the API
       monasca_agent_plugin: name="MonAPI"
-      when: monasca_api_implementation_lang == 'java'
 
 - name: Sets up Monasca Persister
   hosts: MON-PST

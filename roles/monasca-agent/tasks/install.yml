@@ -15,35 +15,14 @@
 # under the License.
 #
 ---
-- name: monasca-agent | install | Install required packages in Debian
-  apt:
-    name: "{{ item }}"
-    state: present
-  with_items: monasca_agent_required_packages
-  when: ansible_os_family == 'Debian'
 
-- name: monasca-agent | install | Install required packages in RedHat
-  yum:
-    name: "{{ item }}"
-    state: present
-  with_items: monasca_agent_required_packages
-  when: ansible_os_family == 'RedHat'
+- name: monasca-agent | install | Install monasca-agent (legacy)
+  include: install-legacy.yml
+  when: deployer_media_legacy_layout|bool
 
-- name: monasca-agent | install | Install required packages in SLES
+- name: monasca-agent | install | Install the monasca-agent service
   zypper:
-    name: "{{ item }}"
-    state: present
-  with_items: monasca_agent_required_packages
-  when: ansible_os_family == 'Suse'
-
-- name: monasca-agent | install | Update venv cache
-  install_package:
-    cache: update
-
-- name: monasca-agent | install |
-    Install the monasca-agent service from the monasca-agent venv
-  install_package:
-    name: monasca_agent
-    service: monasca-agent
+    name: openstack-monasca-agent
     state: present
   register: ardana_notify_monasca_agent_restart_required
+  when: not deployer_media_legacy_layout|bool

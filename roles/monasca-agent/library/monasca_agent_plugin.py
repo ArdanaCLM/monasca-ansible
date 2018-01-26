@@ -54,9 +54,12 @@ options:
               detection_plugins will be removed.
     monasca_setup_path:
         required: false
-        default: "/opt/monasca/bin/monasca-setup"
+        default: None
         description:
-            - The path to the monasca-setup command.
+            - The path to the monasca-setup command. If "None" (the default) the
+              plugin check if either '/opt/monasca/bin/monasca-setup' or
+              '/usr/bin/monasca-setup' (in that order) exist. And use the first
+              one that is found.
     overwrite_enable:
         required: false
         default: False
@@ -75,6 +78,7 @@ tasks:
             - mysql
 '''
 
+import os.path
 from ansible.module_utils.basic import *
 
 
@@ -85,7 +89,7 @@ def main():
             name=dict(required=False, type='str'),
             names=dict(required=False, type='list'),
             state=dict(default='configured', choices=['configured', 'absent'], type='str'),
-            monasca_setup_path=dict(default='/opt/monasca/bin/monasca-setup', type='str'),
+            monasca_setup_path=dict(default=None, type='str'),
             overwrite_enable=dict(default=False, required=False, type='bool')
         ),
         supports_check_mode=True
@@ -99,7 +103,15 @@ def main():
     else:
         names = [module.params['name']]
 
-    args = [module.params['monasca_setup_path']]
+    default_setup_paths = ['/opt/monasca/bin/monasca-setup',
+                           '/usr/bin/monasca-setup']
+    monasca_setup_path = module.params['monasca_setup_path']
+    if not monasca_setup_path:
+        monasca_setup_path = next(
+            (path for path in default_setup_paths if os.path.isfile(path)),
+            "")
+
+    args = [monasca_setup_path]
     if module.check_mode:
         args.append('--dry_run')
     if module.params['overwrite_enable']:

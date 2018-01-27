@@ -47,6 +47,8 @@ monasca_agent_check_frequency: 30
 monasca_agent_system_only: true
 monasca_agent_detection_args: send_rollup_stats=True
 
+monasca_setup_bin_dir: "{{ monasca_agent_virtualenv_dir if deployer_media_legacy_layout|bool else '/usr' }}/bin"
+
 # Kafka Defaults
 kafka_heap_opts: "{% if kafka_heap_opts_override %}{{ kafka_heap_opts_override }}{% else %}{{ monasca_tunings.kafka_heap_opts }}{% endif %}"
 kafka_log_retention_hours: "{% if kafka_log_retention_hours_override %}{{ kafka_log_retention_hours_override }}{% else %}{{ monasca_tunings.kafka_log_retention_hours }}{% endif %}"

@@ -22,7 +22,10 @@
 
 - name: monasca-agent | install | Install the monasca-agent service
   zypper:
-    name: openstack-monasca-agent
+    name: "{{ item }}"
     state: present
+  with_items:
+    - openstack-monasca-agent
+    - python-monasca-common
   register: ardana_notify_monasca_agent_restart_required
   when: not deployer_media_legacy_layout|bool

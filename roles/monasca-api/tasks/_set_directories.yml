@@ -19,8 +19,8 @@
 
 - name: monasca-api | _set_directories | set service etc directory - configure
   set_fact:
-    monasca_api_venv_share_dir:
-      "{{ 'monasca-api' | share_dir(install_package_result.version) }}"
+    monasca_api_venv_dir:
+      "{{ 'monasca-api' | venv_dir(install_package_result.version) }}"
     monasca_api_conf_dir:
       "{{ 'monasca-api' | config_dir(install_package_result.version) }}"
     monasca_api_bin_dir:
@@ -29,8 +29,8 @@
 
 - name: monasca-api | _set_directories | set service etc directory - reconfigure
   set_fact:
-    monasca_api_venv_share_dir:
-      "{{ 'monasca-api' | share_dir() }}/monasca_api"
+    monasca_api_venv_dir:
+      "{{ 'monasca-api' | venv_dir() }}"
     monasca_api_conf_dir:
       "{{ 'monasca-api' | config_dir() }}"
     monasca_api_bin_dir:

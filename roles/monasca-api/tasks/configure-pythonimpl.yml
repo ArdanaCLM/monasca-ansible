@@ -162,10 +162,9 @@
 - name: monasca-api | configure-pythonimpl | Create symbolic link for startup file
   become: yes
   file:
-    src: "{{ monasca_api_venv_share_dir }}/../lib/python2.7/site-packages\
+    src: "{{ monasca_api_venv_dir }}/lib/python2.7/site-packages\
           /monasca_api/monasca-api.wsgi"
     dest: "/var/www/monasca/monasca-api"
     owner: root
     group: "{{ monasca_group }}"
     state: link
-

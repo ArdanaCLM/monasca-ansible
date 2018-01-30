@@ -23,7 +23,11 @@
 - name: monasca-api | install-pythonimpl | Installing Monasca API python code
   become: yes
   install_package:
-    name: monasca_api
+    name: "{%- if deployer_media_legacy_layout|bool -%}
+               monasca_api
+           {%- else -%}
+               monasca
+           {%- endif -%}"
     service: monasca-api
     state: present
     activate: act_off
@@ -43,8 +47,8 @@
   set_fact:
     monasca_api_conf_dir: "{{ 'monasca-api' |
       config_dir(ardana_notify_monasca_api_install_result.version) }}"
-    monasca_api_venv_share_dir: "{{ 'monasca-api' |
-      share_dir(ardana_notify_monasca_api_install_result.version) }}/monasca_api"
+    monasca_api_venv_dir: "{{ 'monasca-api' |
+      venv_dir(ardana_notify_monasca_api_install_result.version) }}"
     monasca_api_bin_dir: "{{ 'monasca-api' |
       bin_dir(ardana_notify_monasca_api_install_result.version) }}"
 

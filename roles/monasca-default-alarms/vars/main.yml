@@ -1,6 +1,6 @@
 #
 # (c) Copyright 2016 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -104,6 +104,30 @@ monasca_alarm_definitions_monasca:
     expression: >
       avg(monasca.collection_time_sec) > {{ monasca_agent_check_frequency }}
       times 3
+  - name: "Cassandra Commit Log Over Recommended Disk Usage"
+    description: "Alarms when cassandra commit log exceeds the recommended disk utilization"
+    severity: "LOW"
+    expression: "max(disk.space_used_perc{mount_point={{ FND_CDB.vars.cassandra_commit_log_dir }}}) > 75"
+    match_by:
+      - "hostname"
+  - name: "Cassandra Commit Log Very High Disk Usage"
+    description: "Alarms when Cassandra commit log exceeds 90% disk utilization"
+    severity: "HIGH"
+    expression: "max(disk.space_used_perc{mount_point={{ FND_CDB.vars.cassandra_commit_log_dir }}}) > 90"
+    match_by:
+      - "hostname"
+  - name: "Cassandra Data Over Recommended Disk Usage"
+    description: "Alarms when cassandra data exceeds the recommended disk utilization"
+    severity: "LOW"
+    expression: "max(disk.space_used_perc{mount_point={{ FND_CDB.vars.cassandra_data_dir }}}) > 75"
+    match_by:
+      - "hostname"
+  - name: "Cassandra Data Very High Disk Usage"
+    description: "Alarms when Cassandra data exceeds 90% disk utilization"
+    severity: "HIGH"
+    expression: "max(disk.space_used_perc{mount_point={{ FND_CDB.vars.cassandra_data_dir }}}) > 90"
+    match_by:
+      - "hostname"
   - name: "Vertica Over Recommended Disk Usage"
     description: "Alarms when Vertica exceeds the recommended disk utilization"
     severity: "LOW"

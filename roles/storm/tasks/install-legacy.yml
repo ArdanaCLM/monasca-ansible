@@ -15,17 +15,21 @@
 # under the License.
 #
 ---
-- include: install-legacy.yml
-  when: deployer_media_legacy_layout|bool
-
-- name: storm | install | Install storm from rpm
+- name: storm | install | Install OS specific required packages
   package:
     name: "{{ item }}"
     state: present
-  with_items:
-    - storm
-    - storm-nimbus
-    - storm-supervisor
-  when: deployer_media_legacy_layout|bool == False
+  with_items: monasca_storm_package_dependencies
+
+- name: install | Update venv cache
+  install_package:
+    cache: update
+
+- name: install | Install storm from venv
+  install_package:
+    name: monasca
+    service: monasca
+    state: present
+  register: ardana_notify_storm_restart_required
 
 - include: ../../monasca-variables/tasks/post_java_install_restore.yml

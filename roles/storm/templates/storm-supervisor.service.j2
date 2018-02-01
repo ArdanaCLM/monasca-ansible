@@ -1,3 +1,4 @@
+{#
 #
 # (c) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
 # (c) Copyright 2017-2018 SUSE LLC
@@ -14,18 +15,18 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 #
----
-- include: install-legacy.yml
-  when: deployer_media_legacy_layout|bool
+#}
+[Unit]
+Description=Storm Supervisor daemon
+After=storm-nimbus.service zookeeper.service
 
-- name: storm | install | Install storm from rpm
-  package:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - storm
-    - storm-nimbus
-    - storm-supervisor
-  when: deployer_media_legacy_layout|bool == False
+[Service]
+Type=simple
+User=storm
+Group=storm
+Restart=on-failure
+WorkingDirectory={{ storm_working_dir }}
+ExecStart={{ storm_executable }} supervisor
 
-- include: ../../monasca-variables/tasks/post_java_install_restore.yml
+[Install]
+WantedBy=multi-user.target

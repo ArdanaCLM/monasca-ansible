@@ -1,6 +1,6 @@
 #
 # (c) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -15,93 +15,31 @@
 # under the License.
 #
 ---
-- name: Setup group
-  group: name={{storm_group}} system=yes
-  register: ardana_notify_storm_restart_required
-
-- name: Setup user
-  user:
-    name: "{{ storm_user }}"
-    system: yes
-    group: "{{ storm_group }}"
-    shell: "{{ storm_shell }}"
-  register: ardana_notify_storm_restart_required
-
-- name: Create Storm root directory
-  file: path={{storm_root_dir}} state=directory owner={{storm_user}} group={{storm_group}} mode=0755
-  register: ardana_notify_storm_restart_required
-
-- name: Uncompress the storm tar
-  unarchive:
-    copy: no
-    creates: "{{ storm_install_dir }}"
-    dest: "{{ storm_root_dir }}"
-    src: "{{ storm_tarball_location }}/{{ storm_tarball_name }}"
-  register: ardana_notify_storm_restart_required
-
-- name: Set owner on Storm directory tree
-  file:
-    path: "{{ storm_install_dir }}"
-    mode: u=rwX,g=rX,o=rX
-    owner: "{{ storm_user }}"
-    group: "{{ storm_group }}"
-    recurse: yes
-
-- name: Set directory permissions on Storm directory tree
-  shell: find "{{ storm_install_dir }}" -type d | xargs chmod 0555
-
-- name: Set file permissions on Storm directory tree
-  shell: find "{{ storm_install_dir }}" -type f |
-         grep -v -e /bin -e /conf -e /log4j2 | xargs chmod 0444
-
-- name: Set bin permissions on Storm directory tree
-  shell: find "{{ storm_install_dir }}"/bin -type f | xargs chmod 0555
-
-- name: Set configuration file permissions on Storm directory tree
-  shell: find "{{ storm_install_dir }}"/conf -type f | xargs chmod 0644
-
-- name: Set log configuration file permissions on Storm directory tree
-  shell: find "{{ storm_install_dir }}"/log4j2 -type f | xargs chmod 0644
-
-- name: Link current version
-  file:
-    path: "{{ storm_root_dir }}/current"
-    state: link
-    src: "{{ storm_install_dir }}"
-  register: ardana_notify_storm_restart_required
-
-- name: Create Storm log and local directories
-  file:
-    path: "{{item}}"
-    state: directory
-    owner: "{{storm_user}}"
-    group: "{{storm_group}}"
-    mode: 0775
-  with_items:
-    - "{{storm_local_dir}}"
-    - "/var/log/storm"
-  register: ardana_notify_storm_restart_required
-
-- name: Check if Storm log directory already exists
-  stat: path={{ storm_install_dir }}/logs get_md5=False
-  register: storm_logs_dir
-
-- name: Create Storm log symlink to /var/log/storm if directory does not exist
-  file: path={{ storm_install_dir }}/logs state=link src=/var/log/storm
-  when: not storm_logs_dir.stat.exists
-  register: ardana_notify_storm_restart_required
+- include: configure-legacy.yml
+  when: deployer_media_legacy_layout|bool
 
 - name: Detect if this is a systemd based system
   command: cat /proc/1/comm
   register: init
+
 - set_fact: use_systemd=True
   when: init.stdout == 'systemd'
+
 - set_fact: use_systemd=False
   when: init.stdout != 'systemd'
 
+- name: Create Storm log4j2 conf directory (rpm)
+  file:
+    path: "{{ storm_log4j2_dir }}"
+    state: directory
+    owner: root
+    group: "{{ storm_group }}"
+    mode: 0755
+  when: deployer_media_legacy_layout|bool == False
+
 - name: Configure cluster.xml for setting log level
   template:
-    dest: "{{ storm_install_dir }}/log4j2/cluster.xml"
+    dest: "{{ storm_log4j2_dir }}/cluster.xml"
     owner: "{{storm_user}}"
     group: "{{storm_group}}"
     mode: 0644
@@ -110,7 +48,7 @@
 
 - name: Configure worker.xml for setting log level
   template:
-    dest: "{{ storm_install_dir }}/log4j2/worker.xml"
+    dest: "{{ storm_log4j2_dir }}/worker.xml"
     owner: "{{storm_user}}"
     group: "{{storm_group}}"
     mode: 0644

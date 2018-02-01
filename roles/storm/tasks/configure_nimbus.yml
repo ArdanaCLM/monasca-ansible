@@ -1,6 +1,6 @@
 #
 # (c) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -16,7 +16,12 @@
 #
 ---
 - name: Configure storm.yaml
-  template: dest="{{ storm_install_dir }}/conf/storm.yaml" owner={{storm_user}} group={{storm_group}} mode=0644 src=storm.yaml.j2
+  template:
+    dest: "{{ storm_conf_file }}"
+    owner: "{{ storm_user }}"
+    group: "{{ storm_group }}"
+    mode: 0644
+    src: storm.yaml.j2
   register: ardana_notify_storm_restart_required
 
 - name: Setup Storm nimbus upstart script
@@ -25,7 +30,12 @@
   register: ardana_notify_storm_restart_required
 
 - name: Setup Storm nimbus systemd script
-  copy: dest={{nimbus_systemd_service}} owner=root group=root mode=0644 src=storm-nimbus.service
+  template:
+    dest: "{{ nimbus_systemd_service }}"
+    owner: root
+    group: root
+    mode: 0644
+    src: storm-nimbus.service.j2
   when: use_systemd
   register: ardana_notify_storm_restart_required
 
@@ -35,7 +45,12 @@
   register: ardana_notify_storm_restart_required
 
 - name: Setup Storm UI systemd script
-  copy: dest={{stormui_systemd_service}} owner=root group=root mode=0644 src=storm-ui.service
+  template:
+    dest: "{{ stormui_systemd_service }}"
+    owner: root
+    group: root
+    mode: 0644
+    src: storm-ui.service.j2
   when: storm_ui_enabled and use_systemd
   register: ardana_notify_storm_restart_required
 

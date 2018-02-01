@@ -1,6 +1,6 @@
 #
 # (c) Copyright 2015,2016 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -17,8 +17,16 @@
 ---
 nimbus_thrift_port: 6627
 storm_drpc_extra_config:
-storm_local_dir: /var/storm
-storm_java_library_path: "/usr/local/lib:/opt/local/lib:/usr/lib"
+storm_local_dir: "{%- if deployer_media_legacy_layout|bool -%}
+                      /var/storm
+                  {%- else -%}
+                      /var/lib/storm/
+                  {%- endif -%}"
+storm_java_library_path: "{%- if deployer_media_legacy_layout|bool -%}
+                      /usr/local/lib:/opt/local/lib:/usr/lib
+                  {%- else -%}
+                      /usr/lib64:/usr/lib/
+                  {%- endif -%}"
 storm_zookeeper_port: 2181
 storm_topology_extra_config:
     topology.acker.executors: 1

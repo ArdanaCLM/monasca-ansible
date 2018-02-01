@@ -1,6 +1,6 @@
 #
 # (c) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -26,9 +26,17 @@ thresh_conf_file: "{{ 'monasca' | config_dir() }}/thresh-config.yml"
 monasca_group: monasca
 thresh_group: thresh
 monasca_mysql_db: "{{ MON_THR.consumes_FND_MDB.vars.databases.monasca.dbname }}"
-monasca_thresh_version: 2.0.0-SNAPSHOT
+monasca_thresh_version: "{%- if deployer_media_legacy_layout|bool -%}
+                             2.0.0-SNAPSHOT
+                         {%- else -%}
+                             2.1.1-SNAPSHOT
+                         {%- endif -%}"
 thresh_statsd_host: localhost
-monasca_thresh_jar: "{{ monasca_jars_virtualenv_dir }}/lib/monasca-thresh-{{ monasca_thresh_version }}-shaded.jar"
+monasca_thresh_jar: "{%- if deployer_media_legacy_layout|bool -%}
+                         {{ monasca_jars_virtualenv_dir }}/lib/monasca-thresh-{{ monasca_thresh_version }}-shaded.jar
+                     {%- else -%}
+                         {{ monasca_jars_virtualenv_dir }}/usr/share/monasca-thresh/monasca-thresh-{{ monasca_thresh_version }}-shaded.jar
+                     {%- endif -%}"
 monasca_thresh_jar_saved_md5: /opt/monasca/md5sums/monasca-thresh.md5
 monasca_thresh_shell: /usr/sbin/nologin
 
@@ -46,3 +54,9 @@ monasca_thresh_mysql_password: "{{ MON_THR.consumes_FND_MDB.vars.accounts.monasc
 
 zookeeper_nodes: "{{ MON_THR.consumes_FND_ZOO.members.private }}"
 zookeeper_hosts: "{% for node in zookeeper_nodes %}{{ node.host }}:{{ node.port }}{% if not loop.last %},{% endif %}{% endfor %}"
+
+storm_executable: "{%- if deployer_media_legacy_layout|bool -%}
+                       /opt/storm/current/bin/storm
+                   {%- else -%}
+                       /usr/bin/storm
+                   {%- endif -%}"

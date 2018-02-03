@@ -1,5 +1,5 @@
 #
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -25,14 +25,6 @@
   when: not ardana_notify_monasca_api_install_result is undefined
     and not ardana_notify_monasca_api_install_result.version is undefined
 
-- name: monasca-api | start-pythonimpl | Enable monasca-api site
-  become: yes
-  command: a2ensite monasca-api-apache2
-  register: monasca_api_enable_result
-  changed_when: ( monasca_api_enable_result | success ) and
-                ( 'already enabled' not in monasca_api_enable_result.stdout )
-  when: ansible_os_family == 'Debian'
-
 - name: monasca-api | start-pythonimpl | Check if monasca api api site is enabled
   become: yes
   stat:
@@ -54,11 +46,20 @@
           ardana_notify_monasca_api_apache_restart is defined
           and ardana_notify_monasca_api_apache_restart.changed
 
-- name: monasca-api | start-pythonimpl | Enable monasca-api site
+- name: monasca-api | start-pythonimpl | Enable monasca-api site (hlinux)
   become: yes
   command: a2ensite monasca-api-apache2
   when: ( not monasca_api_site_file_result.stat.exists and
           ansible_os_family == 'Debian' )
+
+- name: monasca-api | start-pythonimpl | Enable monasca-api site (SUSE)
+  become: yes
+  template:
+    src:  monasca-api-apache2.conf.j2
+    dest: "{{ apache2_vhost_dir }}/monasca-api-apache2.conf"
+    mode: 0644
+  when: ( not monasca_api_site_file_result.stat.exists and
+          ansible_os_family == 'Suse' )
 
 - include: "{{ playbook_dir }}/roles/FND-AP2/tasks/start_reload.yml"
   vars:

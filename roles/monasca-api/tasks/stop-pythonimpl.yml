@@ -1,5 +1,5 @@
 #
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -15,13 +15,21 @@
 #
 ---
 
-- name: monasca-api | stop-pythonimpl | Disable apache site
+- name: monasca-api | stop-pythonimpl | Disable apache site (hlinux)
   become: yes
   command: a2dissite monasca_api_modwsgi
   register: command_result
   failed_when: "('ERROR' in command_result.stderr
     and 'Site monasca_api_modwsgi does not exist' not in command_result.stderr)
     and 'disabled' not in command_result.stdout"
+  when: ansible_os_family == 'Debian'
+
+- name: monasca-api | stop-pythonimpl | Disable apache site (SUSE)
+  become: yes
+  file:
+    state: absent
+    dest: "{{ apache2_vhost_dir }}/monasca-api-apache2.conf"
+  when: ansible_os_family == 'Suse'
 
 # Reload Apache, ignore errors, if reload fails in stop as apache not
 # running, keep going

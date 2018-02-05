@@ -1,6 +1,6 @@
 #
 # (c) Copyright 2016 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -15,18 +15,37 @@
 # under the License.
 #
 ---
-- name: monasca-default-alarms | cleanup | Install Nova Client
+- name: monasca-default-alarms | cleanup | Install Nova Client (legacy)
   install_package:
     name: novaclient
     service: novaclient
     state: present
   become: yes
-  when: service_topology.services.nova is defined and
+  when: deployer_media_legacy_layout|bool and
+        service_topology.services.nova is defined and
         service_topology.services.nova.components['nova-compute']['control_planes'] is defined
+
+- name: monasca-default-alarms | cleanup | Install Nova Client (rpm)
+  zypper:
+    name: python-novaclient
+    state: present
+  become: yes
+  when: deployer_media_legacy_layout|bool == False and
+        service_topology.services.nova is defined and
+        service_topology.services.nova.components['nova-compute']['control_planes'] is defined
+
+- name: monasca-default-alarms | cleanup | Set path for vm_alarm_cleanup.py
+  set_fact:
+    vm_alarm_cleanup: "{%- if deployer_media_legacy_layout|bool -%}
+                           /opt/monasca/bin/vm_alarm_cleanup.py
+                       {%- else -%}
+                           /usr/local/bin/vm_alarm_cleanup.py
+                       {%- endif -%}"
+
 - name: monasca-default-alarms | cleanup | Add VM alarm cleanup cron job
   template:
     src: vm_alarm_cleanup.py.j2
-    dest: /opt/monasca/bin/vm_alarm_cleanup.py
+    dest: "{{ vm_alarm_cleanup }}"
     owner: root
     group: root
     mode: 0700
@@ -44,7 +63,7 @@
   cron:
     name: "Alarm cleanup for deleted VMs"
     minute: "*/5"
-    job: /opt/monasca/bin/vm_alarm_cleanup.py 2>&1 | /usr/bin/logger -t vm_alarm_cleanup
+    job: "{{vm_alarm_cleanup}} 2>&1 | /usr/bin/logger -t vm_alarm_cleanup"
     state: present
   become: yes
   run_once: True

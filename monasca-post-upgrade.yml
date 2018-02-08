@@ -1,6 +1,5 @@
-
 # (c) Copyright 2016 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -26,6 +25,30 @@
       state: absent
     with_items: monasca_post_upgrade_cleanup
 
+- name: Stop monasca-api
+  hosts: MON-API
+  become: yes
+  tags: [monasca-api]
+  vars:
+    run_mode: Stop
+  vars_files:
+    - roles/monasca-variables/vars/configuration.yml
+    - roles/monasca-variables/defaults/main.yml
+  roles:
+    - {role: monasca-api, tags: [monasca-api]}
+
+- name: Start monasca-api
+  hosts: MON-API
+  become: yes
+  tags: [monasca-api]
+  vars:
+    run_mode: Start
+  vars_files:
+    - roles/monasca-variables/vars/configuration.yml
+    - roles/monasca-variables/defaults/main.yml
+  roles:
+    - {role: monasca-api, tags: [monasca-api]}
+
 - name: Delete Alarms for Old Storm Version
   hosts: MON-API
   tags: [alarms]
@@ -37,10 +60,6 @@
   roles:
     - { role: monasca-alarm-definition }
   tasks:
-    - name: start | restart monasca-api
-      become: yes
-      service: name=monasca-api state=restarted enabled=yes
-
     - name: start | wait for api port
       wait_for: port={{monasca_api_client_port}} host={{monasca_api_bind_host | default('127.0.0.1') }} state=started timeout={{ monasca_wait_for_period }}
       when: verify
@@ -54,6 +73,8 @@
         keystone_user: "{{ monasca_keystone_user }}"
         keystone_password: "{{ monasca_keystone_password }}"
         keystone_project: "{{ monasca_keystone_project }}"
+        keystone_project_domain: "{{ monasca_keystone_project_domain }}"
+        keystone_user_domain: "{{ monasca_keystone_user_domain }}"
         monasca_api_url: "{{ monasca_api_url }}"
       run_once: True
       register: alarm_cleanup_result

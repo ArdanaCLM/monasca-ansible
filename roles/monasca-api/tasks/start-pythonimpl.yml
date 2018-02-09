@@ -25,18 +25,13 @@
   when: not ardana_notify_monasca_api_install_result is undefined
     and not ardana_notify_monasca_api_install_result.version is undefined
 
-- name: monasca-api | start-pythonimpl | Check if monasca api api site is enabled
+- name: monasca-api | start-pythonimpl | Enable monasca-api vhost
   become: yes
-  stat:
-    path: /etc/apache2/sites-enabled/monasca-api-apache2.conf
-  register: monasca_api_site_file_result
-
-# Set the fact for reload based on whether we are enabled
-- name: monasca-api | start-pythonimpl | Set fact monasca api to start on ardana_notify_fact
-  set_fact:
-    monasca_api_reload_required : True
-  when: >-
-          not monasca_api_site_file_result.stat.exists
+  file:
+    src: "{{ apache2_vhost_dir }}/monasca-api-apache2.vhost"
+    dest: "{{ apache2_vhost_dir }}/monasca-api-apache2.conf"
+    state: link
+  register: ardana_notify_monasca_api_apache_restart
 
 # Set the fact for restart-pythonimpl based on ardana_notify
 - name: monasca-api | start-pythonimpl | Set fact monasca api to start on ardana_notify_fact
@@ -46,22 +41,7 @@
           ardana_notify_monasca_api_apache_restart is defined
           and ardana_notify_monasca_api_apache_restart.changed
 
-- name: monasca-api | start-pythonimpl | Enable monasca-api site (hlinux)
-  become: yes
-  command: a2ensite monasca-api-apache2
-  when: ( not monasca_api_site_file_result.stat.exists and
-          ansible_os_family == 'Debian' )
-
-- name: monasca-api | start-pythonimpl | Enable monasca-api site (SUSE)
-  become: yes
-  template:
-    src:  monasca-api-apache2.conf.j2
-    dest: "{{ apache2_vhost_dir }}/monasca-api-apache2.conf"
-    mode: 0644
-  when: ( not monasca_api_site_file_result.stat.exists and
-          ansible_os_family == 'Suse' )
-
 - include: "{{ playbook_dir }}/roles/FND-AP2/tasks/start_reload.yml"
   vars:
-    apache_reload_requested: "{{ monasca_api_reload_required }}"
+    apache_reload_requested: "{{ monasca_api_restart_required }}"
     apache_restart_requested: "{{ monasca_api_restart_required }}"

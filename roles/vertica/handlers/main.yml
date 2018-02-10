@@ -1,6 +1,6 @@
 #
 # (c) Copyright 2015,2016 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -53,7 +53,7 @@
 
 - name: vertica | restart | check vertica service status
   command: /opt/vertica/bin/admintools -t view_cluster -d {{vertica_database_name}}
-  sudo_user: dbadmin
+  become_user: dbadmin
   register: running_result
   run_once_per: verb_hosts.FND_VDB
   ignore_errors: yes
@@ -61,7 +61,7 @@
 
 - name: vertica | restart | close any leftover client connections (when up)
   command: /opt/vertica/bin/vsql -U dbadmin -w '{{ vertica_dbadmin_password | quote }}' -c "SELECT CLOSE_ALL_SESSIONS();"
-  sudo_user: dbadmin
+  become_user: dbadmin
   environment: "{{vertica_env}}"
   run_once_per: verb_hosts.FND_VDB
   no_log: True
@@ -69,7 +69,7 @@
 
 - name: vertica | restart | stop vertica service (when up)
   command: /opt/vertica/bin/admintools -t stop_db -d {{ vertica_database_name }} -p "{{vertica_dbadmin_password| quote }}" -i
-  sudo_user: dbadmin
+  become_user: dbadmin
   register: vertica_handler_result
   run_once_per: verb_hosts.FND_VDB
   until: vertica_handler_result | success
@@ -83,7 +83,7 @@
 
 - name: vertica | restart | start vertica service
   command: /opt/vertica/bin/admintools -t start_db -d {{vertica_database_name}} -p "{{vertica_dbadmin_password| quote }}" -i
-  sudo_user: dbadmin
+  become_user: dbadmin
   register: status_start
   failed_when: status_start | failed
   run_once_per: verb_hosts.FND_VDB
@@ -91,7 +91,7 @@
 
 - name: vertica | restart | update vertica license
   command: /opt/vertica/bin/admintools -t upgrade_license_key --license={{vertica_config_dir}}/license.key  -d {{vertica_database_name}} -p "{{vertica_dbadmin_password| quote }}"
-  sudo_user: dbadmin
+  become_user: dbadmin
   register: status_update_license
   failed_when: status_update_license | failed
   run_once_per: verb_hosts.FND_VDB

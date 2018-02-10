@@ -1,6 +1,6 @@
 #
 # (c) Copyright 2015,2016 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -16,7 +16,7 @@
 #
 ---
 - name: vertica | stop | check service status if stopping all
-  sudo_user: dbadmin
+  become_user: dbadmin
   command: /opt/vertica/bin/admintools -t view_cluster -d {{vertica_database_name}}
   register: running_result
   run_once_per: verb_hosts.FND_VDB
@@ -24,7 +24,7 @@
   when: stop_cluster
 
 - name: vertica | stop | stop vertica database (when up) if stopping all
-  sudo_user: dbadmin
+  become_user: dbadmin
   command: /opt/vertica/bin/admintools -t stop_db -d {{ vertica_database_name }} -p "{{vertica_dbadmin_password| quote }}" -i
   register: db_stop_result
   run_once_per: verb_hosts.FND_VDB

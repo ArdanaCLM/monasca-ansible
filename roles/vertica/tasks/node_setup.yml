@@ -1,6 +1,6 @@
 #
 # (c) Copyright 2015,2016 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -59,7 +59,7 @@
 
 - name: vertica | node_setup | check if database exists
   command: /opt/vertica/bin/adminTools -t list_db -d {{ vertica_database_name }}
-  sudo_user: dbadmin
+  become_user: dbadmin
   ignore_errors: yes
   environment: "{{vertica_env}}"
   register: vertica_db_exists_result
@@ -77,7 +77,7 @@
   file: path={{vertica_config_dir}}/share/license.key state=absent
 
 - name: node_setup | decrypt vertica license
-  sudo_user: dbadmin
+  become_user: dbadmin
   command: gpg --passphrase {{ vertica_license_passphrase }} --batch --no-tty --output {{vertica_config_dir}}/license.key -d {{vertica_config_dir}}/license.key.gpg
   when: vertica_db_exists_result | failed and not rebuild
   no_log: True

@@ -1,6 +1,6 @@
 #
 # (c) Copyright 2015 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -67,7 +67,7 @@
 # generate ssh keys on first host if not already generated
 - name: node_users | Create ssh keys
   command: ssh-keygen -t rsa -b 2048 -f {{vertica_dbadmin_home}}/.ssh/id_rsa -q -N ''
-  sudo_user: dbadmin
+  become_user: dbadmin
   when: status is defined and not status.stat.exists and vertica_ssh_private_key is not defined and not rebuild
   notify:
     - vertica | restart | restart all vertica services

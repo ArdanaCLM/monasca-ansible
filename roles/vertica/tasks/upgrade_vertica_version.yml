@@ -17,7 +17,7 @@
 ---
 - name: vertica | upgrade vertica version | get Vertica version
   command: /opt/vertica/bin/vsql -U dbadmin -w '{{ vertica_dbadmin_password }}' -t -A -c "select version();"
-  sudo_user: dbadmin
+  become_user: dbadmin
   environment: "{{vertica_env}}"
   register: current_vertica_version
   no_log: True
@@ -48,7 +48,7 @@
 
 - name: vertica | upgrade vertica version | check vertica service status
   command: /opt/vertica/bin/admintools -t view_cluster -d {{ vertica_database_name }}
-  sudo_user: dbadmin
+  become_user: dbadmin
   register: running_result
   run_once_per: verb_hosts.FND_VDB
   ignore_errors: yes
@@ -56,7 +56,7 @@
 
 - name: vertica | upgrade vertica version | close any leftover client connections (when up)
   command: /opt/vertica/bin/vsql -U dbadmin -w '{{ vertica_dbadmin_password }}' -c "SELECT CLOSE_ALL_SESSIONS();"
-  sudo_user: dbadmin
+  become_user: dbadmin
   environment: "{{vertica_env}}"
   run_once_per: verb_hosts.FND_VDB
   no_log: True
@@ -64,7 +64,7 @@
 
 - name: vertica | upgrade vertica version | stop vertica service (when up)
   command: /opt/vertica/bin/admintools -t stop_db -d {{ vertica_database_name }} -p "{{ vertica_dbadmin_password }}"
-  sudo_user: dbadmin
+  become_user: dbadmin
   register: vertica_handler_result
   run_once_per: verb_hosts.FND_VDB
   until: vertica_handler_result | success
@@ -91,7 +91,7 @@
 
 - name: vertica | upgrade vertica version | start vertica service
   command: /opt/vertica/bin/admintools -t start_db -d {{ vertica_database_name }} -p "{{ vertica_dbadmin_password }}"
-  sudo_user: dbadmin
+  become_user: dbadmin
   register: status_start
   failed_when: status_start | failed
   run_once_per: verb_hosts.FND_VDB
@@ -104,7 +104,7 @@
 
 - name: vertica | upgrade vertica version | change schema to take away non-unique primary key
   command: /opt/vertica/bin/vsql -U dbadmin -w '{{ vertica_dbadmin_password }}' -c "alter table MonMetrics.Measurements drop constraint C_PRIMARY;"
-  sudo_user: dbadmin
+  become_user: dbadmin
   environment: "{{ vertica_env }}"
   run_once_per: verb_hosts.FND_VDB
   no_log: True

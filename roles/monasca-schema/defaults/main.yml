@@ -62,7 +62,9 @@ kafka_events_partitions: 12
 kafka_metrics_partitions: 64
 # This should be the number of systems running the Notification Engine
 kafka_retry_periodic_notifications_partitions: 3
-kafka_replicas: 3
+kafka_node_count: "{{ FND_KFK.members.private | length }}"
+kafka_replicas: "{% if kafka_node_count | int > 3 %}3{% else %}{{ kafka_node_count }}{% endif %}"
+kafka_segment_minutes: 15
 
 kafka_topics:
   metrics: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_metrics_partitions }}" }
@@ -77,9 +79,6 @@ kafka_topics:
   retry-notifications: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_retry_periodic_notifications_partitions }}" }
   60-seconds-notifications: { replicas: "{{ kafka_replicas }}", partitions: "{{ kafka_retry_periodic_notifications_partitions }}" }
 
-kafka_node_count: "{{ FND_KFK.members.private | length }}"
-kafka_replicas: "{% if kafka_node_count | int > 3 %}3{% else %}{{ kafka_node_count }}{% endif %}"
-kafka_segment_minutes: 15
 
 zookeeper_nodes: "{{ FND_KFK.consumes_FND_ZOO.members.private }}"
 zookeeper_hosts: "{% for node in zookeeper_nodes %}{{ node.host }}:{{ node.port }}{% if not loop.last %},{% endif %}{% endfor %}"

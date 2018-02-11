@@ -25,6 +25,11 @@ run_mode: Deploy
 default_service_name: system
 keystone_url: "{{MON_AGN.consumes_KEY_API.vips.private[0].url}}/v3"
 keystone_default_domain_name: "{{ KEY_API.vars.keystone_default_domain }}"
+monasca_agent_service_name: "{%- if deployer_media_legacy_layout|bool -%}
+                               monasca-agent
+                             {%- else -%}
+                               openstack-monasca-agent
+                             {%- endif -%}"
 monasca_agent_user: "{{ MON_AGN.consumes_KEY_API.vars.keystone_monasca_agent_user }}"
 monasca_agent_password: "{{ MON_AGN.consumes_KEY_API.vars.keystone_monasca_agent_password | quote }}"
 monasca_agent_project: "{{KEY_API.vars.keystone_admin_tenant}}"
@@ -34,9 +39,8 @@ monasca_api_url: "{{MON_AGN.consumes_MON_API.vips.private[0].url}}/v2.0"
 monasca_agent_num_collector_threads: 5
 monasca_agent_shell: /usr/sbin/nologin
 
-# These can't be changed
-monasca_agent_user_name: mon-agent
-monasca_agent_group_name: mon-agent
+monasca_agent_user_name: monasca-agent
+monasca_agent_group_name: monasca
 monasca_group_name: monasca
 
 # Number of seconds a plugin collection time exceeds that causes a warning to

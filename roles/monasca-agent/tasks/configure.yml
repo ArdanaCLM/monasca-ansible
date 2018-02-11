@@ -21,11 +21,23 @@
     system: yes
   register: ardana_notify_monasca_agent_restart_required
 
+# the monasca.service unit created by monasca-setup needs a group
+# with the same name as the monasca-agent user.
+- name: monasca-agent | configure | Setup legacy monasca agent group
+  group:
+    name: "{{ monasca_agent_user_name }}"
+    system: yes
+  register: ardana_notify_monasca_agent_restart_required
+  when: deployer_media_legacy_layout|bool
+
 - name: monasca-agent | configure | Setup user
   user:
     name: "{{ monasca_agent_user_name }}"
     system: yes
-    group: "{{ monasca_agent_group_name }}"
+    groups: "{{ monasca_agent_group_name }}
+            {%- if deployer_media_legacy_layout|bool -%}
+            ,{{ monasca_agent_user_name }}
+            {%- endif %}"
     shell: "{{ monasca_agent_shell }}"
   register: ardana_notify_monasca_agent_restart_required
 
@@ -40,16 +52,10 @@
 - name: monasca-agent | configure | copy sudoers
   copy:
     src: sudoers
-    dest: /etc/sudoers.d/mon-agent
+    dest: /etc/sudoers.d/monasca-agent
     owner: root
     group: root
     mode: 0440
-
-- name: monasca-agent | configure | configure sudoers
-  lineinfile:
-    dest: /etc/sudoers.d/mon-agent
-    line: "Defaults:mon-agent  secure_path=\"/usr/local/sbin:/usr/local/bin\
-            :/usr/sbin:/usr/bin:/sbin:/bin\""
 
 - name: monasca-agent | configure | create conf.d dir and custom plugin dirs
   become: yes

@@ -1,6 +1,6 @@
 #
 # (c) Copyright 2015 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -16,4 +16,6 @@
 #
 ---
 - name: monasca-agent | stop | Stop Monasca-Agent
-  service: name=monasca-agent state=stopped
+  service:
+    name: "{{ monasca_agent_service_name }}"
+    state: stopped

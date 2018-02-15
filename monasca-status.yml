@@ -97,10 +97,12 @@
       register: storm_link_result
     - include: roles/monasca-variables/tasks/service_status.yml service_name=storm-nimbus
       when: storm_nimbus_enabled | bool or
-            '0.9.5' not in storm_link_result.stat.lnk_source
+            (storm_link_result.stat.lnk_source is defined and
+            '0.9.5' not in storm_link_result.stat.lnk_source)
     - include: roles/monasca-variables/tasks/service_status.yml service_name=storm-supervisor
       when: storm_supervisor_enabled | bool or
-            '0.9.5' not in storm_link_result.stat.lnk_source
+            (storm_link_result.stat.lnk_source is defined and
+            '0.9.5' not in storm_link_result.stat.lnk_source)
     - include: roles/monasca-variables/tasks/service_status.yml service_name=storm-ui
       when: storm_ui_enabled | bool
     - include: roles/monasca-variables/tasks/service_status.yml service_name=storm-logviewer

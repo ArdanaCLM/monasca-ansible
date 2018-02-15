@@ -1,6 +1,6 @@
 #
 # (c) Copyright 2016 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -58,6 +58,8 @@
       keystone_user: "{{ monasca_keystone_user }}"
       keystone_password: "{{ monasca_keystone_password }}"
       keystone_project: "{{ monasca_keystone_project }}"
+      keystone_project_domain: "{{ monasca_keystone_project_domain }}"
+      keystone_user_domain: "{{ monasca_keystone_user_domain }}"
       monasca_api_url: "{{ monasca_api_url }}"
     with_items:
       - { name: "Kafka Consumer Lag" }

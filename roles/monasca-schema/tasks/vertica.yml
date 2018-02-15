@@ -1,6 +1,6 @@
 #
 # (c) Copyright 2015,2016 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -17,13 +17,13 @@
 ---
 - name: Check if database exists
   command: /opt/vertica/bin/admintools -t list_db -d '{{ vertica_database_name }}'
-  sudo_user: dbadmin
+  become_user: dbadmin
   ignore_errors: yes
   register: database_exists_result
 
 - name: Create database
   shell: /opt/vertica/bin/admintools -t create_db -s {{vertica_cluster | default('127.0.0.1')}} -l {{vertica_config_dir}}/license.key -d '{{ vertica_database_name }}' -p '{{vertica_dbadmin_password| quote }}' <<< 'yes'
-  sudo_user: dbadmin
+  become_user: dbadmin
   args:
     executable: /bin/bash
   environment: "{{vertica_env}}"
@@ -32,13 +32,13 @@
 
 - name: Set restart policy
   command: /opt/vertica/bin/admintools -t set_restart_policy -d {{ vertica_database_name }} -p always
-  sudo_user: dbadmin
+  become_user: dbadmin
   environment: "{{vertica_env}}"
   when: database_exists_result | failed and not rebuild
 
 - name: Copy over vertica schema sql files
   copy: src={{ item }} dest=/var/vertica/{{ item }} mode=0660
-  sudo_user: dbadmin
+  become_user: dbadmin
   with_items:
     - mon_alarms_schema.sql
     - mon_metrics_schema.sql
@@ -47,14 +47,14 @@
 
 - name: Copy over vertica user and settings sql file
   template: src={{ item }}.j2 dest=/var/vertica/{{ item }} mode=0660
-  sudo_user: dbadmin
+  become_user: dbadmin
   with_items:
     - mon_users_and_limits.sql
   register: sql_user_status
 
 - name: Write schema to vertica
   shell: /opt/vertica/bin/vsql -w  '{{vertica_dbadmin_password| quote }}' < /var/vertica/{{ item }}
-  sudo_user: dbadmin
+  become_user: dbadmin
   environment: "{{vertica_env}}"
   with_items:
     - mon_metrics_schema.sql
@@ -63,14 +63,14 @@
   no_log: True
 
 - name: Check for multi node projections
-  sudo_user: dbadmin
+  become_user: dbadmin
   shell: /opt/vertica/bin/vsql -w  '{{vertica_dbadmin_password| quote }}' -c "select projection_basename from projections where projection_basename = 'Dimensions_seg_set_id';"
   register: vertica_projections_result
   no_log: True
 
 - name: Write multi node schema to vertica
   shell: /opt/vertica/bin/vsql -w  '{{vertica_dbadmin_password| quote }}' < /var/vertica/{{ item }}
-  sudo_user: dbadmin
+  become_user: dbadmin
   environment: "{{vertica_env}}"
   with_items:
     - mon_metrics_multi_node.sql
@@ -80,7 +80,7 @@
 
 - name: Write user settings to vertica
   shell: /opt/vertica/bin/vsql -w  '{{vertica_dbadmin_password| quote }}' < /var/vertica/{{ item }}
-  sudo_user: dbadmin
+  become_user: dbadmin
   environment: "{{vertica_env}}"
   with_items:
     - mon_users_and_limits.sql
@@ -89,7 +89,7 @@
 
 - name: Remove vertica schema sql files
   file: path=/var/vertica/{{ item }} state=absent
-  sudo_user: dbadmin
+  become_user: dbadmin
   with_items:
     - mon_alarms_schema.sql
     - mon_metrics_schema.sql

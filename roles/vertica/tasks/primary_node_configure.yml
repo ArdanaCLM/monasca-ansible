@@ -1,5 +1,5 @@
 #
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -26,7 +26,7 @@
 
 - name: primary_node_configure | check if database exists
   command: /opt/vertica/bin/admintools -t list_db -d {{ vertica_database_name }}
-  sudo_user: dbadmin
+  become_user: dbadmin
   ignore_errors: yes
   environment: "{{vertica_env}}"
   register: vertica_db_exists_result
@@ -46,7 +46,7 @@
   register: vertica_license_file_check
 
 - name: primary_node_configure | decrypt vertica license
-  sudo_user: dbadmin
+  become_user: dbadmin
   command: gpg --passphrase {{ vertica_license_passphrase }} --batch --no-tty --output {{vertica_config_dir}}/license.key -d {{vertica_config_dir}}/license.key.gpg
   when: vertica_license_file_check.stat.exists == False and (vertica_db_exists_result | failed)
   no_log: True

@@ -1,5 +1,5 @@
 #
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -60,14 +60,14 @@
     owner: "{{vertica_dbadmin_user}}"
     group: "{{vertica_dbadmin_group}}"
     mode: 0754
-  sudo_user: dbadmin
+  become_user: dbadmin
   ignore_errors: yes
   environment: "{{vertica_env}}"
   when: not vertica_eula_presence_check.stat.exists and
         ansible_os_family | lower == 'suse'
 
 - name: eula_check | Run admintool command on SUSE OS only if needed
-  sudo_user: dbadmin
+  become_user: dbadmin
   command: "{{ vertica_dbadmin_home }}/at_{{ cmd_type }}.sh"
   register: at_cmd_running_result
   run_once_per: verb_hosts.FND_VDB

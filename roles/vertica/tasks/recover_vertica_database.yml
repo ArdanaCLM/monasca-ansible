@@ -1,6 +1,6 @@
 #
 # (c) Copyright 2015,2016 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -16,7 +16,7 @@
 #
 ---
 - name: vertica | recover vertica database | Check database status
-  sudo_user: dbadmin
+  become_user: dbadmin
   command: /opt/vertica/bin/admintools -t view_cluster -d {{ vertica_database_name }}
   register: running_result
   ignore_errors: yes
@@ -34,7 +34,7 @@
   when: database_down
 
 - name: vertica | recover vertica database | Attempt to start database without rolling back
-  sudo_user: dbadmin
+  become_user: dbadmin
   command: /opt/vertica/bin/admintools -t start_db -d {{ vertica_database_name }} -p "{{ vertica_dbadmin_password }}" -i
   register: start_result
   no_log: True
@@ -46,7 +46,7 @@
   when: database_down and start_result | failed
 
 - name: vertica | recover vertica database | Attempt to restart database from last good known epoch
-  sudo_user: dbadmin
+  become_user: dbadmin
   command: /opt/vertica/bin/admintools -t restart_db -d {{ vertica_database_name }} -e last -p "{{ vertica_dbadmin_password }}" -i
   register: restart_database_result
   no_log: True
@@ -58,7 +58,7 @@
   when: database_down and start_result | failed and restart_database_result | failed
 
 - name: vertica | recover vertica database | Attempt to restart each node in the database from last good known epoch
-  sudo_user: dbadmin
+  become_user: dbadmin
   command: /opt/vertica/bin/admintools -t restart_node -s {{ vertica_ips }} -d {{ vertica_database_name }} -p "{{ vertica_dbadmin_password }}" -F -i
   register: restart_nodes_result
   no_log: True

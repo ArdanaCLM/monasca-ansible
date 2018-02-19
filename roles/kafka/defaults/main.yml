@@ -1,6 +1,6 @@
 #
 # (c) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -25,6 +25,9 @@ kafka_num_partitions: 2
 kafka_socket_send_buffer_bytes: 1048576
 kafka_socket_receive_buffer_bytes: 1048576
 kafka_socket_request_max_bytes: 104857600
+# This is setting the idle timeout to 1 day to workaround
+# https://bugzilla.suse.com/show_bug.cgi?id=1081169
+kafka_connections_max_idle_ms: 86400000
 kafka_log_flush_interval_messages: 10000
 kafka_log_flush_interval_ms: 1000
 kafka_log_retention_hours: 4

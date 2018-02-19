@@ -21,7 +21,7 @@ Listen {{ monasca_api_bind_host }}:{{ monasca_api_client_port }}
     WSGIDaemonProcess monasca-api processes=4 threads=5 socket-timeout=600  user={{ monasca_api_user }} group={{ monasca_group }} python-path={{ monasca_api_bin_dir }}/../:{{ monasca_api_bin_dir }}/../lib/python2.7/site-packages display-name=monasca-api
     WSGIProcessGroup monasca-api
     WSGIApplicationGroup monasca-api
-    WSGIScriptAlias / /var/www/monasca/monasca-api
+    WSGIScriptAlias / {{ www_root }}/monasca/monasca-api
 
     ErrorLog /var/log/monasca/api/monasca_api_wsgi.log
     LogLevel info

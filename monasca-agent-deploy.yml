@@ -78,6 +78,23 @@
       tags: [monasca-agent-crash]
       when: "kdump_dir_result.stat.exists and '1' in kdump_config_result.stdout"
 
+- name: Install the Monasca Agent libvirt plugin requirements on NOV-CMP (RPM)
+  hosts: NOV-CMP:&MON-AGN
+  become: yes
+  tags: [monasca-agent]
+  tasks:
+    # these monasca-agent requirements are only on the compute nodes needed
+    # that's why they are not in the openstack-monasca-agent package itself
+    - name: Install required packages for libvirt plugin (RPM)
+      package:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - libvirt-python
+        - python-novaclient
+        - python-neutronclient
+      when: deployer_media_legacy_layout|bool == False
+
 - include: pbfinish.yml
   vars:
     playbook_name: "monasca-agent-deploy.yml"

@@ -1,6 +1,6 @@
 #
 # (c) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -21,11 +21,18 @@
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
     - roles/monasca-variables/defaults/main.yml
+    - roles/monasca-agent/defaults/main.yml
   tasks:
     - name: Check if libvirt is configured
       stat: path=/etc/monasca/agent/conf.d/libvirt.yaml
       register: libvirt_status
     - name: Tune libvirt metrics
-      shell: "{{ monasca_agent_virtualenv_dir }}/bin/monasca-setup -d libvirt {% if monasca_libvirt_agent_detection_args is defined %} -a '{{monasca_libvirt_agent_detection_args}}' {% endif %} --overwrite"
+      shell: >
+        {{ monasca_setup_bin_dir }}/monasca-setup
+        -d libvirt
+        --user '{{ monasca_agent_user_name }}'
+        {% if monasca_libvirt_agent_detection_args is defined %} -a '{{monasca_libvirt_agent_detection_args}}' {% endif %}
+        --agent_service_name '{{ monasca_agent_service_name }}'
+        --overwrite
       when: libvirt_status.stat.exists
       ignore_errors: True

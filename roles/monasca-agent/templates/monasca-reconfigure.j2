@@ -17,8 +17,9 @@
 #
 
 '{{monasca_setup_bin_dir}}/monasca-setup' \
-    -u '{{monasca_agent_user}}' \
-    -p '{{monasca_agent_password}}' \
+    --user '{{monasca_agent_user_name}}' \
+    --username '{{monasca_agent_user}}' \
+    --password '{{monasca_agent_password}}' \
     --user_domain_name '{{keystone_default_domain_name}}' \
     --ca_file '{{system_cacert_file}}' \
     {% if monasca_agent_service is defined %} -s '{{monasca_agent_service}}' {% endif %} \
@@ -37,5 +38,6 @@
     --max_measurement_buffer_size={{ monasca_agent_max_measurement_buffer_size }} \
     --backlog_send_rate={{ monasca_agent_backlog_send_rate }} \
     --max_buffer_size={{ monasca_agent_max_buffer_size }} \
+    --agent_service_name={{ monasca_agent_service_name }} \
     {% if deployer_media_legacy_layout|bool == false %} --skip_enable {% endif %} \
     --overwrite

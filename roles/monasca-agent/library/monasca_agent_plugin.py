@@ -111,7 +111,13 @@ def main():
             (path for path in default_setup_paths if os.path.isfile(path)),
             "")
 
-    args = [monasca_setup_path]
+    args = [monasca_setup_path, '--user', 'monasca-agent']
+
+    # assume a package based installation if monasca_setup_path is
+    # "/usr/bin/monasca-setup" and set service name accordingly
+    # use default otherwise
+    if monasca_setup_path == '/usr/bin/monasca-setup':
+        args.extend(['--agent_service_name', 'openstack-monasca-agent'])
     if module.check_mode:
         args.append('--dry_run')
     if module.params['overwrite_enable']:

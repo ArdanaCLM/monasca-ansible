@@ -16,6 +16,7 @@
 #
 ---
 - name: monasca-agent | configure | Setup monasca agent group
+  become: yes
   group:
     name: "{{ monasca_agent_group_name }}"
     system: yes
@@ -24,6 +25,7 @@
 # the monasca.service unit created by monasca-setup needs a group
 # with the same name as the monasca-agent user.
 - name: monasca-agent | configure | Setup legacy monasca agent group
+  become: yes
   group:
     name: "{{ monasca_agent_user_name }}"
     system: yes
@@ -31,6 +33,7 @@
   when: deployer_media_legacy_layout|bool
 
 - name: monasca-agent | configure | Setup user
+  become: yes
   user:
     name: "{{ monasca_agent_user_name }}"
     system: yes
@@ -50,6 +53,7 @@
     mode: 0755
 
 - name: monasca-agent | configure | copy sudoers
+  become: yes
   copy:
     src: sudoers
     dest: /etc/sudoers.d/monasca-agent
@@ -91,6 +95,7 @@
     mode: 0775
 
 - name: monasca-agent | configure | set monasca-agent log file ownership
+  become: yes
   file:
     path: "{{ item }}"
     state: touch

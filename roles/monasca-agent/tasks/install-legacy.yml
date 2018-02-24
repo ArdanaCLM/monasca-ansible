@@ -15,27 +15,6 @@
 # under the License.
 #
 ---
-- name: monasca-agent | install-legacy | Install required packages in Debian
-  apt:
-    name: "{{ item }}"
-    state: present
-  with_items: monasca_agent_required_packages
-  when: ansible_os_family == 'Debian'
-
-- name: monasca-agent | install-legacy | Install required packages in RedHat
-  yum:
-    name: "{{ item }}"
-    state: present
-  with_items: monasca_agent_required_packages
-  when: ansible_os_family == 'RedHat'
-
-- name: monasca-agent | install-legacy | Install required packages in SLES
-  zypper:
-    name: "{{ item }}"
-    state: present
-  with_items: monasca_agent_required_packages
-  when: ansible_os_family == 'Suse'
-
 - name: monasca-agent | install-legacy | Update venv cache
   install_package:
     cache: update

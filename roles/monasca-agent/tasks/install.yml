@@ -15,6 +15,11 @@
 # under the License.
 #
 ---
+- name: monasca-agent | install | Install required packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: monasca_agent_required_packages
 
 - name: monasca-agent | install | Install monasca-agent (legacy)
   include: install-legacy.yml

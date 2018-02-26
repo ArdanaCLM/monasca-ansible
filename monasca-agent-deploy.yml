@@ -80,13 +80,13 @@
 
 - name: Install the Monasca Agent libvirt plugin requirements on NOV-CMP (RPM)
   hosts: NOV-CMP:&MON-AGN
-  become: yes
   tags: [monasca-agent]
   tasks:
     # these monasca-agent requirements are only on the compute nodes needed
     # that's why they are not in the openstack-monasca-agent package itself
     # Not needed for RHEL computes as monasca-agent is installed in venv
     - name: Install required packages for libvirt plugin (RPM)
+      become: yes
       package:
         name: "{{ item }}"
         state: latest

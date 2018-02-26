@@ -104,6 +104,7 @@ def main():
         names = [module.params['name']]
 
     default_setup_paths = ['/opt/monasca/bin/monasca-setup',
+                           '/usr/local/bin/monasca-setup',
                            '/usr/bin/monasca-setup']
     monasca_setup_path = module.params['monasca_setup_path']
     if not monasca_setup_path:

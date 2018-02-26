@@ -108,6 +108,72 @@
     - "{{ monasca_agent_log_dir }}/statsd.log"
     - "{{ monasca_agent_log_dir }}/supervisord.log"
 
+- name: monasca-agent | configure | Determine paths for RHEL systemd setup
+  set_fact:
+    _ma_vdir: "{{ 'monasca-agent' | venv_dir() }}"
+    _ma_vsvc: "lib/systemd/system/venv-openstack-monasca-agent.service"
+    _ma_esvc: "/etc/systemd/system/openstack-monasca-agent.service"
+
+- name: monasca-agent | configure | Copy systemd file from venv to expected
+        systemd location
+  become: yes
+  command: cp {{ _ma_vdir }}/{{ _ma_vsvc }} {{ _ma_esvc }}
+  when:
+    - ansible_os_family | lower == 'redhat'
+
+- name: monasca-agent | configure | Change permission for agent systemd service
+        file
+  become: yes
+  file:
+    path: "/etc/systemd/system/openstack-monasca-agent.service"
+    owner: "{{ monasca_agent_user_name }}"
+    group: "{{ monasca_agent_group_name }}"
+    mode: 0640
+  when:
+    - ansible_os_family | lower == 'redhat'
+
+- name: monasca-agent | configure | Create tmpfiles.d file to handle reboots
+        for agent process pid file
+  become: yes
+  lineinfile:
+    dest: "/etc/tmpfiles.d/openstack-monasca-agent.conf"
+    state: present
+    create: yes
+    line: "D /run/openstack-monasca-agent 0644 {{
+              monasca_agent_user_name }} {{ monasca_agent_group_name }} -"
+  when:
+    - ansible_os_family | lower == 'redhat'
+
+- name: monasca-agent | configure | Create run directory for agent process
+        pid file
+  become: yes
+  file:
+    path: "/run/openstack-monasca-agent"
+    state: directory
+    owner: "{{ monasca_agent_user_name }}"
+    group: "{{ monasca_agent_group_name }}"
+    mode: 0644
+  when:
+    - ansible_os_family | lower == 'redhat'
+
+# Needed venv/usr/share --> venv/share symlink because of the way monasca-agent
+# venv is created. Agent template lookup path ends up venv/share/monasca/agent/
+- name: monasca-agent | configure | Create symlinks for RHEL case
+  file:
+    path: "{{ item.path }}"
+    src: "{{ item.src }}"
+    state: link
+    owner: "{{ monasca_agent_user_name }}"
+    group: "{{ monasca_agent_group_name }}"
+    mode: 0640
+  with_items:
+    - { path: "/usr/local/bin/monasca-setup" ,
+        src: "{{ 'monasca-agent' | venv_dir() }}/usr/bin/monasca-setup"}
+    - { path: "{{ 'monasca-agent' | venv_dir() }}/share" ,
+        src: "{{ 'monasca-agent' | venv_dir() }}/usr/share"}
+  when:
+    - ansible_os_family | lower == 'redhat'
+
 # Instead of running this directly by creating a file to run
 # it changes such as user/pass will trigger a rerun.
 # Also a user can run it manually

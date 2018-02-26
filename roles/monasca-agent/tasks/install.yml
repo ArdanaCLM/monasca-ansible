@@ -21,6 +21,7 @@
     state: present
   with_items: monasca_agent_required_packages
 
+# Use legacy mode install for RHEL computes as well
 - name: monasca-agent | install | Install monasca-agent (venv)
   include: install-legacy.yml
   when: >

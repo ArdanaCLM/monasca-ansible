@@ -47,7 +47,18 @@ monasca_agent_check_frequency: 30
 monasca_agent_system_only: true
 monasca_agent_detection_args: send_rollup_stats=True
 
-monasca_setup_bin_dir: "{{ monasca_agent_virtualenv_dir if deployer_media_legacy_layout|bool else '/usr' }}/bin"
+# For RHEL node, monasca-setup is found at both venv/usr/bin and venv/bin
+# paths. We are using venv/usr/bin path so that related agent templates can be
+# found at venv/usr/share/monasca/agent path. This is different from legacy and
+# SLES setup. SLES node installs monasca-agent via rpm where as in RHEL node,
+# its installed via venv.
+monasca_setup_bin_dir: "{%- if deployer_media_legacy_layout|bool -%}
+                          {{monasca_agent_virtualenv_dir}}/bin
+                        {%- elif ansible_os_family|lower == 'redhat' -%}
+                          {{monasca_agent_virtualenv_dir}}/usr/bin
+                        {%- else -%}
+                          /usr/bin
+                        {%- endif -%}"
 
 # Kafka Defaults
 kafka_heap_opts: "{% if kafka_heap_opts_override %}{{ kafka_heap_opts_override }}{% else %}{{ monasca_tunings.kafka_heap_opts }}{% endif %}"

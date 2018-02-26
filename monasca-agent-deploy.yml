@@ -85,6 +85,7 @@
   tasks:
     # these monasca-agent requirements are only on the compute nodes needed
     # that's why they are not in the openstack-monasca-agent package itself
+    # Not needed for RHEL computes as monasca-agent is installed in venv
     - name: Install required packages for libvirt plugin (RPM)
       package:
         name: "{{ item }}"
@@ -93,7 +94,10 @@
         - libvirt-python
         - python-novaclient
         - python-neutronclient
-      when: deployer_media_legacy_layout|bool == False
+      when:
+        - deployer_media_legacy_layout|bool == False
+        - ansible_os_family | lower == 'suse'
+
 
 - include: pbfinish.yml
   vars:

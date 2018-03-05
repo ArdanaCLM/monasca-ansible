@@ -57,9 +57,9 @@ options:
         default: None
         description:
             - The path to the monasca-setup command. If "None" (the default) the
-              plugin check if either '/opt/monasca/bin/monasca-setup' or
-              '/usr/bin/monasca-setup' (in that order) exist. And use the first
-              one that is found.
+              plugin will attempt to discover the command in a monasca
+              installation within /usr/local/bin, /usr/bin, or /opt.
+              And use the first one that is found.
     overwrite_enable:
         required: false
         default: False
@@ -103,9 +103,9 @@ def main():
     else:
         names = [module.params['name']]
 
-    default_setup_paths = ['/opt/monasca/bin/monasca-setup',
-                           '/usr/local/bin/monasca-setup',
-                           '/usr/bin/monasca-setup']
+    default_setup_paths = ['/usr/local/bin/monasca-setup',
+                           '/usr/bin/monasca-setup',
+                           '/opt/monasca/bin/monasca-setup']
     monasca_setup_path = module.params['monasca_setup_path']
     if not monasca_setup_path:
         monasca_setup_path = next(

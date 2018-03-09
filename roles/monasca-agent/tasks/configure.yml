@@ -94,20 +94,6 @@
     group: "{{ monasca_agent_group_name }}"
     mode: 0775
 
-- name: monasca-agent | configure | set monasca-agent log file ownership
-  become: yes
-  file:
-    path: "{{ item }}"
-    state: touch
-    owner: "{{ monasca_agent_user_name }}"
-    group: "adm"
-    mode: 0640
-  with_items:
-    - "{{ monasca_agent_log_dir }}/collector.log"
-    - "{{ monasca_agent_log_dir }}/forwarder.log"
-    - "{{ monasca_agent_log_dir }}/statsd.log"
-    - "{{ monasca_agent_log_dir }}/supervisord.log"
-
 - name: monasca-agent | configure | Determine paths for RHEL systemd setup
   set_fact:
     _ma_vdir: "{{ 'monasca-agent' | venv_dir() }}"

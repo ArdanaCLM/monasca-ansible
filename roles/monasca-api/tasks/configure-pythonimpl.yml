@@ -66,11 +66,11 @@
 # create modwsgi file for monasca-api
 #
 
-- name: monasca-api | install-pythonimpl | Create /var/www/monasca  directory
+- name: "monasca-api | install-pythonimpl | Create {{ www_root }}/monasca directory"
   become: yes
   file:
-    path: /var/www/monasca
-    owner: "{{ monasca_api_user }}"
+    path: "{{ www_root }}/monasca"
+    owner: root
     group: "{{ monasca_group }}"
     mode: 0755
     state: directory
@@ -155,7 +155,7 @@
   file:
     src: "{{ monasca_api_venv_dir }}/lib/python2.7/site-packages\
           /monasca_api/monasca-api.wsgi"
-    dest: "/var/www/monasca/monasca-api"
+    dest: "{{ www_root }}/monasca/monasca-api"
     owner: root
     group: "{{ monasca_group }}"
     state: link

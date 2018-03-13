@@ -1,5 +1,5 @@
 #
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -30,5 +30,5 @@ zookeeper_myid_dir: "{{ zookeeper_conf_dir }}"
 
 zookeeper_java_share_dir: /usr/share/java
 
-# predefined jars defined and available as part of hlinux package
+# predefined jars defined and available as part of debian package
 zookeeper_java_share_classpath: "/usr/share/java/jline.jar:/usr/share/java/log4j-1.2.jar:/usr/share/java/xercesImpl.jar:/usr/share/java/xmlParserAPIs.jar:/usr/share/java/netty.jar:/usr/share/java/slf4j-api.jar:/usr/share/java/slf4j-log4j12.jar:/usr/share/java/zookeeper.jar"

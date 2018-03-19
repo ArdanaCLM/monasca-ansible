@@ -34,3 +34,17 @@
   no_log: True
   when: cql_schema_status | changed
   run_once: True
+  ignore_errors: True
+  register: schema_result
+
+- name: monasca-schema | clear schema if failed
+  become: yes
+  file:
+    path: "{{ cassandra_conf_dir }}/mon_cassandra_schema.cql"
+    state: absent
+  when: schema_result is defined and schema_result.rc != 0
+
+- name: monasca-schema | check schema fail
+  fail:
+    msg: failed to create monasca schema
+  when: schema_result is defined and schema_result.rc != 0

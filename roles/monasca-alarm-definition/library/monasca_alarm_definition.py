@@ -255,7 +255,20 @@ class MonascaDefinition(MonascaAnsible):
 
                 if self.module.check_mode:
                     self._exit_json(changed=True, alarm_definition_id=definitions[name]['id'])
-                body = self.monasca.alarm_definitions.patch(**def_kwargs)
+
+                do_recreate = False
+                try:
+                    body = self.monasca.alarm_definitions.patch(**def_kwargs)
+                except Exception, e:
+                    do_recreate = True
+
+                if do_recreate:
+                    resp = self.monasca.alarm_definitions.delete(alarm_id=definitions[name]['id'])
+                    if resp.status_code == 204:
+                        body = self.monasca.alarm_definitions.create(**def_kwargs)
+                    else:
+                        self.module.fail_json(msg="Recreate alarm delete failed: " + str(resp.status_code) + resp.text)
+                        self._exit_json(changed=False)
             else:
                 if self.module.check_mode:
                     self._exit_json(changed=True)

@@ -22,14 +22,14 @@ from sys import exit, path, stdout
 {%- if deployer_media_legacy_layout|bool -%}
 path.append('/opt/stack/service/monascaclient/venv/lib/python2.7/site-packages')
 path.append('/opt/stack/service/novaclient/venv/lib/python2.7/site-packages')
-{%- endif -%}
+{%- endif -%}{{''}}
 
 from keystoneauth1.identity import v3
 from keystoneauth1 import session, exceptions as ksexceptions
 from monascaclient import client as mnclient
-import monascaclient.exc as mnexceptions
 from novaclient import client as nvclient, exceptions as nvexceptions
 from requests import exceptions as rqexceptions
+
 
 # Goes through all metrics in an alarm
 # Returns true if there is one VM that exists
@@ -84,6 +84,8 @@ monasca_version = '2_0'
 ks_kwargs = {'username': username,
              'password': password,
              'project_name': project_name,
+             'project_domain_name': project_domain_name,
+             'user_domain_name': user_domain_name,
              'auth_url': auth_url}
 monasca_client = mnclient.Client(monasca_version, monasca_URL, **ks_kwargs)
 
@@ -93,18 +95,6 @@ list_args = {'state' : 'UNDETERMINED',
              'metric_dimensions' : dimension_args}
 try:
     alarm_list = monasca_client.alarms.list(**list_args)
-except mnexceptions.KeystoneException as e:
-    print ('Keystone credentials invalid or could not communicate '
-           'with Keystone. KeystoneException message={}'.format(e.message))
-    exit (1)
-except mnexceptions.CommunicationError as e:
-    print ('Error communicating with monasca. '
-           'CommunicationError message={}'.format(e.message))
-    exit (1)
-except mnexceptions.HTTPInternalServerError as e:
-    print ('monasca alarm-list failed with HTTPInternalServerError '
-           'from the monasca-api, message={}'.format(e.message))
-    exit (1)
 except Exception as e:
     print ('monasca alarm-list failed with Monascaclient Exception: '
            '{}'.format(e.message))
@@ -143,7 +133,7 @@ for alarm in alarm_list:
         try:
             delete_args = {'alarm_id': alarm['id']}
             monasca_client.alarms.delete(**delete_args)
-        except mnexceptions.HTTPException as e:
-            print ('Failed to delete alarm. HTTPException '
+        except Exception as e:
+            print ('Failed to delete alarm. Exception '
                    'message={}'.format(e.message))
 exit(0)

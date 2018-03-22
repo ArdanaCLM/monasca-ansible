@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # (c) Copyright 2016 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -21,7 +21,6 @@ import logging
 from sys import exit, path, stdout
 path.append('/opt/stack/service/monascaclient/venv/lib/python2.7/site-packages')
 from monascaclient import client as mnclient
-import monascaclient.exc as mnexceptions
 
 username = "{{ MON_API.consumes_KEY_API.vars.keystone_monasca_user }}"
 password = "{{ MON_API.consumes_KEY_API.vars.keystone_monasca_password }}"
@@ -68,16 +67,6 @@ def test_measurement(hostname):
             logger.error('test_measurement measurement-list failed for metric name: {} hostname: {} '
                          'start_time: {}'.format(metric_name, dimensions['hostname'], hour_ago_str))
             return False
-    except mnexceptions.KeystoneException as e:
-        logger.exception('test_measurement failed with KeystoneException, message={}'.format(e.message))
-        return False
-    except mnexceptions.CommunicationError as e:
-        logger.exception('test_measurement failed with CommunicationError, message={}'.format(e.message))
-        return False
-    except mnexceptions.HTTPInternalServerError as e:
-        logger.exception('test_measurement failed with HTTPInternalServerError '
-                         'from the monasca-api, message={}'.format(e.message))
-        return False
     except Exception as e:
         logger.exception('test_measurement failed with Monascaclient Exception: {}'.format(e.message))
         return False
@@ -95,16 +84,6 @@ def test_metric(hostname):
             logger.error('test_metric metric-list failed for metric name: {} hostname: '
                          '{}'.format(metric_name, dimensions['hostname']))
             return False
-    except mnexceptions.KeystoneException as e:
-        logger.exception('test_metric failed with KeystoneException, message={}'.format(e.message))
-        return False
-    except mnexceptions.CommunicationError as e:
-        logger.exception('test_metric failed with CommunicationError, message={}'.format(e.message))
-        return False
-    except mnexceptions.HTTPInternalServerError as e:
-        logger.exception('test_metric failed with HTTPInternalServerError '
-                         'from the monasca-api, message={}'.format(e.message))
-        return False
     except Exception as e:
         logger.exception('test_metric failed with Monascaclient Exception: {}'.format(e.message))
         return False
@@ -122,16 +101,6 @@ def test_alarm(hostname):
             logger.error('test_alarm alarm-list failed for metric name: {} hostname: '
                          '{}'.format(list_args['metric_name'], dimensions['hostname']))
             return False
-    except mnexceptions.KeystoneException as e:
-        logger.exception('test_alarm failed with KeystoneException, message={}'.format(e.message))
-        return False
-    except mnexceptions.CommunicationError as e:
-        logger.exception('test_alarm failed with CommunicationError, message={}'.format(e.message))
-        return False
-    except mnexceptions.HTTPInternalServerError as e:
-        logger.exception('test_alarm failed with HTTPInternalServerError '
-                         'from the monasca-api, message={}'.format(e.message))
-        return False
     except Exception as e:
         logger.exception('test_alarm failed with Monascaclient Exception: {}'.format(e.message))
         return False

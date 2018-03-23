@@ -1,29 +1,31 @@
 {#
 #
 # (c) Copyright 2015 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 #}
 # Modified from http://packages.ubuntu.com/saucy/zookeeperd
 NAME=zookeeper
-ZOOCFGDIR=/etc/$NAME/conf
+ZOOCFGDIR={{ zookeeper_conf_dir }}
 
 # seems, that log4j requires the log4j.properties file to be in the classpath
 CLASSPATH="$ZOOCFGDIR:{{ zookeeper_java_share_classpath }}"
 
 ZOOCFG="$ZOOCFGDIR/zoo.cfg"
-ZOO_LOG_DIR={{zookeeper_log_dir}}
+ZOO_LOG_DIR={{ zookeeper_log_dir }}
 USER=$NAME
 GROUP=$NAME
 PIDDIR=/var/run/$NAME
 PIDFILE=$PIDDIR/$NAME.pid
-SCRIPTNAME=/etc/init.d/$NAME
+{% if zookeeper_script_name is defined %}
+SCRIPTNAME={{ zookeeper_script_name }}
+{% endif %}
 JAVA=/usr/bin/java
 ZOOMAIN="org.apache.zookeeper.server.quorum.QuorumPeerMain"
 ZOO_LOG4J_PROP="INFO,ROLLINGFILE"
 JMXLOCALONLY=false
 {% if zookeeper_heap_opt is defined %}
-JAVA_OPTS="{{ zookeeper_heap_opt }}"
+{{ zookeeper_java_opts_key }}="{{ zookeeper_heap_opt }}"
 {% else %}
-JAVA_OPTS=""
+{{ zookeeper_java_opts_key }}=""
 {% endif %}

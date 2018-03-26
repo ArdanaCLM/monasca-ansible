@@ -70,3 +70,14 @@ storm_local_host: >
       first).host }}
 
 stop_old_thresh: False
+
+#
+# storm extlib directory
+#
+storm_ext_lib_dir: "/usr/lib64/storm/extlib"
+
+#
+# mysql jdbc driver
+#
+mysql_jdbc_dir: "/usr/share/java"
+mysql_jdbc_jar: "mysql-connector-java.jar"

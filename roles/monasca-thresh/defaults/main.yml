@@ -51,10 +51,6 @@ monasca_thresh_jdbc_driver_type: "{%- if deployer_media_legacy_layout|bool -%}
                                       mysql
                                   {%- endif -%}"
 
-monasca_thresh_ext_lib_dir: "/usr/lib64/storm/extlib"
-mysql_jdbc_dir: "/usr/share/java"
-mysql_jdbc_jar: "mysql-connector-java.jar"
-
 monasca_thresh_jar_saved_md5: /opt/monasca/md5sums/monasca-thresh.md5
 monasca_thresh_shell: /usr/sbin/nologin
 

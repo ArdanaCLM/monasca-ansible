@@ -29,20 +29,3 @@
 - name: Install | Set up service dirs
   set_fact:
     thresh_conf_file: "{{ 'monasca' | config_dir(ardana_notify_monasca_thresh_restart_required.version) }}/thresh-config.yml"
-
-- name: monasca-thresh | install | Install the mysql jdbc driver from repo
-  become: yes
-  zypper:
-    name: "{{ item }}"
-    state: present
-  when: deployer_media_legacy_layout|bool == False
-  with_items:
-    - "mysql-connector-java"
-
-- name: monasca-thresh | install | create symlink to mysql connector jdbc jar
-  become: yes
-  file:
-    src: "{{ mysql_jdbc_dir }}/{{ msyql_jdbc_jar }}"
-    dest: "{{ monasca_thresh_ext_lib_dir }}/{{ msyql_jdbc_jar }}"
-    state: link
-  when: deployer_media_legacy_layout|bool == False

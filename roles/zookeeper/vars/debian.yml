@@ -24,6 +24,10 @@ monasca_zookeeper_restart_packages:
   - zookeeperd
 
 zookeeper_conf_dir: /etc/zookeeper/conf
+zookeeper_script_name: /etc/init.d/zookeeper
+
+zookeeper_env_file: environment
+zookeeper_java_opts_key: JAVA_OPTS
 
 # Location of myid file for zookeeper cluster
 zookeeper_myid_dir: "{{ zookeeper_conf_dir }}"

@@ -32,3 +32,4 @@ galaxy_info:
   - monitoring
 dependencies:
   - role: FND-AP2
+  - role: tls-vars

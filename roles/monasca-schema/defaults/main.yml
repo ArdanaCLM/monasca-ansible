@@ -100,4 +100,4 @@ monasca_api_mysql_user: "{{ MON.consumes_FND_MDB.vars.accounts.monasca_api.usern
 monasca_api_mysql_password: "{{ MON.consumes_FND_MDB.vars.accounts.monasca_api.password | quote }}"
 mysql_host: "{{ MON_API.consumes_FND_MDB.vips.private[0].host }}"
 
-monasca_schema_system_cacert_file: "/etc/ssl/certs/ca-certificates.crt"
+monasca_schema_system_cacert_file: "{{ trusted_ca_bundle }}"

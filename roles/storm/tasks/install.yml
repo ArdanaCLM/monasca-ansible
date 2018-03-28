@@ -44,5 +44,3 @@
     dest: "{{ storm_ext_lib_dir }}/{{ mysql_jdbc_jar }}"
     state: link
   when: deployer_media_legacy_layout|bool == False
-
-- include: ../../monasca-variables/tasks/post_java_install_restore.yml

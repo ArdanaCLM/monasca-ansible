@@ -37,5 +37,3 @@
   set_fact:
     persister_conf_dir: "{{ 'monasca' | config_dir(ardana_notify_monasca_persister_restart_required.version) }}"
     persister_java_conf_file: "{{ 'monasca' | config_dir(ardana_notify_monasca_persister_restart_required.version) }}/persister-config.yml"
-
-- include: ../../monasca-variables/tasks/post_java_install_restore.yml

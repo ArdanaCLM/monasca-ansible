@@ -51,7 +51,7 @@ monasca_agent_max_buffer_size: 1000
 monasca_agent_max_measurement_buffer_size: -1
 monasca_agent_backlog_send_rate: 1
 
-system_cacert_file: "/etc/ssl/certs/ca-certificates.crt"
+system_cacert_file: "{{ trusted_ca_bundle }}"
 
 monasca_log_dir: /var/log/monasca
 monasca_agent_log_dir: "{{ monasca_log_dir }}/agent"

@@ -31,5 +31,3 @@
     service: monasca
     state: present
   register: ardana_notify_storm_restart_required
-
-- include: ../../monasca-variables/tasks/post_java_install_restore.yml

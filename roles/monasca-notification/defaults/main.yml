@@ -1,6 +1,6 @@
 #
 # (c) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -46,7 +46,7 @@ kafka_nodes: "{{ MON_NTF.consumes_FND_KFK.members.private }}"
 kafka_hosts: "{% for node in kafka_nodes %}{{ node.host }}:{{ node.port }}{% if not loop.last %},{% endif %}{% endfor %}"
 
 mysql_host: "{{MON_NTF.consumes_FND_MDB.vips.private[0].host}}"
-mysql_ssl: "{% if MON_NTF.consumes_FND_MDB.vips.private[0].use_tls %}{'ca': '/etc/ssl/certs/ca-certificates.crt'}{% endif %}"
+mysql_ssl: "{% if MON_NTF.consumes_FND_MDB.vips.private[0].use_tls %}{'ca': '{{ trusted_ca_bundle }}'}{% endif %}"
 monasca_notification_mysql_user: "{{ MON_NTF.consumes_FND_MDB.vars.accounts.monasca_notifier.username }}"
 monasca_notification_mysql_password: "{{ MON_NTF.consumes_FND_MDB.vars.accounts.monasca_notifier.password | quote }}"
 

@@ -1,5 +1,5 @@
 #
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -29,7 +29,3 @@ vertica_jdbc_version: 7.2.1-0
 
 vertica_jdbc_jar: "vertica-jdbc-{{ vertica_jdbc_version }}.jar"
 vertica_jdbc_location: "/opt/vertica/java/lib/{{ vertica_jdbc_jar }}"
-
-# just adding for consistency, not needed for debian side.
-cacert_symlink_source_location:
-cacert_symlink_target_location:

@@ -26,7 +26,7 @@ monasca_keystone_password: "{{ MON_API.consumes_KEY_API.vars.keystone_monasca_pa
 monasca_keystone_project: "{{ KEY_API.vars.keystone_admin_tenant }}"
 monasca_keystone_project_domain: "Default"
 monasca_keystone_user_domain: "Default"
-system_cacert_file: "/etc/ssl/certs/ca-certificates.crt"
+system_cacert_file: "{{ trusted_ca_bundle }}"
 
 monasca_client_venv: "{{ monasca_agent_virtualenv_dir }}"
 

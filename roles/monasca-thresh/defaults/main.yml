@@ -52,7 +52,7 @@ monasca_thresh_jdbc_driver_type: "{%- if deployer_media_legacy_layout|bool -%}
                                   {%- endif -%}"
 
 monasca_thresh_jar_saved_md5: /opt/monasca/md5sums/monasca-thresh.md5
-monasca_thresh_shell: /usr/sbin/nologin
+monasca_thresh_shell: /sbin/nologin
 
 run_mode: Deploy
 skip_install: False

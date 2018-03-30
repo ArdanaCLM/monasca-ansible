@@ -27,7 +27,7 @@ monasca_wait_for_period: 60
 monasca_virtualenv_dir: /opt/monasca
 monasca_persister_alarm_max_batch_time: 15
 monasca_persister_metric_max_batch_time: 15
-monasca_persister_shell: /usr/sbin/nologin
+monasca_persister_shell: /sbin/nologin
 
 vertica_vip: "{% if database_type == 'vertica' %}{{ MON_PST.consumes_FND_VDB.vips.private[0].host }}{% endif %}"
 vertica_vip_port: "{% if database_type == 'vertica' %}{{ MON_PST.consumes_FND_VDB.vips.private[0].port }}{% endif %}"

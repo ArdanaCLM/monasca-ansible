@@ -37,7 +37,7 @@ monasca_log_level: WARN
 notification_log_max_size: 10
 monasca_log_rotation_backup_count: 5
 monasca_mysql_db: "{{ MON_NTF.consumes_FND_MDB.vars.databases.monasca.dbname }}"
-monasca_notification_shell: /usr/sbin/nologin
+monasca_notification_shell: /sbin/nologin
 
 run_mode: Deploy
 skip_install: False

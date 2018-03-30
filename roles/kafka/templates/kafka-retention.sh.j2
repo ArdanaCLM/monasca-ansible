@@ -18,13 +18,16 @@
 #
 
 function decrease_retention() {
-    {{ kafka_bin_dir }}/kafka-topics.sh --zookeeper {{ zookeeper_hosts }} --alter \
-        --topic $1 --config retention.ms={{ kafka_low_disk_retention }}
+    # note this is post-0.9.0 behavior
+    {{ kafka_bin_dir }}/kafka-configs.sh --zookeeper {{ zookeeper_hosts }} --alter \
+        --entity-type topics --entity-name $1 \
+        --config retention.ms={{ kafka_low_disk_retention }}
 }
 
 function reset_retention() {
-    {{ kafka_bin_dir }}/kafka-topics.sh --zookeeper {{ zookeeper_hosts }} --alter \
-        --topic $1 --deleteConfig retention.ms
+    # note this is post-0.9.0 behavior
+    {{ kafka_bin_dir }}/kafka-configs.sh --zookeeper {{ zookeeper_hosts }} --alter \
+        --entity-type topics --entity-name $1 --delete-config retention.ms
 }
 
 kafka_dir={{ kafka_data_dir }}

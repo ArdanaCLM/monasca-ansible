@@ -1,5 +1,5 @@
 #
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -22,17 +22,23 @@
 # "- include: ../../monasca-variables/tasks/post_java_install_restore.yml"
 ---
 
-- name: post_java_install_restore | include OS specific variables
+- name:
+    monasca-variables | post_java_install_restore |
+    include OS specific variables
   include_vars: ../../monasca-variables/vars/{{ ansible_os_family | lower }}.yml
 
-- name: post_java_install_restore | Check ssl cacert file exists
+- name:
+    monasca-variables | post_java_install_restore |
+    Check ssl cacert file exists
   become: yes
   stat:
     path: "{{ cacert_symlink_target_location }}"
   register: ssl_cacert_check_result
   when: ansible_os_family | lower == "suse"
 
-- name: post_java_install_restore | Make symlink to CA OS bundle
+- name:
+    monasca-variables | post_java_install_restore |
+    Make symlink to CA OS bundle
   become: yes
   file:
     src: "{{ cacert_symlink_source_location }}"

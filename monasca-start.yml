@@ -38,7 +38,9 @@
     - name: Determine if we are starting one node
       set_fact:
         start_one_node: True
-      when: ( database_type == 'vertica' and ( {{ play_hosts }} | length ) == 1 )
+      when:
+        ( database_type == 'vertica' and
+        ( {{ play_hosts }} | length ) == 1 )
   roles:
     - {role: vertica, when: database_type == 'vertica', tags: [vertica]}
 

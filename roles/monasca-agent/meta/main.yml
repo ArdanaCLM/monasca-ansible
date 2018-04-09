@@ -29,3 +29,4 @@ galaxy_info:
   - monitoring
 dependencies:
   - role: tls-vars
+  - role: monasca-variables

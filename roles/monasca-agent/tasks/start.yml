@@ -18,6 +18,7 @@
 # Checking if the restart flag is defined marks it for deletion
 # Check for the opposite to avoid deleting it too early
 - name: monasca-agent | start | run monasca-setup
+  become: yes
   command: "{{ agent_reconfigure_script }}"
   when: (run_mode == 'Deploy' or run_mode == "Configure"
         or run_mode == 'Upgrade') and

@@ -16,7 +16,7 @@
 #
 ---
 monasca_agent_system_only: False
-agent_reconfigure_script: /usr/local/bin/monasca-reconfigure
+agent_reconfigure_script: /usr/local/sbin/monasca-reconfigure
 
 skip_install: False
 monasca_virtualenv_dir: /opt/monasca

@@ -16,6 +16,7 @@
 #
 ---
 - name: monasca-agent | install | Install required packages
+  become: yes
   package:
     name: "{{ item }}"
     state: present
@@ -28,6 +29,7 @@
     deployer_media_legacy_layout|bool or ansible_os_family|lower == 'redhat'
 
 - name: monasca-agent | install | Install the monasca-agent service
+  become: yes
   package:
     name: "{{ item }}"
     state: present

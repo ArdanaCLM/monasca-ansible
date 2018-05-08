@@ -28,6 +28,9 @@
     createhome: no
     home: /var/nonexistent
   register: ardana_notify_monasca_persister_restart_required
+  failed_when: ardana_notify_monasca_persister_restart_required|failed and
+                "user {{ persister_user }} is currently used by process"
+                not in ardana_notify_monasca_persister_restart_required.msg
 
 - name: create monasca log directory
   file: path={{monasca_log_dir}} state=directory owner=root group=root mode=0775

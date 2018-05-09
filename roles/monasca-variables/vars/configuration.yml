@@ -17,8 +17,6 @@
 ---
 # count cassandra nodes
 cassandra_node_count: "{{ groups['FND-CDB'] | length }}"
-cassandra_replication_factor: "{{ [2, cassandra_node_count] | min }}"
-
 
 # Retention variables
 kafka_low_disk_retention: 1800000 # 30 minutes in milliseconds

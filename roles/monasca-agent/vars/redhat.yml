@@ -20,3 +20,4 @@ monasca_agent_required_packages:
   - libyaml
   - libxml2
   - libxslt
+  - python-monascaclient

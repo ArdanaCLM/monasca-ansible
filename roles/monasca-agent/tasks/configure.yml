@@ -61,7 +61,23 @@
     group: root
     mode: 0440
 
+# to be consistent with the rpm
 - name: monasca-agent | configure | create conf.d dir and custom plugin dirs
+  become: yes
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ monasca_agent_user_name }}"
+    group: "{{ monasca_agent_group_name }}"
+    mode: 0750
+  with_items:
+    - "{{ monasca_conf_dir }}/agent"
+    - "{{ monasca_conf_dir }}/agent/conf.d"
+    - "{{ monasca_agent_check_plugin_dir }}"
+    - "{{ monasca_agent_detection_plugin_dir }}"
+  when: deployer_media_legacy_layout|bool == False
+
+- name: monasca-agent | configure | create conf.d and custom plugin dirs legacy
   become: yes
   file:
     path: "{{ item }}"
@@ -75,6 +91,7 @@
     - "{{ monasca_conf_dir }}/agent/conf.d"
     - "{{ monasca_agent_check_plugin_dir }}"
     - "{{ monasca_agent_detection_plugin_dir }}"
+  when: deployer_media_legacy_layout|bool
 
 - name: monasca-agent | configure | create monasca log dir
   become: yes

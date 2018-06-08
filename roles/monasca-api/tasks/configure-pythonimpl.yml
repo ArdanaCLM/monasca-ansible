@@ -76,18 +76,6 @@
     state: directory
     recurse: yes
 
-- name: monasca-api | install-pythonimpl | Creating monasca-api global conf directory
-  become: yes
-  file:
-    path: "{{ item.dir }}"
-    state: directory
-    owner: "{{ monasca_api_user }}"
-    group: "{{ monasca_group }}"
-    mode: "{{ item.permission }}"
-    recurse: yes
-  with_items:
-    - { dir: '{{ monasca_global_conf_dir }}', permission: '0755'}
-
 - name: monasca-api | configure-pythonimpl | configure monasca-api wsgi file
   become: yes
   template:

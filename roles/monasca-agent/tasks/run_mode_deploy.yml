@@ -1,6 +1,5 @@
 #
-# (c) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017-2018 SUSE LLC
+# (c) Copyright 2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -14,6 +13,13 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 #
+# Perform "Deploy" run_mode actions
 ---
-- name: "monasca-agent | run_mode_{{ run_mode | lower }} | deffered include"
-  include: "run_mode_{{ run_mode | default('Deploy') | lower }}.yml"
+- name: "monasca-agent | run_mode_{{ run_mode | lower }} | Set os-specific variables"
+  include_vars: "{{ ansible_os_family | lower }}.yml"
+
+- include: install.yml
+  when: not skip_install
+
+- include: configure.yml
+- include: start.yml

@@ -16,7 +16,7 @@
 #
 ---
 - name: Start the Monasca Agent on all systems
-  hosts: MON-AGN:NOV-CMP
+  hosts: MON-AGN
   become: yes
   vars:
     run_mode: Start

@@ -42,11 +42,11 @@ mon_keystone_users:
     password: "{{MON_AGN.consumes_KEY_API.vars.keystone_monasca_agent_password| quote }}"
     project: "{{keystone_admin_project}}"
     role: monitoring-delegate
-  - username: "{{keystone_admin}}"
-    project: "{{keystone_admin_project}}"
-    password: "{{keystone_admin_password}}"
-    role: monasca-user
   - username: "{{MON_API.consumes_KEY_API.vars.keystone_monasca_read_only_user}}"
     password: "{{MON_API.consumes_KEY_API.vars.keystone_monasca_read_only_password| quote }}"
     project: "{{keystone_admin_project}}"
     role: monasca-read-only-user
+  # include external monasca users below this line and exclude their passwords
+  - username: "{{keystone_admin}}"
+    project: "{{keystone_admin_project}}"
+    role: monasca-user

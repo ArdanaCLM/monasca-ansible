@@ -22,7 +22,7 @@
 
 - name: setup group
   group: name={{monasca_group}} system=yes
-  register: ardana_notify_monasca_api_restart_required
+  notify: ardana_notify_monasca_api_apache_restart
 
 - name: Setup user
   user:
@@ -30,7 +30,7 @@
     system: yes
     group: "{{ monasca_group }}"
     shell: "{{ monasca_api_shell }}"
-  register: ardana_notify_monasca_api_restart_required
+  notify: ardana_notify_monasca_api_apache_restart
 
 - name: monasca-api | configure-pythonimpl | configure api config ini file
   become: yes
@@ -40,7 +40,7 @@
     owner: "{{ monasca_api_user }}"
     group: "{{ monasca_group }}"
     mode: 0600
-  register: ardana_notify_monasca_api_restart_required
+  notify: ardana_notify_monasca_api_apache_restart
 
 - name: monasca-api | configure-pythonimpl | configure api config conf file
   become: yes
@@ -50,7 +50,7 @@
     owner: "{{ monasca_api_user }}"
     group: "{{ monasca_group }}"
     mode: 0600
-  register: ardana_notify_monasca_api_restart_required
+  notify: ardana_notify_monasca_api_apache_restart
 
 - name: monasca-api | configure-pythonimpl | configure api logging conf file
   become: yes
@@ -60,7 +60,7 @@
     owner: "{{ monasca_api_user }}"
     group: "{{ monasca_group }}"
     mode: 0600
-  register: ardana_notify_monasca_api_restart_required
+  notify: ardana_notify_monasca_api_apache_restart
 
 #
 # create modwsgi file for monasca-api
@@ -96,7 +96,7 @@
     owner: "{{ monasca_api_user }}"
     group: "{{ monasca_group }}"
     mode: 0755
-  register: ardana_notify_monasca_api_apache_restart
+  notify: ardana_notify_monasca_api_apache_restart
 
 - name: monasca-api | configure-pythonimpl | configure monasca-api apache virtualhost
   become: yes
@@ -104,15 +104,15 @@
     src: monasca-api-apache2.conf.j2
     dest: "{{ apache2_vhost_dir }}/monasca-api-apache2.vhost"
     mode: 0755
-  register: ardana_notify_monasca_api_apache_restart
+  notify: ardana_notify_monasca_api_apache_restart
 
 - name: create monasca log dir
   file: path={{monasca_log_dir}} state=directory owner=root group=root mode=0775
-  register: ardana_notify_monasca_api_apache_restart
+  notify: ardana_notify_monasca_api_apache_restart
 
 - name: create api log dir
   file: path={{api_log_dir}} state=directory owner=mon-api group=adm mode=0775
-  register: ardana_notify_monasca_api_apache_restart
+  notify: ardana_notify_monasca_api_apache_restart
 
 - name: monasca-api | configure-pythonimpl | set monasca-api log file ownership
   file:

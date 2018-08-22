@@ -31,17 +31,17 @@
     src: "{{ apache2_vhost_dir }}/monasca-api-apache2.vhost"
     dest: "{{ apache2_vhost_dir }}/monasca-api-apache2.conf"
     state: link
-  register: ardana_notify_monasca_api_apache_restart
+  notify: ardana_notify_monasca_api_apache_restart
 
 # Set the fact for restart-pythonimpl based on ardana_notify
 - name: monasca-api | start-pythonimpl | Set fact monasca api to start on ardana_notify_fact
-  set_fact:
-    monasca_api_restart_required : True
-  when: >-
-          ardana_notify_monasca_api_apache_restart is defined
-          and ardana_notify_monasca_api_apache_restart.changed
+  meta: flush_handlers
 
 - include: "{{ playbook_dir }}/roles/FND-AP2/tasks/start_reload.yml"
   vars:
     apache_reload_requested: "{{ monasca_api_restart_required }}"
     apache_restart_requested: "{{ monasca_api_restart_required }}"
+
+- name: monasca-api | start-pythonimpl | Unset notify fact
+  set_fact:
+    monasca_api_restart_required: false

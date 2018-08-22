@@ -40,7 +40,7 @@
 
 - name: monasca-api | install-pythonimpl | Register restart required
   command: echo "monasca api restart required"
-  register: ardana_notify_monasca_api_restart_required
+  notify: ardana_notify_monasca_api_apache_restart
   when: ardana_notify_monasca_api_install_result.changed
 
 - name: monasca-api | install-pythonimpl | Set service conf directories

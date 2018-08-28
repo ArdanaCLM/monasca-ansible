@@ -1,6 +1,6 @@
 #
 # (c) Copyright 2015 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017 SUSE LLC
+# (c) Copyright 2017-2018 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -20,9 +20,9 @@
   hosts: all
   gather_facts: no
   vars:
-    keystone_url: "{{KEY_API.advertises.vips.private[0].url}}/v2.0"
+    keystone_url: "{{KEY_API.advertises.vips.private[0].url}}/v3"
     monasca_user: "{{ MON_API.consumes_KEY_API.vars.keystone_monasca_user }}"
     monasca_password: "{{ MON_API.consumes_KEY_API.vars.keystone_monasca_password | quote }}"
     monasca_project: "{{KEY_API.vars.keystone_admin_tenant}}"
   tasks:
-    - copy: dest="~/monasca-env.sh" content=". /opt/stack/service/monasca-agent/venv/bin/activate\nexport OS_USERNAME='{{monasca_user}}'\nexport OS_PASSWORD='{{monasca_password}}'\nexport OS_PROJECT_NAME='{{monasca_project}}'\nexport OS_AUTH_URL={{keystone_url}}"
+    - copy: dest="~/monasca-env.sh" content=". /opt/stack/service/monasca-agent/venv/bin/activate\nexport OS_USERNAME='{{monasca_user}}'\nexport OS_PASSWORD='{{monasca_password}}'\nexport OS_PROJECT_NAME='{{monasca_project}}'\nexport OS_AUTH_URL={{keystone_url}} \nexport OS_PROJECT_DOMAIN_NAME=Default \nexport OS_USERNAME_DOMAIN_NAME=Default"

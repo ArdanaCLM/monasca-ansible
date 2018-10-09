@@ -91,6 +91,20 @@
     - "{{ monasca_agent_detection_plugin_dir }}"
   when: deployer_media_legacy_layout|bool
 
+- name: monasca-agent | configure | create custom plugin dirs RHEL
+  become: yes
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ monasca_agent_user_name }}"
+    group: "{{ monasca_agent_group_name }}"
+    mode: 0750
+  with_items:
+    - "{{ monasca_agent_check_plugin_dir }}"
+    - "{{ monasca_agent_detection_plugin_dir }}"
+  when: ansible_os_family|lower == 'redhat'
+
+
 - name: monasca-agent | configure | create monasca log dir
   become: yes
   file:

@@ -27,7 +27,7 @@ user = {{ cassandra_user }}
 password = {{ cassandra_password }}
 
 [database]
-url = mysql+pymysql://{{monasca_api_mysql_user}}:{{monasca_api_mysql_password| quote }}@{{mysql_host}}/{{monasca_mysql_db}}?charset=utf8
+connection = mysql+pymysql://{{monasca_api_mysql_user}}:{{monasca_api_mysql_password| quote }}@{{mysql_host}}/{{monasca_mysql_db}}?charset=utf8
 
 [kafka]
 uri = {{ kafka_hosts }}

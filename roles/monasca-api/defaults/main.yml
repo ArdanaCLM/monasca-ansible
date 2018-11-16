@@ -44,7 +44,7 @@ vertica_vip_port: "{% if database_type == 'vertica' %}{{ MON_API.consumes_FND_VD
 vertica_url: "{% if database_type == 'vertica' %}jdbc:vertica://{{ vertica_vip }}:{{ vertica_vip_port }}/mon{% endif %}"
 
 monasca_api_region: "unset"
-monasca_api_shell: /usr/sbin/nologin
+monasca_api_shell: /sbin/nologin
 
 influxdb_url: "{% if database_type == 'influxdb' %}{{ MON_API.consumes_FND_IDB.vips.private[0].url }}{% endif %}"
 influxdb_user: "{% if database_type == 'influxdb' %}{{ MON_API.consumes_FND_IDB.vars.influxdb_monasca_api_user }}{% endif %}"

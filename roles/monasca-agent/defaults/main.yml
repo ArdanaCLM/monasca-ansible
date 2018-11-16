@@ -33,7 +33,7 @@ monasca_agent_region_name: "{{ MON.regions | first }}"
 monasca_agent_dimensions: "control_plane:{{ host.my_dimensions.control_plane }},cluster:{{ host.my_dimensions.cluster }},cloud_name:{{ host.my_dimensions.cloud_name }},service:{{ default_service_name }}"
 monasca_api_url: "{{MON_AGN.consumes_MON_API.vips.private[0].url}}/v2.0"
 monasca_agent_num_collector_threads: 5
-monasca_agent_shell: /usr/sbin/nologin
+monasca_agent_shell: /sbin/nologin
 
 monasca_agent_user_name: monasca-agent
 monasca_agent_group_name: monasca

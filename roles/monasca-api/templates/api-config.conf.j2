@@ -81,11 +81,16 @@ agent_authorized_roles = monasca-agent
 default_authorized_roles = user, domainuser, domainadmin, monasca-user, admin
 
 [keystone_authtoken]
-auth_uri = {{ keystone_url }}
+www_authenticate_uri = {{ keystone_url }}
 identity_uri = {{ keystone_url | replace(keystone_port, '35357') }}
 region_name = region1
 # memcached_servers = localhost:11211
 # signing_dir =
+memcached_servers = {{ memcached_servers }}
+memcache_security_strategy = ENCRYPT
+memcache_secret_key = {{ memcache_secret_key }}
+memcache_pool_socket_timeout = 1
+service_token_roles_required = true
 cafile = {{ trusted_ca_bundle }}
 project_domain_name = Default
 project_name = {{keystone_admin_project}}

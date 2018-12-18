@@ -25,8 +25,7 @@
 # Use legacy mode install for RHEL computes as well
 - name: monasca-agent | install | Install monasca-agent (venv)
   include: install-legacy.yml
-  when: >
-    deployer_media_legacy_layout|bool or ansible_os_family|lower == 'redhat'
+  when: ansible_os_family|lower == 'redhat'
 
 - name: monasca-agent | install | Install the monasca-agent service
   become: yes
@@ -39,4 +38,3 @@
   register: ardana_notify_monasca_agent_restart_required
   when:
     - ansible_os_family | lower == 'suse'
-    - not deployer_media_legacy_layout|bool

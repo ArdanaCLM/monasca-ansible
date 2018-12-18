@@ -27,11 +27,7 @@
 
 - name: Install | Install monasca-notification service from venv
   install_package:
-    name: "{%- if deployer_media_legacy_layout|bool -%}
-               monasca_notification
-           {%- else -%}
-               monasca
-           {%- endif -%}"
+    name: "monasca"
     service: monasca-notification
     state: present
   register: ardana_notify_monasca_notification_restart_required

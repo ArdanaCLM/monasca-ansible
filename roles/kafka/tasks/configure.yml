@@ -23,16 +23,11 @@
   debug:
     msg: "monasca_tuning_selector = {{ monasca_tuning_selector }}"
 
-- name: kafka | install | install kafka (legacy)
-  include: install-legacy.yml
-  when: deployer_media_legacy_layout|bool
-
 - name: kafka | install | install kafka (rpm)
   zypper:
     name: kafka
     state: present
   become: yes
-  when: deployer_media_legacy_layout|bool == false
 
 - name: Create data_dir
   file: path={{kafka_data_dir}} state=directory owner={{kafka_user}} group={{kafka_group}} mode=0755

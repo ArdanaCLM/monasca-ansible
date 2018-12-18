@@ -15,9 +15,6 @@
 # under the License.
 #
 ---
-- include: install-legacy.yml
-  when: deployer_media_legacy_layout|bool
-
 - name: storm | install | Install storm from rpm
   package:
     name: "{{ item }}"
@@ -26,14 +23,12 @@
     - storm
     - storm-nimbus
     - storm-supervisor
-  when: deployer_media_legacy_layout|bool == False
 
 - name: storm | install | Install the mysql jdbc driver from repo
   become: yes
   zypper:
     name: "{{ item }}"
     state: present
-  when: deployer_media_legacy_layout|bool == False
   with_items:
     - "mysql-connector-java"
 
@@ -43,4 +38,3 @@
     src: "{{ mysql_jdbc_dir }}/{{ mysql_jdbc_jar }}"
     dest: "{{ storm_ext_lib_dir }}/{{ mysql_jdbc_jar }}"
     state: link
-  when: deployer_media_legacy_layout|bool == False

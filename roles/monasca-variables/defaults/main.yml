@@ -52,9 +52,7 @@ monasca_agent_detection_args: send_rollup_stats=True
 # found at venv/usr/share/monasca/agent path. This is different from legacy and
 # SLES setup. SLES node installs monasca-agent via rpm where as in RHEL node,
 # its installed via venv.
-monasca_setup_bin_dir: "{%- if deployer_media_legacy_layout|bool -%}
-                          {{monasca_agent_virtualenv_dir}}/bin
-                        {%- elif ansible_os_family|lower == 'redhat' -%}
+monasca_setup_bin_dir: "{%- if ansible_os_family|lower == 'redhat' -%}
                           {{monasca_agent_virtualenv_dir}}/usr/bin
                         {%- else -%}
                           /usr/bin

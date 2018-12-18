@@ -17,16 +17,8 @@
 ---
 nimbus_thrift_port: 6627
 storm_drpc_extra_config:
-storm_local_dir: "{%- if deployer_media_legacy_layout|bool -%}
-                      /var/storm
-                  {%- else -%}
-                      /var/lib/storm/
-                  {%- endif -%}"
-storm_java_library_path: "{%- if deployer_media_legacy_layout|bool -%}
-                      /usr/local/lib:/opt/local/lib:/usr/lib
-                  {%- else -%}
-                      /usr/lib64:/usr/lib/
-                  {%- endif -%}"
+storm_local_dir: "/var/lib/storm/"
+storm_java_library_path: "/usr/lib64:/usr/lib"
 storm_zookeeper_port: 2181
 storm_topology_extra_config:
     topology.acker.executors: 1

@@ -15,32 +15,18 @@
 # under the License.
 #
 ---
-- name: monasca-default-alarms | cleanup | Install Nova Client (legacy)
-  install_package:
-    name: novaclient
-    service: novaclient
-    state: present
-  become: yes
-  when: deployer_media_legacy_layout|bool and
-        service_topology.services.nova is defined and
-        service_topology.services.nova.components['nova-compute']['control_planes'] is defined
 
 - name: monasca-default-alarms | cleanup | Install Nova Client (rpm)
   zypper:
     name: python-novaclient
     state: present
   become: yes
-  when: deployer_media_legacy_layout|bool == False and
-        service_topology.services.nova is defined and
+  when: service_topology.services.nova is defined and
         service_topology.services.nova.components['nova-compute']['control_planes'] is defined
 
 - name: monasca-default-alarms | cleanup | Set path for vm_alarm_cleanup.py
   set_fact:
-    vm_alarm_cleanup: "{%- if deployer_media_legacy_layout|bool -%}
-                           /opt/monasca/bin/vm_alarm_cleanup.py
-                       {%- else -%}
-                           /usr/local/bin/vm_alarm_cleanup.py
-                       {%- endif -%}"
+    vm_alarm_cleanup: "/usr/local/bin/vm_alarm_cleanup.py"
 
 - name: monasca-default-alarms | cleanup | Add VM alarm cleanup cron job
   template:

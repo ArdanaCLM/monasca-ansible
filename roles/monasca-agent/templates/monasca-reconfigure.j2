@@ -39,5 +39,5 @@
     --backlog_send_rate={{ monasca_agent_backlog_send_rate }} \
     --max_buffer_size={{ monasca_agent_max_buffer_size }} \
     --agent_service_name={{ monasca_agent_service_name }} \
-    {% if deployer_media_legacy_layout|bool == false %} --skip_enable {% endif %} \
+    --skip_enable \
     --overwrite

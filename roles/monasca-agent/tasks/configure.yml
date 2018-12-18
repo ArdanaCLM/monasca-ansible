@@ -22,25 +22,12 @@
     system: yes
   register: ardana_notify_monasca_agent_restart_required
 
-# the monasca.service unit created by monasca-setup needs a group
-# with the same name as the monasca-agent user.
-- name: monasca-agent | configure | Setup legacy monasca agent group
-  become: yes
-  group:
-    name: "{{ monasca_agent_user_name }}"
-    system: yes
-  register: ardana_notify_monasca_agent_restart_required
-  when: deployer_media_legacy_layout|bool
-
 - name: monasca-agent | configure | Setup user
   become: yes
   user:
     name: "{{ monasca_agent_user_name }}"
     system: yes
-    groups: "{{ monasca_agent_group_name }}
-            {%- if deployer_media_legacy_layout|bool -%}
-            ,{{ monasca_agent_user_name }}
-            {%- endif %}"
+    groups: "{{ monasca_agent_group_name }}"
     shell: "{{ monasca_agent_shell }}"
   register: ardana_notify_monasca_agent_restart_required
 
@@ -73,23 +60,6 @@
   with_items:
     - "{{ monasca_conf_dir }}/agent"
     - "{{ monasca_conf_dir }}/agent/conf.d"
-  when: deployer_media_legacy_layout|bool == False
-
-- name: monasca-agent | configure | create conf.d and custom plugin dirs legacy
-  become: yes
-  file:
-    path: "{{ item }}"
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
-  with_items:
-    - "{{ monasca_conf_dir }}"
-    - "{{ monasca_conf_dir }}/agent"
-    - "{{ monasca_conf_dir }}/agent/conf.d"
-    - "{{ monasca_agent_check_plugin_dir }}"
-    - "{{ monasca_agent_detection_plugin_dir }}"
-  when: deployer_media_legacy_layout|bool
 
 - name: monasca-agent | configure | create custom plugin dirs RHEL
   become: yes
@@ -122,21 +92,6 @@
     owner: "{{ monasca_agent_user_name }}"
     group: "{{ monasca_agent_group_name }}"
     mode: 0775
-
-- name: monasca-agent | configure | configure log file ownership
-  become: yes
-  file:
-    path: "{{ monasca_agent_log_dir }}/{{ item }}"
-    owner: "{{ monasca_agent_user_name }}"
-    group: "{{ monasca_agent_group_name }}"
-    mode: 0644
-    state: touch
-  with_items:
-    - collector.log
-    - forwarder.log
-    - statsd.log
-    - supervisord.log
-  when: deployer_media_legacy_layout|bool
 
 - name: monasca-agent | configure | Determine paths for RHEL systemd setup
   set_fact:

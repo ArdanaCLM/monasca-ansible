@@ -15,8 +15,6 @@
 # under the License.
 #
 ---
-- include: configure-legacy.yml
-  when: deployer_media_legacy_layout|bool
 
 - name: Detect if this is a systemd based system
   command: cat /proc/1/comm
@@ -35,7 +33,6 @@
     owner: root
     group: "{{ storm_group }}"
     mode: 0755
-  when: deployer_media_legacy_layout|bool == False
 
 - name: Configure cluster.xml for setting log level
   template:

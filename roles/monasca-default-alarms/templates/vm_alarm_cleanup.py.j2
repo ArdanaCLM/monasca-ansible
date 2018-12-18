@@ -19,11 +19,6 @@
 import fcntl
 from sys import exit, path, stdout
 
-{%- if deployer_media_legacy_layout|bool -%}
-path.append('/opt/stack/service/monascaclient/venv/lib/python2.7/site-packages')
-path.append('/opt/stack/service/novaclient/venv/lib/python2.7/site-packages')
-{%- endif -%}{{''}}
-
 from keystoneauth1.identity import v3
 from keystoneauth1 import session, exceptions as ksexceptions
 from monascaclient import client as mnclient

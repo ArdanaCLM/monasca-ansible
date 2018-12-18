@@ -23,11 +23,7 @@
 - name: monasca-api | install-pythonimpl | Installing Monasca API python code
   become: yes
   install_package:
-    name: "{%- if deployer_media_legacy_layout|bool -%}
-               monasca_api
-           {%- else -%}
-               monasca
-           {%- endif -%}"
+    name: "monasca"
     service: monasca-api
     state: present
     activate: act_off

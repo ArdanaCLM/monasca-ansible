@@ -24,7 +24,7 @@
     name: "{{ thresh_user }}"
     system: yes
     group: "{{ monasca_group }}"
-    groups: "{{ '' if deployer_media_legacy_layout|bool else 'storm' }}"
+    groups: "storm"
     shell: "{{ monasca_thresh_shell }}"
     createhome: no
     home: /var/nonexistent

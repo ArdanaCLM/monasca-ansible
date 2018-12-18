@@ -55,9 +55,5 @@ monasca_persister_hostname: "{{ host.my_dimensions.hostname }}"
 zookeeper_nodes: "{{ MON_PST.consumes_FND_ZOO.members.private }}"
 zookeeper_hosts: "{% for node in zookeeper_nodes %}{{ node.host }}:{{ node.port }}{% if not loop.last %},{% endif %}{% endfor %}"
 
-monasca_persister_jar: "{%- if  deployer_media_legacy_layout|bool -%}
-                            {{ monasca_jars_virtualenv_dir }}/lib/monasca-persister-{{monasca_persister_version}}-shaded.jar
-                        {%- else -%}
-                            {{ monasca_jars_virtualenv_dir }}/usr/share/monasca-persister/monasca-persister.jar
-                        {%- endif -%}"
+monasca_persister_jar: "{{ monasca_jars_virtualenv_dir }}/usr/share/monasca-persister/monasca-persister.jar"
 monasca_persister_jar_saved_md5: /opt/monasca/md5sums/monasca-persister.md5

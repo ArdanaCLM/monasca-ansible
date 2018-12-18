@@ -31,26 +31,6 @@
         monasca_virtualenv_dir: "{{ monasca_agent_virtualenv_dir }}",
         tags: [monasca-agent]}
   tasks:
-    # Create /opt/monasca explicitly or ansible creates with strange permissions
-    - name: create monasca dir (legacy)
-      file: path=/opt/monasca state=directory owner=root group=root mode=0755
-      when: deployer_media_legacy_layout|bool
-    - name: create monasca bin dir (legacy)
-      file:
-        path=/opt/monasca/bin state=directory owner=root group=root mode=0755
-      when: deployer_media_legacy_layout|bool
-    - name: create monasca-setup link for services (legacy)
-      file:
-        path=/opt/monasca/bin/monasca-setup
-        src="{{ monasca_setup_bin_dir }}/monasca-setup"
-        state=link
-      when: deployer_media_legacy_layout|bool
-    - name: create monasca venv link, help with the alarm definition module
-      file:
-        path=/opt/monasca/bin/activate_this.py
-        src="{{ monasca_setup_bin_dir }}/activate_this.py"
-        state=link
-      when: deployer_media_legacy_layout|bool
     - name: Run Monasca Agent detection plugin for the monasca-agent processes
       monasca_agent_plugin:
         name="MonAgent"
@@ -95,7 +75,6 @@
         - python-novaclient
         - python-neutronclient
       when:
-        - deployer_media_legacy_layout|bool == False
         - ansible_os_family | lower == 'suse'
 
 

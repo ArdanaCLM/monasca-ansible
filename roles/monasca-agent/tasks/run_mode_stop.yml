@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 #
+# Perform "Stop" run_mode actions
 ---
-- name: "monasca-agent | run_mode_{{ run_mode | lower }} | No action required"
-  debug:
-      msg: 'noop'
+- name: "monasca-agent | run_mode_{{ run_mode | lower }} | run the actual run_mode"
+  include: stop.yml

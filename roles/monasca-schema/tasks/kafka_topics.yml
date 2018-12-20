@@ -30,5 +30,5 @@
   when: check_result|failed
 
 - name: configure per topic segment rotation
-  command: "{{ kafka_bin_dir}}/kafka-topics.sh --zookeeper {{ zookeeper_hosts }} --topic {{ item.key }} --alter --config segment.ms={{ kafka_segment_minutes * 60 * 1000 }}"
+  command: "{{ kafka_bin_dir}}/kafka-configs.sh  --alter --zookeeper {{ zookeeper_hosts }} --entity-type topics --entity-name {{ item.key }} --add-config segment.ms={{ kafka_segment_minutes * 60 * 1000 }}"
   with_dict: kafka_topics

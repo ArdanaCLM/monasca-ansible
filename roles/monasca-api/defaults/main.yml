@@ -82,3 +82,8 @@ zookeeper_hosts: "{% for node in zookeeper_nodes %}{{ node.host }}:{{ node.port 
 
 # monasca global conf
 monasca_global_conf_dir: "/etc/monasca/"
+
+# [keystone_authtoken]
+memcached_servers: "{% for x in MON.consumes_FND_MEM.members.private %}{{ x.host }}:{{ x.port }}{%if
+ not loop.last %},{% endif %}{% endfor %}"
+memcache_secret_key: "{{ MON.consumes_FND_MEM.vars.memcached.monasca.secret_key | quote }}"

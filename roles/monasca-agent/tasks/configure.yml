@@ -95,27 +95,21 @@
 
 - name: monasca-agent | configure | Determine paths for RHEL systemd setup
   set_fact:
-    _ma_vdir: "{{ 'monasca-agent' | venv_dir() }}"
-    _ma_vsvc: "lib/systemd/system/venv-openstack-monasca-agent.service"
-    _ma_esvc: "/etc/systemd/system/openstack-monasca-agent.service"
+    _ma_vdir: "{{ 'monasca-agent' | venv_dir() }}/lib/systemd/system"
+    _ma_edir: "/etc/systemd/system"
 
 - name: monasca-agent | configure | Copy systemd file from venv to expected
         systemd location
   become: yes
-  command: cp {{ _ma_vdir }}/{{ _ma_vsvc }} {{ _ma_esvc }}
+  # rename file to eliminate spurious 'venv-' prefix added by venvjail
+  command: install -v -g root -o root -m 755 {{ _ma_vdir }}/{{ item }} {{ _ma_edir }}/{{ item | replace('venv-', '') }}
   when:
     - ansible_os_family | lower == 'redhat'
-
-- name: monasca-agent | configure | Change permission for agent systemd service
-        file
-  become: yes
-  file:
-    path: "/etc/systemd/system/openstack-monasca-agent.service"
-    owner: root
-    group: root
-    mode: 0755
-  when:
-    - ansible_os_family | lower == 'redhat'
+  with_items:
+    - openstack-monasca-agent.target
+    - venv-openstack-monasca-agent-collector.service
+    - venv-openstack-monasca-agent-forwarder.service
+    - venv-openstack-monasca-agent-statsd.service
 
 - name: monasca-agent | configure | Create tmpfiles.d file to handle reboots
         for agent process pid file

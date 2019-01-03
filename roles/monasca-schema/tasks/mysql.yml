@@ -21,33 +21,3 @@
     name: "{{ item }}"
     state: present
   with_items: monasca_schema_package_dependencies
-
-# Copy temporary python script and scheme to host
-- name: monasca-schema | mysql | Copy python script to host
-  template:
-    dest: "{{ monasca_script_file }}"
-    owner: root
-    group: root
-    mode: 0640
-    src: mysql_setup.py.j2
-
-- name: monasca-schema | mysql | Copy sql script to host
-  template:
-    dest: "{{ monasca_schema_file }}"
-    owner: root
-    group: root
-    mode: 0640
-    src: mon.sql.j2
-
-# Run python script to create schema
-- name: monasca-schema | mysql | Apply mysql schema to db
-  shell: /usr/bin/python {{ monasca_script_file }}
-
-# Remove temporary files
-- name: monasca-schema | mysql | remove temporary files
-  file:
-    dest: "{{ item }}"
-    state: absent
-  with_items:
-    - "{{ monasca_script_file }}"
-    - "{{ monasca_schema_file }}"

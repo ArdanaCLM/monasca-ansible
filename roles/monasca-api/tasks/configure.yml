@@ -101,6 +101,12 @@
     group: "{{monasca_group}}"
     mode: 0640
 
+# Attempt to run this task on the first node
+- name: Create the database scheme using monasca_db
+  shell: "/opt/stack/service/monasca-api-*/venv/bin/monasca_db upgrade"
+  run_once_per: verb_hosts.MON_API
+  register: ardana_notify_monasca_api_restart_required
+
 - name: Copy Truststore
   copy: dest={{monasca_api_truststore}} src={{monasca_api_truststore_src}}
   when: monasca_api_truststore_src is defined

@@ -30,6 +30,8 @@
     system: yes
     group: "{{ monasca_group }}"
     shell: "{{ monasca_api_shell }}"
+    move_home: yes
+    home: "{{ monasca_api_home }}"
   notify: ardana_notify_monasca_api_apache_restart
 
 - name: monasca-api | configure-pythonimpl | configure api config ini file

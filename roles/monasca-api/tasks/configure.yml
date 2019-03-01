@@ -25,6 +25,8 @@
     system: yes
     group: "{{ monasca_group }}"
     shell: "{{ monasca_api_shell }}"
+    move_home: yes
+    home: "{{ monasca_api_home }}"
   register: ardana_notify_monasca_api_restart_required
 
 - name: Ensure vertica jdbc permissions

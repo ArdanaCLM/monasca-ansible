@@ -71,7 +71,7 @@
         name: "{{ item }}"
         state: present
       with_items:
-        - libvirt-python
+        - python-libvirt-python
         - python-novaclient
         - python-neutronclient
       when:

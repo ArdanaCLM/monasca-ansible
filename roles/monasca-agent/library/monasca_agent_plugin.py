@@ -112,7 +112,7 @@ def main():
             (path for path in default_setup_paths if os.path.isfile(path)),
             "")
 
-    args = [monasca_setup_path, '--user', 'monasca-agent']
+    args = [monasca_setup_path, '--user', 'monasca-agent', '--enable_logrotate', 'false']
 
     # assume a package based installation if monasca_setup_path is
     # "/usr/bin/monasca-setup" and set service name accordingly

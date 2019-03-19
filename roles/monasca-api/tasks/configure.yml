@@ -105,7 +105,7 @@
 
 # Attempt to run this task on the first node
 - name: Create the database scheme using monasca_db
-  shell: "/opt/stack/service/monasca-api-*/venv/bin/monasca_db upgrade"
+  shell: "{{ monasca_api_bin_dir }}/monasca_db upgrade"
   run_once_per: verb_hosts.MON_API
   register: ardana_notify_monasca_api_restart_required
 

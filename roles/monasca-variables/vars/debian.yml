@@ -22,10 +22,3 @@ monasca_post_upgrade_cleanup:
 
 monasca_pre_upgrade_pkg_lock:
   - influxdb
-  - vertica
-
-vertica_version: 7.2.1-0
-vertica_jdbc_version: 7.2.1-0
-
-vertica_jdbc_jar: "vertica-jdbc-{{ vertica_jdbc_version }}.jar"
-vertica_jdbc_location: "/opt/vertica/java/lib/{{ vertica_jdbc_jar }}"

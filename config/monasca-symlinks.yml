@@ -19,7 +19,6 @@ symlinks:
     "monasca/api-config.yml.j2": "roles/monasca-api/templates/api-config.yml.j2"
     "monasca/notification.yaml.j2": "roles/monasca-notification/templates/notification.yaml.j2"
     "monasca/influxdb.conf.j2": "roles/influxdb/templates/influxdb.conf.j2"
-    "monasca/vertica-cleanup.j2": "roles/monasca-schema/templates/vertica-cleanup.j2"
     "monasca/storm.yaml.j2": "roles/storm/templates/storm.yaml.j2"
     "monasca/thresh-cluster.xml.j2": "roles/storm/templates/cluster.xml.j2"
     "monasca/thresh-config.yml.j2": "roles/monasca-thresh/templates/thresh-config.yml.j2"
@@ -30,5 +29,4 @@ symlinks:
     "monasca/zookeeper.log4j.properties.j2": "roles/zookeeper/templates/log4j.properties.j2"
     "monasca/plugin.yaml.j2": "roles/monasca-agent/templates/plugin.yaml.j2"
     "monasca/persister-config.yml.j2": "roles/monasca-persister/templates/persister-config.yml.j2"
-    "monasca/vertica_logrotate.j2": "roles/vertica/templates/vertica_logrotate.j2"
     "monasca/agent-defaults.yml": "roles/monasca-agent/defaults/main.yml"

@@ -44,63 +44,6 @@
 
 - include: kafka-configure-monasca.yml
 
-- name: Upgrade Vertica Version
-  hosts: FND-VDB
-  become: yes
-  tags: [vertica]
-  vars_files:
-    - roles/monasca-variables/vars/configuration.yml
-    - roles/monasca-variables/defaults/main.yml
-    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
-  vars:
-    check_version_upgrade: True
-    vertica_group_size: "{{ groups['FND-VDB'] | length }}"
-  roles:
-    - {role: vertica, when: database_type == 'vertica' and run_mode == 'Upgrade', tags: [vertica]}
-
-# Execute serially as need to set ssh keys from first host to others
-- name: Pre-configure steps for all vertica nodes
-  hosts: FND-VDB
-  serial: 1
-  become: yes
-  tags: [vertica]
-  vars_files:
-    - roles/monasca-variables/vars/configuration.yml
-    - roles/monasca-variables/defaults/main.yml
-    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
-  vars:
-    vertica_pre_primary_setup: True
-  roles:
-    - {role: vertica,
-       when: database_type == 'vertica' and ansible_os_family | lower == 'suse',
-       tags: [vertica]}
-
-- name: Configures Vertica on primary node
-  hosts: FND-VDB--first-member
-  become: yes
-  tags: [vertica]
-  vars_files:
-    - roles/monasca-variables/vars/configuration.yml
-    - roles/monasca-variables/defaults/main.yml
-    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
-  vars:
-    vertica_primary_setup: True
-  roles:
-    - {role: vertica, when: database_type == 'vertica', tags: [vertica]}
-
-- name: Configures Vertica on secondary nodes, if any
-  hosts: FND-VDB:!FND-VDB--first-member
-  become: yes
-  tags: [vertica]
-  vars_files:
-    - roles/monasca-variables/vars/configuration.yml
-    - roles/monasca-variables/defaults/main.yml
-    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
-  vars:
-    vertica_post_primary_setup: True
-  roles:
-    - {role: vertica, when: database_type == 'vertica', tags: [vertica]}
-
 - name: Installs Influxdb
   hosts: FND-IDB
   become: yes
@@ -119,7 +62,6 @@
   vars:
     influxdb_schema_enabled: False
     kafka_topics_enabled: False
-    vertica_schema_enabled: False
     cassandra_schema_enabled: False
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -137,7 +79,6 @@
     kafka_topics_enabled: True
     mysql_schema_enabled: False
     winchester_schema_enabled: False
-    vertica_schema_enabled: False
     cassandra_schema_enabled: False
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -155,7 +96,6 @@
     kafka_topics_enabled: False
     mysql_schema_enabled: False
     winchester_schema_enabled: False
-    vertica_schema_enabled: False
     cassandra_schema_enabled: False
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -163,26 +103,6 @@
     - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
   roles:
     - {role: monasca-schema, when: database_type == 'influxdb', tags: [monasca-schema-influx, monasca-schema]}
-
-- name: Set up vertica schema
-  hosts: FND-VDB--first-member
-  become: yes
-  tags: [monasca-schema-vertica, monasca-schema]
-  vars:
-    influxdb_schema_enabled: False
-    kafka_topics_enabled: False
-    mysql_schema_enabled: False
-    winchester_schema_enabled: False
-    vertica_schema_enabled: True
-    cassandra_schema_enabled: False
-  vars_files:
-    - roles/monasca-variables/vars/configuration.yml
-    - roles/monasca-variables/defaults/main.yml
-    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
-    - roles/vertica/defaults/main.yml
-    - roles/vertica/vars/main.yml
-  roles:
-    - {role: monasca-schema, when: database_type == 'vertica', tags: [monasca-schema-vertica, monasca-schema]}
 
 - name: Set up cassandra schema
   hosts: FND-CDB--first-member
@@ -193,7 +113,6 @@
     kafka_topics_enabled: False
     mysql_schema_enabled: False
     winchester_schema_enabled: False
-    vertica_schema_enabled: False
     cassandra_schema_enabled: True
   vars_files:
     - roles/monasca-variables/vars/configuration.yml
@@ -201,46 +120,6 @@
     - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
   roles:
     - {role: monasca-schema, when: database_type == 'cassandra', tags: [monasca-schema-cassandra, monasca-schema]}
-
-- name: Delete vertica licenses and reset dbadmin privileges
-  hosts: FND-VDB
-  become: yes
-  tags: [vertica]
-  vars_files:
-    - roles/monasca-variables/vars/configuration.yml
-    - roles/vertica/vars/main.yml
-  tasks:
-    - name: vertica | license | remove original unencrypted vertica license
-      file: path={{vertica_config_dir}}/license.key state=absent
-      when: database_type == 'vertica'
-    - name: vertica | license | remove unencrypted vertica license
-      file: path={{vertica_config_dir}}/share/license.key state=absent
-      when: database_type == 'vertica'
-    - name: vertica | license | remove encrypted vertica license
-      file: path={{vertica_config_dir}}/license.key.gpg state=absent
-      when: database_type == 'vertica'
-    - include: roles/vertica/tasks/reset_dbadmin_privs.yml
-      when: database_type == 'vertica'
-
-- name: Set up Vertica logrotate and Monasca Agent configuration
-  hosts: FND-VDB
-  become: yes
-  tags: [vertica]
-  vars_files:
-    - roles/monasca-variables/vars/configuration.yml
-    - roles/monasca-variables/defaults/main.yml
-    - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
-  vars:
-    run_mode: Logging
-  roles:
-    - {role: vertica, when: database_type == 'vertica' and run_mode == 'Logging', tags: [vertica]}
-  tasks:
-    - name: Run Monasca Agent detection plugin for Vertica
-      monasca_agent_plugin:
-        name="Vertica"
-        args="user={{ FND_VDB.vars.monitor_user_name }} password={{ FND_VDB.vars.monitor_user_password }} timeout=10"
-      no_log: True
-      when: database_type == 'vertica'
 
 - name: Set up Cassandra Monasca Agent configuration
   hosts: FND-CDB

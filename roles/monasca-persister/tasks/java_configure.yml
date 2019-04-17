@@ -15,11 +15,6 @@
 # under the License.
 #
 ---
-- name: Ensure vertica jdbc permissions
-  file: path={{ vertica_jdbc_location }} mode=0644
-  when: database_type == 'vertica'
-  register: ardana_notify_monasca_persister_restart_required
-
 - name: create conf_file from template
   template: dest={{persister_java_conf_file}} owner={{persister_user}} group={{monasca_group}} mode=0640 src=persister-config.yml.j2
   register: ardana_notify_monasca_persister_restart_required

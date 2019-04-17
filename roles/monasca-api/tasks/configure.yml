@@ -27,10 +27,6 @@
     shell: "{{ monasca_api_shell }}"
   register: ardana_notify_monasca_api_restart_required
 
-- name: Ensure vertica jdbc permissions
-  file: path={{ vertica_jdbc_location }} mode=0644
-  when: database_type == 'vertica'
-
 - name: Detect if this is a systemd based system
   command: cat /proc/1/comm
   register: init

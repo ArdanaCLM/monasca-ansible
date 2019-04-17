@@ -100,24 +100,6 @@
     become: yes
 
 - hosts: all
-  tags: [vertica]
-  tasks:
-  - name: vertica | Remove vertica sql files
-    file: path=/var/vertica/{item} state=absent
-    with_items:
-    - mon_alarms_schema.sql
-    - mon_metrics_schema.sql
-    - mon_metrics_multi_node.sql
-    - mon_users_and_limits.sql
-  - name: monasca-schema | mysql | remove temporary files
-    file:
-      dest: "{{ item }}"
-      state: absent
-    with_items:
-      - "{{ monasca_script_file }}"
-      - "{{ monasca_schema_file }}"
-
-- hosts: all
   tags: [monasca-schema-mysql, monasca-schema]
   vars_files:
     - roles/monasca-schema/defaults/main.yml

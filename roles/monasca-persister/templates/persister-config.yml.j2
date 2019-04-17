@@ -60,11 +60,8 @@ kafkaConfig:
   zookeeperConnectionTimeoutMs : 6000
   zookeeperSyncTimeMs: 2000
 
-verticaMetricRepoConfig:
-  maxCacheSize: 2000000
-
 databaseConfiguration:
-# vertica | influxdb | cassandra
+# influxdb | cassandra
   databaseType: {{ database_type }}
 
 # Uncomment if databaseType is influxdb
@@ -78,18 +75,10 @@ influxDbConfiguration:
   user: "{% if influxdb_user is defined %}{{influxdb_user}}{% endif %}"
   password: "{% if influxdb_password is defined %}{{influxdb_password| quote }}{% endif %}"
 
-# Uncomment if databaseType is vertica
 dataSourceFactory:
-  driverClass: com.vertica.jdbc.Driver
-{% if database_type == 'vertica' %}
-  url: "{{ vertica_url | default('jdbc:vertica://localhost:5433/mon') }}"
-  user: "{{ vertica_persister_user }}"
-  password: "{{ vertica_persister_password }}"
-{% else %}
   url:
   user:
   password:
-{% endif %}
   properties:
       ssl: false
   # the maximum amount of time to wait on an empty pool before throwing an exception

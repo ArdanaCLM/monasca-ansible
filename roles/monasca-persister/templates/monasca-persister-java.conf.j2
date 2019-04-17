@@ -26,4 +26,4 @@ respawn
 
 setgid {{ monasca_group }}
 setuid {{ persister_user }}
-exec /usr/bin/java -Dfile.encoding=UTF-8 {{ monasca_persister_java_opts }} -cp {{ monasca_jars_virtualenv_dir }}/lib/monasca-persister-{{monasca_persister_version}}-shaded.jar{% if database_type == 'vertica' %}:{{ vertica_jdbc_location }}{% endif %} monasca.persister.PersisterApplication server {{ 'monasca' | config_dir() }}/persister-config.yml
+exec /usr/bin/java -Dfile.encoding=UTF-8 {{ monasca_persister_java_opts }} -cp {{ monasca_jars_virtualenv_dir }}/lib/monasca-persister-{{monasca_persister_version}}-shaded.jar monasca.persister.PersisterApplication server {{ 'monasca' | config_dir() }}/persister-config.yml

@@ -24,26 +24,6 @@
   roles:
     - {role: kafka, tags: [kafka]}
 
-- name: Start vertica
-  hosts: FND-VDB
-  become: yes
-  tags: [vertica]
-  vars:
-    run_mode: Start
-    start_one_node: False
-  vars_files:
-    - roles/monasca-variables/vars/configuration.yml
-    - roles/monasca-variables/defaults/main.yml
-  pre_tasks:
-    - name: Determine if we are starting one node
-      set_fact:
-        start_one_node: True
-      when:
-        ( database_type == 'vertica' and
-        ( {{ play_hosts }} | length ) == 1 )
-  roles:
-    - {role: vertica, when: database_type == 'vertica', tags: [vertica]}
-
 - name: Start influxdb
   hosts: FND-IDB
   become: yes

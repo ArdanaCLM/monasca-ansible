@@ -38,17 +38,6 @@ Requires Variables be defined for:
          influxdb_password: "{{persister_influxdb_password}}",
          tags: [persister]}
 
-##Running with Vertica
-
-To run with vertica you must pass in the change the variable database_type to vertica in defaults or add it in the call to the role.
-You can also pass in the url of your vertica database and the username/password for the monasca-persister. These do default to values if not passed in.
-Setting the username and password would talk the form of:
-
-    vertica_users:
-      - username: mon_persister
-        password: password
-        role: monasca_persister
-
 ##License
 Apache
 

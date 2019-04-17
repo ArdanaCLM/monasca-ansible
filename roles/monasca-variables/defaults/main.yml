@@ -88,28 +88,6 @@ cassandra_persister_user: "{% if database_type == 'cassandra' %}{{ MON_PST.consu
 cassandra_persister_password: "{% if database_type == 'cassandra' %}{{ MON_PST.consumes_FND_CDB.vars.cassandra_monasca_persister_password }}{% endif %}"
 cassandra_version: 3.11.1
 
-# Vertica Defaults
-vertica_users:
-  - username: "{% if database_type == 'vertica' %}{{ FND_VDB.vars.monitor_user_name }}{% endif %}"
-    password: " {% if database_type == 'vertica' %}{{ FND_VDB.vars.monitor_user_password }}{% endif %}"
-    role: monitor
-  - username: "{% if database_type == 'vertica' %}{{ MON_API.consumes_FND_VDB.vars.vertica_monasca_api_user }}{% endif %}"
-    password: "{% if database_type == 'vertica' %}{{ MON_API.consumes_FND_VDB.vars.vertica_monasca_api_password }}{% endif %}"
-    role: monasca_api
-  - username: "{% if database_type == 'vertica' %}{{ MON_PST.consumes_FND_VDB.vars.vertica_monasca_persister_user }}{% endif %}"
-    password: "{% if database_type == 'vertica' %}{{ MON_PST.consumes_FND_VDB.vars.vertica_monasca_persister_password }}{% endif %}"
-    role: monasca_persister
-vertica_api_user: "{% if database_type == 'vertica' %}{{ MON_API.consumes_FND_VDB.vars.vertica_monasca_api_user }}{% endif %}"
-vertica_api_password: "{% if database_type == 'vertica' %}{{ MON_API.consumes_FND_VDB.vars.vertica_monasca_api_password }}{% endif %}"
-vertica_persister_user: "{% if database_type == 'vertica' %}{{ MON_PST.consumes_FND_VDB.vars.vertica_monasca_persister_user }}{% endif %}"
-vertica_persister_password: "{% if database_type == 'vertica' %}{{ MON_PST.consumes_FND_VDB.vars.vertica_monasca_persister_password }}{% endif %}"
-vertica_resource_pools_limits: "{% if database_type == 'vertica' and vertica_resource_pools_limits_override %}{{ vertica_resource_pools_limits_override }}{% else %}{{ monasca_tunings.vertica_resource_pools_limits }}{% endif %}"
-vertica_version: 7.2.1-0
-vertica_jdbc_version: 7.2.1-0
-vertica_jdbc_jar: "{% if database_type == 'vertica' %}vertica-jdbc-{{ vertica_jdbc_version }}.jar{% endif %}"
-vertica_jdbc_location: "{% if database_type == 'vertica' %}/opt/vertica/java/lib/{{ vertica_jdbc_jar }}{% endif %}"
-vertica_use_apt: True
-
 # Threshold Engine defaults
 thresh_metric_spout_tasks: "{% if thresh_metric_spout_tasks_override %}{{ thresh_metric_spout_tasks_override }}{% else %}{{ monasca_tunings.thresh_metric_spouts }}{% endif %}"
 thresh_metric_spout_threads: "{% if thresh_metric_spout_threads_override %}{{ thresh_metric_spout_threads_override }}{% else %}{{ monasca_tunings.thresh_metric_threads }}{% endif %}"

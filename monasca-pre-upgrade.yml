@@ -15,7 +15,7 @@
 # under the License.
 #
 ---
-- hosts: FND-VDB:FND-IDB
+- hosts: FND-IDB
   become: yes
   vars_files:
     - roles/monasca-variables/vars/{{ ansible_os_family | lower }}.yml
@@ -27,18 +27,6 @@
       state: latest
       force: yes
     when: ansible_os_family | lower == 'debian'
-
-  - name: monasca-pre-upgrade | Hold vertica and influxdb package in Debian.
-    become: yes
-    command: aptitude hold {{ item }} -y
-    with_items: monasca_pre_upgrade_pkg_lock
-    when: ansible_os_family | lower == 'debian'
-
-  - name: monasca-pre-upgrade | Hold vertica and influxdb package in SLES.
-    become: yes
-    command: zypper --non-interactive addlock {{ item }}
-    with_items: monasca_pre_upgrade_pkg_lock
-    when: ansible_os_family | lower == 'suse'
 
 - name: Delete Alarm Definitions from previous Ardana installs
   hosts: MON-API--first-member

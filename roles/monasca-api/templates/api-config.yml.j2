@@ -72,24 +72,6 @@ influxDB:
   user: "{% if influxdb_user is defined %}{{influxdb_user}}{% endif %}"
   password: "{% if influxdb_password is defined %}{{influxdb_password| quote }}{% endif %}"
 
-# Uncomment if databaseType is vertica
-vertica:
-  driverClass: com.vertica.jdbc.Driver
-{% if database_type == 'vertica' %}
-  url: "{{ vertica_url | default('jdbc:vertica://localhost:5433/mon')}}"
-  user: "{{ vertica_api_user }}"
-  password: "{{ vertica_api_password }}"
-{% else %}
-  url:
-  user:
-  password:
-{% endif %}
-  maxWaitForConnection: 1s
-  validationQuery: "/* MyService Health Check */ SELECT 1"
-  minSize: 4
-  maxSize: 32
-  checkConnectionWhileIdle: true
-
 middleware:
   enabled: true
   serverVIP: "{{keystone_host}}"

@@ -23,18 +23,6 @@
   tasks:
     - { include: roles/monasca-variables/tasks/service_status.yml, service_name: kafka}
 
-- name: vertica Status
-  hosts: FND-VDB
-  max_fail_percentage: 0
-  become: yes
-  tags: [vertica]
-  vars_files:
-    - roles/monasca-variables/vars/configuration.yml
-    - roles/monasca-variables/defaults/main.yml
-    - roles/vertica/defaults/main.yml
-  tasks:
-    - { include: roles/vertica/tasks/status.yml, service_name: verticad, when: database_type=='vertica'}
-
 - name: influxdb Status
   hosts: FND-IDB
   max_fail_percentage: 0

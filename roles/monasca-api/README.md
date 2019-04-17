@@ -58,17 +58,6 @@ The keystore and truststore's are jks files and created by command such as these
          monasca_api_mysql_password: "{{api_mysql_password}}",
          tags: [api]}
 
-##Running with Vertica
-
-To run with vertica you must pass in the change the variable database_type to vertica in defaults or add it in the call to the role.
-You can also pass in the url of your vertica database and the username/password for the monasca-api. These do default to values if not passed in.
-Setting the username and password would talk the form of:
-
-    vertica_users:
-      - username: mon_api
-        password: password
-        role: monasca_api
-
 ##License
 Apache
 

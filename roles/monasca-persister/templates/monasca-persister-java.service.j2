@@ -25,7 +25,7 @@ Type=simple
 User={{ persister_user }}
 Group={{ monasca_group }}
 Restart=on-failure
-ExecStart=/usr/bin/java -Dfile.encoding=UTF-8 {{ monasca_persister_java_opts }} -cp {{ monasca_persister_jar }}{% if database_type == 'vertica' %}:{{ vertica_jdbc_location }}{% endif %} monasca.persister.PersisterApplication server {{ 'monasca' | config_dir() }}/persister-config.yml
+ExecStart=/usr/bin/java -Dfile.encoding=UTF-8 {{ monasca_persister_java_opts }} -cp {{ monasca_persister_jar }} monasca.persister.PersisterApplication server {{ 'monasca' | config_dir() }}/persister-config.yml
 
 [Install]
 WantedBy=multi-user.target

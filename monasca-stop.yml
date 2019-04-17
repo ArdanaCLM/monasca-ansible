@@ -100,33 +100,6 @@
   roles:
     - {role: influxdb, when: database_type == 'influxdb', tags: [influxdb]}
 
-- name: Stop vertica
-  hosts: FND-VDB
-  become: yes
-  tags: [vertica]
-  vars:
-    run_mode: Stop
-    stop_cluster: True
-  vars_files:
-    - roles/monasca-variables/vars/configuration.yml
-    - roles/monasca-variables/defaults/main.yml
-  pre_tasks:
-    - name: Determine if we are stopping the cluster or only one node
-      set_fact:
-        stop_cluster: False
-      when:
-        ( database_type == 'vertica' and
-        {{ FND_VDB.members.private }} | length ) != ( {{ play_hosts }} | length )
-    - name: Fail if not stopping cluster and if cluster will not have quorum
-      fail:
-        msg: Must stop entire cluster or less than half of Vertica nodes
-      when:
-        ( database_type == 'vertica' and
-        not stop_cluster and
-        {{ play_hosts }} | length > ( {{ FND_VDB.members.private }} | length ) / 2 )
-  roles:
-    - {role: vertica, when: database_type == 'vertica', tags: [vertica]}
-
 - name: Stop kafka
   hosts: FND-KFK
   become: yes

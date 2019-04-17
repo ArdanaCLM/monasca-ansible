@@ -1,3 +1,2 @@
-monasca-agent ALL=(root) NOPASSWD:/usr/bin/ovs-vsctl
 Defaults:monasca-agent !requiretty
 Defaults:monasca-agent  secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"

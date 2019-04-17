@@ -52,7 +52,6 @@
             - memcached
             - zookeeper
             - kafka
-            - vertica
             - storm
             - monasca-api
             - monasca-persister

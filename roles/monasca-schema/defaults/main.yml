@@ -27,11 +27,6 @@ influxdb_shard_duration: "7d"
 influxdb_script_dir: /root
 mysql_admin: root
 monasca_mysql_db: "{{ MON_API.consumes_FND_MDB.vars.databases.monasca.dbname }}"
-vertica_database_name: mon
-vertica_env: {LC_ALL: en_US.UTF-8, LANG: en_US.UTF-8}
-vertica_schema_enabled: true
-vertica_dbadmin_old_password: "{% if FND_VDB.old_vars is defined and FND_VDB.old_vars.dbadmin_user_password is defined %}{{ FND_VDB.old_vars.dbadmin_user_password }}{% else %}{{ vertica_dbadmin_password }}{% endif %}"
-
 # enable cassandra schema
 cassandra_conf_dir: "{{ '/etc/cassandra/conf' if ansible_os_family == 'Suse' else '/etc/cassandra' }}"
 cassandra_schema_enabled: true
@@ -94,8 +89,6 @@ mon_influxdb_users:
   - username: "{{ MON_PST.consumes_FND_IDB.vars.influxdb_monasca_persister_user }}"
     password: "{{ MON_PST.consumes_FND_IDB.vars.influxdb_monasca_persister_password | quote }}"
 
-vertica_nodes: "{{ FND_VDB.members.private }}"
-vertica_cluster: "{% for node in vertica_nodes %}{{ node.host }}{% if not loop.last %},{% endif %}{% endfor %}"
 rebuild: False
 
 monasca_api_mysql_user: "{{ MON.consumes_FND_MDB.vars.accounts.monasca_api.username }}"

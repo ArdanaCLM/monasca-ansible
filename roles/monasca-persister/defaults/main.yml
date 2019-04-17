@@ -29,10 +29,6 @@ monasca_persister_alarm_max_batch_time: 15
 monasca_persister_metric_max_batch_time: 15
 monasca_persister_shell: /sbin/nologin
 
-vertica_vip: "{% if database_type == 'vertica' %}{{ MON_PST.consumes_FND_VDB.vips.private[0].host }}{% endif %}"
-vertica_vip_port: "{% if database_type == 'vertica' %}{{ MON_PST.consumes_FND_VDB.vips.private[0].port }}{% endif %}"
-vertica_url: "{% if database_type == 'vertica' %}jdbc:vertica://{{ vertica_vip }}:{{ vertica_vip_port }}/mon{% endif %}"
-
 influxdb_url: "{% if database_type == 'influxdb' %}{{ MON_PST.consumes_FND_IDB.vips.private[0].url }}{% endif %}"
 influxdb_user: "{% if database_type == 'influxdb' %}{{ MON_PST.consumes_FND_IDB.vars.influxdb_monasca_persister_user }}{% endif %}"
 influxdb_password: "{% if database_type == 'influxdb' %}{{ MON_PST.consumes_FND_IDB.vars.influxdb_monasca_persister_password | quote }}{% endif %}"

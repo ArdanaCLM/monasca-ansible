@@ -40,10 +40,6 @@ run_mode: Deploy
 skip_install: False
 verify: True
 
-vertica_vip: "{% if database_type == 'vertica' %}{{ MON_API.consumes_FND_VDB.vips.private[0].host }}{% endif %}"
-vertica_vip_port: "{% if database_type == 'vertica' %}{{ MON_API.consumes_FND_VDB.vips.private[0].port }}{% endif %}"
-vertica_url: "{% if database_type == 'vertica' %}jdbc:vertica://{{ vertica_vip }}:{{ vertica_vip_port }}/mon{% endif %}"
-
 monasca_api_region: "unset"
 monasca_api_shell: /sbin/nologin
 

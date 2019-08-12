@@ -1,0 +1,23 @@
+[Unit]
+After=systemd-journald.socket basic.target system.slice
+Requires=basic.target
+Description=Monitoring threshold engine running under storm
+Conflicts=shutdown.target
+Before=shutdown.target multi-user.target
+
+[Service]
+Type=forking
+Restart=always
+RestartSec=10
+TimeoutSec=5min
+KillMode=process
+IgnoreSIGPIPE=no
+GuessMainPID=no
+RemainAfterExit=yes
+PrivateTmp=yes
+ExecStart={{ monasca_thresh_wrapper }} start
+ExecStop={{ monasca_thresh_wrapper }} stop
+
+[Install]
+WantedBy=multi-user.target
+

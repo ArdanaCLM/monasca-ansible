@@ -54,8 +54,13 @@
     group: "{{monasca_group}}"
     mode: 0640
 
-- name: create service script from template
-  template: dest=/etc/init.d/monasca-thresh owner=root group=root mode=0744 src=monasca-thresh.j2
+- name: create wrapper script from template
+  template:
+    src: monasca-thresh-wrapper.j2
+    owner: root
+    group: root
+    mode: 0744
+    dest: "{{ monasca_thresh_wrapper }}"
   register: ardana_notify_monasca_thresh_restart_required
 
 - name: Detect if this is a systemd based system
@@ -65,6 +70,24 @@
   when: init.stdout == 'systemd'
 - set_fact: use_systemd=False
   when: init.stdout != 'systemd'
+
+- name: Drop monasca-tresh init service file
+  template:
+    src: monasca-thresh.init.j2
+    dest: /etc/init.d/monasca-thresh
+    owner: root
+    group: root
+    mode: 0744
+  when: not use_systemd
+
+- name: Drop monasca-tresh systemd service file
+  template:
+    src: monasca-thresh.service.j2
+    dest: /etc/systemd/system/monasca-thresh.service
+    owner: root
+    group: root
+    mode: 0640
+  when: use_systemd
 
 - command: systemctl daemon-reload
   when: use_systemd

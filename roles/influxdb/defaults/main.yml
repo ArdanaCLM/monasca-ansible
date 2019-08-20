@@ -26,7 +26,7 @@ influxdb_client_port: "{{ FND_IDB.members.private[0].port }}"
 influxdb_node_count: "{{ FND_IDB.members.private | length }}"
 influxdb_admin: "{{ FND_IDB.vars.influxdb_admin_user_name | default('root') }}"
 influxdb_admin_password: "{{ FND_IDB.vars.influxdb_admin_user_password | default('root') }}"
-influxdb_url: http://{{ influxdb_bind_address }}:{{ influxdb_client_port }}
+influxdb_url: http://{{ influxdb_bind_address | ipwrap }}:{{ influxdb_client_port }}
 influxdb_data_dir: "/var/opt/influxdb"
 influxdb_log_dir: "/var/log/influxdb"
 influxdb_https_enabled: "false"

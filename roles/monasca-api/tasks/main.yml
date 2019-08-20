@@ -23,7 +23,7 @@
 # monasca-api java
 #
 - include: stop.yml
-  when: run_mode == 'Stop' and monasca_api_implementation_lang == 'java'
+  when: (run_mode == 'Stop' or run_mode == 'Upgrade') and monasca_api_implementation_lang == 'java'
 
 - include: _check_upgraded_pkgs.yml
   when: run_mode == 'Upgrade'
@@ -41,7 +41,7 @@
 # monasca-api python
 #
 - include: stop-pythonimpl.yml
-  when: run_mode == 'Stop' and monasca_api_implementation_lang == 'python'
+  when: (run_mode == 'Stop' or run_mode == 'Upgrade') and monasca_api_implementation_lang == 'python'
 
 - include: install-pythonimpl.yml
   when: not skip_install and ( run_mode == 'Install' or run_mode == 'Deploy' or run_mode == 'Upgrade' ) and monasca_api_implementation_lang == 'python'

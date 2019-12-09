@@ -1,0 +1,331 @@
+#!/usr/bin/env python
+#
+# (c) Copyright 2019 SUSE LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+#
+import datetime
+import sys
+
+import MySQLdb
+
+
+def execute_query(con, query):
+    try:
+        cursor = con.cursor()
+        cursor.execute(query)
+    finally:
+        if cursor:
+            cursor.close()
+
+
+def execute_fetchone_query(con, query):
+    try:
+        cursor = con.cursor()
+        cursor.execute(query)
+        return cursor.fetchone()
+    finally:
+        if cursor:
+            cursor.close()
+
+
+def create_table(con, table_name, create_table_query):
+    result = execute_fetchone_query(con, "SHOW TABLES like '%s'" % (table_name))
+    if not result:
+        execute_fetchone_query(con, create_table_query)
+
+
+def drop_table(con, table_name):
+    result = execute_fetchone_query(con, "SHOW TABLES like '%s'" % (table_name))
+    if result:
+        query = """
+            DROP TABLE %s;
+        """ % (table_name)
+        execute_query(con, query)
+
+
+def add_table_column(con, table_name, column_name, add_column_query):
+    query = """
+        select column_name from information_schema.columns where table_schema = 'mon' and table_name = '%s' and column_name = '%s';
+    """ % (table_name, column_name)
+    result = execute_fetchone_query(con, query)
+    if not result:
+        execute_query(con, add_column_query)
+
+
+def create_alarm_state_table(con):
+    create_table_query = """
+        CREATE TABLE `alarm_state` (
+          `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+          PRIMARY KEY (`name`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    """
+    create_table(con, 'alarm_state', create_table_query)
+
+
+def create_alarm_definition_severity_table(con):
+    create_table_query = """
+        CREATE TABLE `alarm_definition_severity` (
+          `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+          PRIMARY KEY (`name`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    """
+    create_table(con, 'alarm_definition_severity', create_table_query)
+
+
+def create_stream_actions_action_type_table(con):
+    create_table_query = """
+        CREATE TABLE `stream_actions_action_type` (
+          `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+          PRIMARY KEY (`name`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    """
+    create_table(con, 'stream_actions_action_type', create_table_query)
+
+
+def create_schema_migration_table(con):
+    create_table_query = """
+        CREATE TABLE `schema_migration` (
+          `version` varchar(255) NOT NULL,
+          CONSTRAINT `unique_schema_migrations` UNIQUE (`version`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+    """
+    create_table(con, 'schema_migration', create_table_query)
+
+
+def create_stream_definition_table(con):
+    create_table_query = """
+        CREATE TABLE `stream_definition` (
+          `id` varchar(36) NOT NULL,
+          `tenant_id` varchar(36) NOT NULL,
+          `name` varchar(190) NOT NULL DEFAULT '',
+          `description` varchar(255) DEFAULT NULL,
+          `select_by` longtext DEFAULT NULL,
+          `group_by` longtext DEFAULT NULL,
+          `fire_criteria` longtext DEFAULT NULL,
+          `expiration` int(10) DEFAULT '0',
+          `action_enabled` tinyint(1) NOT NULL DEFAULT '1',
+          `created_at` datetime NOT NULL,
+          `updated_at` datetime NOT NULL,
+          `deleted_at` datetime NOT NULL,
+          PRIMARY KEY (`id`),
+          CONSTRAINT `tenant_name` UNIQUE (`tenant_id`, `name`),
+          INDEX `name` (`name`),
+          INDEX `tenant_id` (`tenant_id`),
+          INDEX `deleted_at` (`deleted_at`),
+          INDEX `created_at` (`created_at`),
+          INDEX `updated_at` (`updated_at`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    """
+    create_table(con, 'stream_definition', create_table_query)
+
+
+def create_stream_actions_table(con):
+    create_table_query = """
+        CREATE TABLE `stream_actions` (
+          `stream_definition_id` varchar(36) NOT NULL,
+          `action_id` varchar(36) NOT NULL,
+          `action_type` varchar(20) NOT NULL,
+          CONSTRAINT `fk_stream_action_stream_definition_id` FOREIGN KEY (`stream_definition_id`) REFERENCES `stream_definition` (`id`) ON DELETE CASCADE,
+          CONSTRAINT `fk_stream_action_notification_method_id` FOREIGN KEY (`action_id`) REFERENCES `notification_method` (`id`) ON DELETE CASCADE,
+          FOREIGN KEY (`action_type`) REFERENCES `stream_actions_action_type` (`name`),
+          PRIMARY KEY (`stream_definition_id`, `action_id`, `action_type`),
+
+          INDEX `stream_definition_id` (`stream_definition_id`),
+          INDEX `action_type` (`action_type`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    """
+    create_table(con, 'stream_actions', create_table_query)
+
+
+def create_event_transform_table(con):
+    create_table_query = """
+        CREATE TABLE `event_transform` (
+          `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+          `tenant_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+          `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+          `description` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+          `specification` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+          `enabled` tinyint(1) DEFAULT NULL,
+          `created_at` datetime NOT NULL,
+          `updated_at` datetime NOT NULL,
+          `deleted_at` datetime NOT NULL,
+          PRIMARY KEY (`id`),
+          INDEX `name` (`name`),
+          INDEX `tenant_id` (`tenant_id`),
+          INDEX `deleted_at` (`deleted_at`),
+          INDEX `created_at` (`created_at`),
+          INDEX `updated_at` (`updated_at`),
+          CONSTRAINT `tenant_name` UNIQUE (`tenant_id`, `name`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    """
+    create_table(con, 'event_transform', create_table_query)
+
+
+def populate_table_column_with_value(con, table_name, column_name, value):
+    query = """
+        select * from `%s` where %s = '%s';
+    """ % (table_name, column_name, value)
+    result = execute_fetchone_query(con, query)
+    if not result:
+        query = """
+            insert into `%s` (%s) values ('%s');
+        """ % (table_name, column_name, value)
+        execute_query(con, query)
+
+
+def populate_alarm_state_table(con):
+    populate_table_column_with_value(con, 'alarm_state', 'name', 'UNDETERMINED')
+    populate_table_column_with_value(con, 'alarm_state', 'name', 'OK')
+    populate_table_column_with_value(con, 'alarm_state', 'name', 'ALARM')
+
+
+def populate_alarm_definition_severity_table(con):
+    populate_table_column_with_value(con, 'alarm_definition_severity', 'name', 'LOW')
+    populate_table_column_with_value(con, 'alarm_definition_severity', 'name', 'MEDIUM')
+    populate_table_column_with_value(con, 'alarm_definition_severity', 'name', 'HIGH')
+    populate_table_column_with_value(con, 'alarm_definition_severity', 'name', 'CRITICAL')
+
+
+def populate_notification_method_type_table(con):
+    populate_table_column_with_value(con, 'notification_method_type', 'name', 'EMAIL')
+    populate_table_column_with_value(con, 'notification_method_type', 'name', 'WEBHOOK')
+    populate_table_column_with_value(con, 'notification_method_type', 'name', 'PAGERDUTY')
+
+
+def populate_stream_actions_action_type_table(con):
+    populate_table_column_with_value(con, 'stream_actions_action_type', 'name', 'FIRE')
+    populate_table_column_with_value(con, 'stream_actions_action_type', 'name', 'EXPIRE')
+
+
+def update_notification_method_type_table(con):
+    query = """
+        ALTER TABLE `notification_method_type` MODIFY `name` VARCHAR(20);
+    """
+    execute_query(con, query)
+
+def add_constraint(con, table_name, constraint_name, add_constraint_query):
+    query = """
+        select * from information_schema.table_constraints where constraint_schema = 'mon' and constraint_name = '%s' and table_name = '%s';
+    """ % (constraint_name, table_name)
+    result = execute_fetchone_query(con, query)
+    if not result:
+        execute_query(con, add_constraint_query)
+
+
+def update_alarm_table(con):
+    querys = ["""ALTER TABLE `alarm` MODIFY COLUMN `state` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL;""",
+              """ALTER TABLE `alarm` MODIFY COLUMN `created_at` datetime NOT NULL;""",
+              """ALTER TABLE `alarm` MODIFY COLUMN `state_updated_at` datetime DEFAULT NULL;""",
+              """ALTER TABLE `alarm` MODIFY COLUMN `updated_at` datetime NOT NULL;"""]
+    for query in querys:
+        execute_query(con, query)
+
+    query = """ALTER TABLE `alarm` ADD CONSTRAINT `fk_alarm_alarm_state` FOREIGN KEY (`state`) REFERENCES `alarm_state` (`name`);"""
+    add_constraint(con, 'alarm', 'fk_alarm_alarm_state', query)
+
+    #query = """ALTER TABLE `alarm` ADD `inhibited` tinyint(1) NOT NULL DEFAULT '0';"""
+    #add_table_column(con, 'alarm', 'inhibited', query)
+    #query = """ALTER TABLE `alarm` ADD `silenced` tinyint(1) NOT NULL DEFAULT '0';"""
+    #add_table_column(con, 'alarm', 'silenced', query)
+
+
+def update_alarm_action_table(con):
+    querys = ["""ALTER TABLE `alarm_action` MODIFY COLUMN `alarm_state` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL;"""]
+    for query in querys:
+        execute_query(con, query)
+
+    query = """ALTER TABLE `alarm_action` ADD CONSTRAINT `fk_alarm_action_alarm_state` FOREIGN KEY (`alarm_state`) REFERENCES `alarm_state` (`name`);"""
+    add_constraint(con, 'alarm_action', 'fk_alarm_action_alarm_state', query)
+
+
+def update_alarm_definition_table(con):
+    querys = ["""ALTER TABLE `alarm_definition` MODIFY COLUMN `expression` longtext COLLATE utf8mb4_unicode_ci NOT NULL;""",
+              """ALTER TABLE `alarm_definition` MODIFY COLUMN `severity` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL;""",
+              """ALTER TABLE `alarm_definition` MODIFY COLUMN `actions_enabled` tinyint(1) NOT NULL DEFAULT '1';"""]
+    for query in querys:
+        execute_query(con, query)
+
+    query = """ALTER TABLE `alarm_definition` ADD CONSTRAINT `fk_alarm_definition_severity` FOREIGN KEY (`severity`) REFERENCES `alarm_definition_severity` (`name`);"""
+    add_constraint(con, 'alarm_definition', 'fk_alarm_definition_severity', query)
+
+
+def update_notification_method_table(con):
+    query = """ALTER TABLE `notification_method` ADD CONSTRAINT `fk_alarm_noticication_method_type` FOREIGN KEY (`type`) REFERENCES `notification_method_type` (`name`);"""
+    add_constraint(con, 'notification_method', 'fk_alarm_noticication_method_type', query)
+
+
+def update_sub_alarm_table(con):
+    querys = ["""ALTER TABLE `sub_alarm` MODIFY COLUMN `expression` longtext COLLATE utf8mb4_unicode_ci NOT NULL;""",
+              """ALTER TABLE `sub_alarm` MODIFY COLUMN `created_at` datetime NOT NULL;""",
+              """ALTER TABLE `sub_alarm` MODIFY COLUMN `updated_at` datetime NOT NULL;""",
+              """ALTER TABLE `sub_alarm` MODIFY COLUMN `state` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'OK';"""]
+    for query in querys:
+        execute_query(con, query)
+
+    query = """ALTER TABLE `sub_alarm` ADD CONSTRAINT `fk_sub_alarm_state` FOREIGN KEY (`state`) REFERENCES `alarm_state` (`name`);"""
+    add_constraint(con, 'sub_alarm', 'fk_sub_alarm_state', query)
+
+
+def drop_schema_version_table(con):
+    drop_table(con, 'schema_version')
+
+
+def main():
+    return_code = 0
+    try:
+        ssl = {'ca': '{{ monasca_schema_system_cacert_file }}' }
+        con = MySQLdb.connect('{{ mysql_host }}', '{{ monasca_api_mysql_user }}', '{{ monasca_api_mysql_password }}',
+                              '{{ monasca_mysql_db }}', ssl=ssl)
+
+        con.autocommit(True)
+
+        # NOTE(gyee): the following code was used to retrace the upstream
+        # migration steps. They were merely used to retrace the intermediate
+        # steps, and therefore no loger needed once we've reached the final
+        # stamp. We are leaving it here instead of removing it so we can
+        # reuse it for future debugging purposes.
+        #create_schema_migration_table(con)
+        #create_stream_definition_table(con)
+        #create_stream_actions_action_type_table(con)
+        #populate_stream_actions_action_type_table(con)
+        #create_stream_actions_table(con)
+        #create_event_transform_table(con)
+
+        create_alarm_state_table(con)
+        populate_alarm_state_table(con)
+        create_alarm_definition_severity_table(con)
+        populate_alarm_definition_severity_table(con)
+        update_notification_method_type_table(con)
+        populate_notification_method_type_table(con)
+        update_alarm_table(con)
+        update_alarm_action_table(con)
+        update_alarm_definition_table(con)
+        update_notification_method_table(con)
+        update_sub_alarm_table(con)
+        drop_schema_version_table(con)
+
+    except MySQLdb.MySQLError as sql_error:
+        print "Mysql error {0} when running the script".format(sql_error)
+        return_code = 1
+    except Exception as e:
+        print "Error {0} when running the script".format(e)
+        return_code = 1
+
+    finally:
+        if con:
+            con.close()
+        sys.exit(return_code)
+
+if __name__ == "__main__":
+    sys.exit(main())

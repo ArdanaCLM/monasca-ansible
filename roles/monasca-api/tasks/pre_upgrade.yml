@@ -1,0 +1,29 @@
+#
+# (c) Copyright 2019 SUSE LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+#
+---
+# NOTE(gyee): prior to stable/rocky, Monasca DB schema was a wild, wild, west.
+# In other words, there was no "official version" of the schema. It was
+# left up to the vendors. In stable/rocky, Monasca established an
+# official version of the schema, and it was stamp (or fingerprinted) with
+# each migration step. 'f69cb3152a76' was the last known fingerprint in
+# stable/rocky so we'll fix up our schema to align with the official
+# stable/rocky version prior to the migration.
+- name: monasca-api | pre_upgrade | Stamp database with a known fingerprint
+  shell: >
+    "{{ monasca_api_bin_dir }}/monasca_db stamp
+     --from-fingerprint 'f69cb3152a76'"
+  run_once_per: verb_hosts.MON_API
+  register: ardana_notify_monasca_api_restart_required

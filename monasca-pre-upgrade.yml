@@ -98,3 +98,18 @@
           dimensions: "service:compute"
       when: (MON_LVC.consumes_MON_AGN.members.ping | length) > 1 and
             ((names_to_remove | length) > 1)
+
+- name: Align monasca-api DB schema with upstream
+  hosts: MON-API--first-member
+  roles:
+    - role: monasca-schema
+  tasks:
+    - include: roles/monasca-schema/tasks/mysql_pre_upgrade.yml
+
+- name: Stamp monasca-api DB
+  hosts: MON-API--first-member
+  roles:
+    - role: monasca-api
+  tasks:
+    - include: roles/monasca-api/tasks/pre_upgrade.yml
+

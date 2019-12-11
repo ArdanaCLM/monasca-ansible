@@ -50,11 +50,9 @@ cassandra_admin_user: "{% if database_type == 'cassandra' %}{{ FND_CDB.vars.cass
 cassandra_admin_password: "{% if database_type == 'cassandra' %}{{ FND_CDB.vars.cassandra_admin_password }}{% endif %}"
 
 mysql_root_dir: /var/lib/mysql
-mysql_schema_dir: /root
 monasca_schema_version: 4
 monasca_schema_file: "{{ mysql_schema_dir }}/mon.sql"
 monasca_script_file: "{{ mysql_schema_dir }}/mysql_schema.py"
-monasca_mysql_schema_sync_script_file: "{{ mysql_schema_dir }}/mysql_schema_sync.py"
 
 kafka_events_partitions: 12
 kafka_metrics_partitions: 64

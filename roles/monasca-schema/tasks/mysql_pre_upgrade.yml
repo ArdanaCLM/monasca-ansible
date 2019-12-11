@@ -30,11 +30,3 @@
     group: root
     mode: 0640
     src: mysql_schema_sync.py.j2
-
-- name: monasca-schema | mysql_pre_upgrade | Align schema with upstream
-  shell: /usr/bin/python {{ monasca_mysql_schema_sync_script_file }}
-
-- name: monasca-schema | mysql_pre_upgrade | remove temporary files
-  file:
-    dest: "{{ monasca_mysql_schema_sync_script_file }}"
-    state: absent

@@ -1,6 +1,5 @@
 #
-# (c) Copyright 2015 Hewlett Packard Enterprise Development LP
-# (c) Copyright 2017-2018 SUSE LLC
+# (c) Copyright 2019 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -15,20 +14,5 @@
 # under the License.
 #
 ---
-galaxy_info:
-  author: Ardana Developers
-  description: Applies Monasca schema to influxdb and mysql
-    and creates kafka topics
-  company: SUSE
-  license: Apache
-  min_ansible_version: 1.7
-  platforms:
-  - name: Ubuntu
-    versions:
-    - all
-  categories:
-  - clustering
-  - system
-dependencies:
-  - role: tls-vars
-  - role: monasca-common
+mysql_schema_dir: /root
+monasca_mysql_schema_sync_script_file: "{{ mysql_schema_dir }}/mysql_schema_sync.py"

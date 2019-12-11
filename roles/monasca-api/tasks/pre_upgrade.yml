@@ -14,16 +14,49 @@
 # under the License.
 #
 ---
+
+# This task list should be run only on the MON-API--first-member
+# nodes as per the when condition where it is included in the
+# configure-pythonimpl.yml task list.
+- name: monasca-api | pre_upgrade | Confirm running on MON-API first member
+  fail:
+    msg: >-
+      This task list should only be being run on the first member of
+      the MON-API group for a given control plane cluster.
+  when:
+    - inventory_hostname not in groups['MON-API--first-member']
+
+# The alignment script will only be generated if we are running as part
+# of an upgrade, so check for it's existence
+- name: monasca-api | pre_upgrade | Check if schema alignment script exists?
+  stat:
+    path: "{{ monasca_mysql_schema_sync_script_file }}"
+  register: schema_align_script_exists_result
+
 # NOTE(gyee): prior to stable/rocky, Monasca DB schema was a wild, wild, west.
 # In other words, there was no "official version" of the schema. It was
 # left up to the vendors. In stable/rocky, Monasca established an
 # official version of the schema, and it was stamp (or fingerprinted) with
 # each migration step. 'f69cb3152a76' was the last known fingerprint in
 # stable/rocky so we'll fix up our schema to align with the official
-# stable/rocky version prior to the migration.
+# stable/rocky version prior to the migration and then stamp the resulting
+# database with that fingerprint marker.
+- name: monasca-api | pre_upgrade | Align schema with upstream
+  command: /usr/bin/python {{ monasca_mysql_schema_sync_script_file }}
+  when:
+    - schema_align_script_exists_result.stat.exists
+
 - name: monasca-api | pre_upgrade | Stamp database with a known fingerprint
-  shell: >
-    "{{ monasca_api_bin_dir }}/monasca_db stamp
-     --from-fingerprint 'f69cb3152a76'"
-  run_once_per: verb_hosts.MON_API
+  command: >
+    {{ monasca_api_bin_dir }}/monasca_db stamp
+     'f69cb3152a76'
   register: ardana_notify_monasca_api_restart_required
+  when:
+    - schema_align_script_exists_result.stat.exists
+
+- name: monasca-api | pre_upgrade | remove schema alignment script
+  file:
+    dest: "{{ monasca_mysql_schema_sync_script_file }}"
+    state: absent
+  when:
+    - schema_align_script_exists_result.stat.exists

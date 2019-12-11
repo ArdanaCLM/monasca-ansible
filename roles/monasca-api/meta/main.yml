@@ -33,3 +33,4 @@ galaxy_info:
 dependencies:
   - role: FND-AP2
   - role: tls-vars
+  - role: monasca-common

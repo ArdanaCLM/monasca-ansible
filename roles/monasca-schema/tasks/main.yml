@@ -31,3 +31,5 @@
   when: cassandra_schema_enabled and database_type == 'cassandra'
 - include: cassandra-start.yml tags=cassandra_schema
   when: cassandra_schema_enabled and database_type == 'cassandra'
+- include: mysql_pre_upgrade.yml
+  when: run_mode | default('') == 'Upgrade'

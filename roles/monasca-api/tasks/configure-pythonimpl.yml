@@ -150,6 +150,10 @@
     group: "{{ monasca_group }}"
     state: link
 
+- include: pre_upgrade.yml
+  when:
+    - inventory_hostname in groups['MON-API--first-member']
+
 # Attempt to run this task on the first node
 - name: monasca-api | configure-pythonimpl | Create the database scheme using monasca_db
   shell: "{{ monasca_api_bin_dir }}/monasca_db upgrade"

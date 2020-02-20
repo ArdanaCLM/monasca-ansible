@@ -173,4 +173,24 @@ monasca_alarm_definitions_misc_services:
       {{ monasca_critical_cert_expire_days }}
     match_by: "url"
     severity: "HIGH"
-
+  - name: "Certificate File Expiration Warning"
+    description: >
+      Alarms when the certificate file is close to expiring
+    expression: >
+      MIN(cert_file.cert_expire_days, {{ monasca_cert_check_period }}) <
+      {{ monasca_warn_cert_expire_days }}
+    match_by:
+      - hostname
+      - cert_file
+      - service
+  - name: "Certificate File Expiration Critical"
+    description: >
+      Alarms when the certificate file is extremely close to expiring
+    expression: >
+      MIN(cert_file.cert_expire_days, {{ monasca_cert_check_period }}) <
+      {{ monasca_critical_cert_expire_days }}
+    match_by: 
+      - hostname
+      - cert_file
+      - service
+    severity: "HIGH"

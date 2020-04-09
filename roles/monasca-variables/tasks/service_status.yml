@@ -15,11 +15,26 @@
 # under the License.
 #
 ---
+- include_vars: status.yml
+
 - name: "{{ service_name }} | Check systemd service status"
   command: systemctl status {{ service_name }}
   register: status_result
   ignore_errors: yes
   changed_when: false
+  until:
+    # retry until active or inactive (dead), i.e. retry while service
+    # is attempting to auto-restart or up to (retries * delay) seconds.
+    - status_result | systemctl_active_or_dead
+  retries: "{{ monasca_service_status_retry_count }}"
+  delay: "{{ monasca_service_status_retry_delay }}"
+
+- name: "{{ service_name }} | Report retries needed if > 0"
+  debug:
+    msg: |
+      {{ service_name }} status check attempts {{ status_result.attempts }}.
+  when:
+    - status_result.attempts > 0
 
 - name: "{{ service_name }} | Report systemd service failure"
   fail:

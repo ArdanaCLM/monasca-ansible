@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # (c) Copyright 2015-2016 Hewlett Packard Enterprise Development LP
 # (c) Copyright 2017-2018 SUSE LLC
@@ -16,11 +16,69 @@
 # under the License.
 #
 
+# Run storm command optionally with specified timeout
+storm_cmd()
+{
+  local timeout="" cmd_args=()
+
+  # check if a specific timeout specified, can be empty string to disable
+  case "${1}" in
+      timeout=*)
+        eval "${1}"
+        shift
+        ;;
+  esac
+
+  # if timeout is not disabled prepend timeout ${timeout} to cmd_args
+  if [[ -n "${timeout}" ]]; then
+    cmd_args+=( timeout "${timeout}" )
+  fi
+
+  # add storm command + args to cmd_args
+  cmd_args+=( {{ storm_executable }} "${@}" )
+
+  sudo -EHu {{ thresh_user }} "${cmd_args[@]}"
+}
+
+storm_check_svc()
+{
+  local list_rc svc timeout="" tmp_file="$(mktemp --tmpdir mtw_storm_check_svc.XXXXXXXX)"
+
+  # check if a timeout value has been specified
+  case "${1}" in
+      timeout=*)
+        timeout="${1}"
+        shift
+        ;;
+  esac
+
+  svc="${1}"
+
+  storm_cmd timeout="{{ monasca_thresh_storm_timeout }}" list > "${tmp_file}" 2>&1
+  list_rc=$?
+
+  # if list command timed out
+  if (( list_rc == 124 )); then
+    echo "storm list timed out"
+  else
+    grep "${svc}" "${tmp_file}"
+    list_rc=$?
+  fi
+
+  # remove temp file
+  rm -f "${tmp_file}"
+
+  return ${sc_sts}
+}
+
 case "$1" in
     start)
-      $0 status
-      if [ $? -ne 0 ]; then
-        sudo -EHu {{ thresh_user }} {{ storm_executable }} jar {{ monasca_thresh_jar }} monasca.thresh.ThresholdingEngine {{ 'monasca' | config_dir() }}/thresh-config.yml thresh-cluster
+      storm_check_svc thresh-cluster
+      check_rc=$?
+      if (( check_rc == 124 )); then
+        exit ${check_rc}
+      elif (( check_rc != 0 )); then
+        storm_cmd jar {{ monasca_thresh_jar }} monasca.thresh.ThresholdingEngine {{ 'monasca' | config_dir() }}/thresh-config.yml thresh-cluster
         exit $?
       else
         echo "monasca-thresh is already running"
@@ -39,16 +97,27 @@ case "$1" in
           exit 0
         fi
       fi
-      sudo -EHu {{ thresh_user }} {{ storm_executable }} kill thresh-cluster
-      # The above command returns but actually takes awhile loop watching status
+
+      storm_cmd kill thresh-cluster
+
+      # The kill command returns but actually takes awhile loop watching status
+      timeout_retries=3
       while true; do
-        sudo -EHu {{ thresh_user }} {{ storm_executable }} list | grep thresh-cluster
-        if [ $? -ne 0 ]; then break; fi
+        storm_check_svc thresh-cluster
+        check_rc=$?
+
+        if (( check_rc == 124 )); then
+          (( timeout_retries -= 1 ))
+          (( timeout_retries == 0 )) && exit ${check_rc}
+        elif (( check_rc == 1 )); then
+          break
+        fi
+
         sleep 1
       done
     ;;
     status)
-        sudo -EHu {{ thresh_user }} {{ storm_executable }} list | grep thresh-cluster
+        storm_check_svc thresh-cluster
+        exit $?
     ;;
 esac
-

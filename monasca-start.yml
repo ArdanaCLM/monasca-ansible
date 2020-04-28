@@ -82,6 +82,8 @@
   vars:
     run_mode: Start
   vars_files:
+    - roles/monasca-variables/vars/configuration.yml
+    - roles/monasca-variables/defaults/main.yml
     - roles/monasca-thresh/vars/nodes.yml
   roles:
     - {role: monasca-thresh, tags: [thresh], when: thresh_start_enabled}

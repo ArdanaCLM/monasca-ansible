@@ -225,6 +225,8 @@
     - roles/storm/defaults/main.yml
   tasks:
     - include: roles/storm/tasks/stop_on_upgrade.yml
+      when:
+        - run_mode == "Upgrade"
 
 - name: Sets up Storm
   hosts: MON-THR

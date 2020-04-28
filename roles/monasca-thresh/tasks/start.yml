@@ -17,11 +17,27 @@
 ---
 - name: monasca-thresh | start | restart monasca thresh service
   service: name=monasca-thresh state=restarted enabled=yes
-  when: ardana_notify_monasca_thresh_restart_required is defined and
+  when: (not (ardana_notify_monasca_thresh_restart_required is not defined)) and
         ardana_notify_monasca_thresh_restart_required.changed
+  failed_when: false
 
 - name: start | Start monasca thresh service
   service: name=monasca-thresh state=started enabled=yes
+  failed_when: false
 
-- name: pause for monasca-thresh to start
+# wait for the service to start or fail to start, allowing for
+# possibility of limited number of auto-restarts
+- name: monasca-thresh | start | wait for monasca-thresh service to start
+  include: "{{ playbook_dir }}/roles/monasca-variables/tasks/service_status.yml"
+  vars:
+    service_name: monasca-thresh
+
+# NOTE: stat'ing /dev/null to run an arbitrary action that generates no output
+- name: monasca-thresh | start | clear any persistent monasca-thresh restart flag
+  stat:
+    path: /dev/null
+  when: ardana_notify_monasca_thresh_restart_required is defined
+  changed_when: False
+
+- name: monasca-thresh | start | pause for monasca-thresh to start
   pause: seconds=2

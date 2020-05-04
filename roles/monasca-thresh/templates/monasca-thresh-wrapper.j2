@@ -42,9 +42,8 @@ storm_cmd()
 
 storm_check_svc()
 {
-  local list_rc svc timeout="" tmp_file="$(mktemp --tmpdir mtw_storm_check_svc.XXXXXXXX)"
+  local list_rc svc timeout="{{ monasca_thresh_storm_timeout }}" tmp_file="$(mktemp --tmpdir mtw_storm_check_svc.XXXXXXXX)"
 
-  # check if a timeout value has been specified
   case "${1}" in
       timeout=*)
         timeout="${1}"
@@ -54,7 +53,7 @@ storm_check_svc()
 
   svc="${1}"
 
-  storm_cmd timeout="{{ monasca_thresh_storm_timeout }}" list > "${tmp_file}" 2>&1
+  storm_cmd ${timeout:+timeout="${timeout}"} list > "${tmp_file}" 2>&1
   list_rc=$?
 
   # if list command timed out
@@ -68,7 +67,7 @@ storm_check_svc()
   # remove temp file
   rm -f "${tmp_file}"
 
-  return ${sc_sts}
+  return ${list_rc}
 }
 
 case "$1" in

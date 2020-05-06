@@ -17,7 +17,7 @@
 ---
 - name: storm | stop_on_upgrade | Stop Thresh on upgrade
   service: name=monasca-thresh state=stopped enabled=yes
-  when: storm_nimbus_enabled | bool
+  when: thresh_start_enabled | bool
 
 - name: storm | stop_on_upgrade | Stop Storm UI on upgrade
   service: name=storm-ui state=stopped enabled=yes
@@ -29,20 +29,15 @@
 
 - name: storm | stop_on_upgrade | Stop Supervisor on upgrade
   service: name=storm-supervisor state=stopped enabled=yes
-  when: storm_supervisor_enabled | bool
 
 - name: storm | stop_on_upgrade | Stop Nimbus on upgrade
   service: name=storm-nimbus state=stopped enabled=yes
-  when: storm_nimbus_enabled | bool
 
 - name: storm | stop_on_upgrade | Clean Storm Supervisor Data
   file: path="{{ storm_local_dir }}/supervisor" state=absent
-  when: storm_supervisor_enabled | bool
 
 - name: storm | stop_on_upgrade | Clean Storm Workers Data
   file: path="{{ storm_local_dir }}/workers" state=absent
-  when: storm_supervisor_enabled | bool
 
 - name: storm | stop_on_upgrade | Clean Storm Nimbus Data
   file: path="{{ storm_local_dir }}/nimbus" state=absent
-  when: storm_nimbus_enabled | bool

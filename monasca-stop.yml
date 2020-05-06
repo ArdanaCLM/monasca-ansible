@@ -41,7 +41,7 @@
     - {role: storm, tags: [storm, thresh]}
 
 - name: Stop storm-nimbus
-  hosts: MON-THR--first-member
+  hosts: MON-THR
   become: yes
   tags: [storm, thresh]
   vars_files:

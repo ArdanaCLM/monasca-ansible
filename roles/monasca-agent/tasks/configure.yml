@@ -93,6 +93,21 @@
     group: "{{ monasca_agent_group_name }}"
     mode: 0775
 
+# This is necessary to fix an issue where logging-upgrade reset the
+# permissions to "adm".
+- name: monasca-agent | configure | Touch monasca-agent log files
+  file:
+    path: "{{ monasca_agent_log_dir }}/{{ item }}"
+    owner: "{{ monasca_agent_user_name }}"
+    group: "{{ monasca_agent_group_name }}"
+    mode: 0644
+    state: touch
+  with_items:
+    - collector.log
+    - forwarder.log
+    - statsd.log
+    - supervisord.log
+
 - name: monasca-agent | configure | Determine paths for RHEL systemd setup
   set_fact:
     _ma_vdir: "{{ 'monasca-agent' | venv_dir() }}/lib/systemd/system"

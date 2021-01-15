@@ -136,7 +136,6 @@
     - forwarder.log
     - statsd.log
     - supervisord.log
-  when: deployer_media_legacy_layout|bool
 
 - name: monasca-agent | configure | Determine paths for RHEL systemd setup
   set_fact:

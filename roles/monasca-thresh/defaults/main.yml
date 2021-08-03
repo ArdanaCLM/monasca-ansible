@@ -49,7 +49,7 @@ kafka_hosts: "{% for node in kafka_nodes %}{{ node.host }}:{{ node.port }}{% if 
 mysql_host: "{{MON_THR.consumes_FND_MDB.vips.private[0].host}}"
 mysql_port: "{{ MON_THR.consumes_FND_MDB.vips.private[0].port }}"
 
-mysql_https_arg: "{% if MON_THR.consumes_FND_MDB.vips.private[0].use_tls %}&useSSL=true{% endif %}"
+mysql_https_arg: "{% if MON_THR.consumes_FND_MDB.vips.private[0].use_tls %}&useSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3{% endif %}"
 
 monasca_thresh_mysql_user: "{{ MON_THR.consumes_FND_MDB.vars.accounts.monasca_thresh.username }}"
 monasca_thresh_mysql_password: "{{ MON_THR.consumes_FND_MDB.vars.accounts.monasca_thresh.password | quote }}"
